@@ -31,8 +31,8 @@ function getTimeStart(time){
 	return h+':'+m
 }
 
-var $play = {
-	init: function(start){				//Метки, но в коде на них ссылки нету
+var $play = {								//Обьект
+	init: function(start){				
 		var app = 'tv', url;
 		if ( $LS.ott_id ) {
 			start = $LS.ott_id;
@@ -49,7 +49,7 @@ var $play = {
 			this.isHLS = true;
 			$('#play').html('<video id="iPlayer" src="'+ url + start +'.m3u8" controls autoplay></video>')
 		} else {
-			swfobject.embedSWF('swf/GrindPlayer.swf', 'play', '100%', '100%', '11', null, {
+			swfobject.embedSWF('swf/GrindPlayer.swf', 'play', '100%', '100%', '11', null, {					//Использование grind player'a
 				src: url + start +'.m3u8',
 				plugin_hls: 'swf/flashlsOSMF.swf',
 				streamType: 'live',
@@ -140,7 +140,7 @@ $.getJSON( $etc.api +'list.json', function (res){		//send Jquery HTTP GET
 
 	for (var i=0; res.list.length > i; i++) {
 		$('#chans').append('<div class="chan" data-id="'+ res.list[i]._id +'">'+
-			'<div class="chImg" style="background-image: url('+ $etc.img +'60px/'+ res.list[i]._id +'.png)"></div>'+
+			'<div class="chImg" style="background-image: url('+ $etc.img +'60px/'+ res.list[i]._id +'.png)"></div>'+ //Добавление иконки канала
 			'<div data-id="'+ res.list[i]._id +'" class="chEPG"><span></span>'+
 			'<div class="chDay"></div></div></div>');
 		$list[res.list[i]._id] = {
@@ -148,13 +148,13 @@ $.getJSON( $etc.api +'list.json', function (res){		//send Jquery HTTP GET
 			app: res.list[i].app,
 			title: res.list[i].title
 		}
-		updEpg(res.list[i]._id)
+		updEpg(res.list[i]._id)		//Функция поиска EPG для канала
 	}
 
-	$play.init(res.list[0]._id)
+	$play.init(res.list[0]._id)		// Запуск проигрывания первого канала по счету
 })
 
-$('#chans').on('click', '.chan', function (e){
+$('#chans').on('click', '.chan', function (e){			// Обработка события клика по иконке канала
 	var id = $(this).attr('data-id'),
 		targ = e.target.className;
 	if (targ == 'chDay') {
@@ -197,7 +197,7 @@ function showNiz(id){
 	}, 3000)
 }
 
-$(window).keydown(function (e){
+$(window).keydown(function (e){					//Менять каналы с помощью "вверх-вниз"
 	var tmpID = false;
 	if (e.keyCode == 40){
 		tmpID = $('.chan[data-id="'+ $etc.now +'"]').next().attr('data-id');
