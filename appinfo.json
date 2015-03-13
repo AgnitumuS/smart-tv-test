@@ -1,0 +1,11 @@
+{
+    "id": "ua.lanet.vsashyn.lgottwebos",
+    "version": "0.0.1",
+    "vendor": "Lanet Ukraine",
+    "type": "web",
+    "main": "index.html",
+    "title": "single page",
+    "icon": "assets/icon.png",
+    "largeIcon": "assets/largeIcon.png",
+    "uiRevision":2
+}
