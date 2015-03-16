@@ -39,3 +39,41 @@ h1 {
 	height: 50px;
 	background-image: url("http://static.lanet.ua/tv/logo/9032.png");
 }
+/* Testing markup
+.news {
+	float:left;
+	width: 250px;
+}
+
+.main{
+	/* Исключить обтекание левого столбца news
+	margin-left: 270px; 
+}
+.wrap{
+	width: 960px;
+}
+/*  testing end*/
+
+/* testing flex*/
+#flex-main{
+	display:flex;
+	flex-direction:column;
+	padding: 0;
+  	margin: 0;
+}
+.flex-item {
+  background: tomato;
+  padding: 5px;
+  width: 200px;
+  height: 150px;
+  margin: 10px;
+
+  
+  line-height: 150px;
+  color: white;
+  font-weight: bold;
+  font-size: 3em;
+  text-align: center;
+}
+	
+/* testing flex*/
