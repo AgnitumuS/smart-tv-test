@@ -41,14 +41,11 @@ function getTVAPI(url) {
 //$(document).ready(function(){
 $.getJSON($apiURL + "list.json",function(data){
 		$edge = data.edge;
-		alert($edge);
 		for( i=0 ; i<data.list.length ; i++){
-			// var input = '<div class="flex-chan"' + " data-id=\"" + data.list[i]._id  + '\"' +  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');"'+ '</div>';
-			// console.log(input);
 		$(".child").append('<div class="chan"' + " data-id=\"" + data.list[i]._id  + '\"'  
 			+  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
 			+ '</div>');
-	};})
+	};});
 	
 //})
 
@@ -65,20 +62,28 @@ $.getJSON($apiURL + "list.json",function(data){
 // })
 
 /*  resize screen	*/
-			// document.write($(document).width()) + "\n ";
+			// alert($(document).width()) + "\n ";
 			// $("#iPlayer").attr({
 			// 	"width": document.documentElement.clientWidth, 
 			// 	"height":document.documentElement.clientHeight
 			// });
 /*   -- resize screen --*/
 
-
-	$(".flex-chans").on("click",'.flex-chan', function(){
-		
-		//this.innerHTML = "OOOPS";	//debug
-		//alert($(this).attr('data-id'));	//debug
+		/*  -- On click event handler - change source videoplayer--*/
+	$(".child").on("click",".chan",  function(){
+		console.log("clicked");
 		var playlist = $edge + $(this).attr('data-id') + '.m3u8';
 		$("#iPlayer").attr("src", playlist);
 		//alert(this);
-	})	
+	});	
+		/* -- On click show/hide channel panel --*/
+	$("#iPlayer").on('click',function(){
+		var visible = $(".child").css("visibility");
+		//$(".child").css("visibility","visible");
+		if(visible=="hidden"){
+			$(".child").css('visibility','visible');
+		} else {
+			$(".child").css('visibility','hidden');
+		}
+	})
 
