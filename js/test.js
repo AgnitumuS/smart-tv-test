@@ -39,12 +39,15 @@ function getTVAPI(url) {
 // }
 
 //$(document).ready(function(){
-	$.getJSON($apiURL + "list.json",function(data){
+$.getJSON($apiURL + "list.json",function(data){
 		$edge = data.edge;
+		alert($edge);
 		for( i=0 ; i<data.list.length ; i++){
-		$("#flex-main").append('<div class="flex-item"' + " data-id=\"" + data.list[i]._id  + '\"' 
-			+  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');"'
-			+  '</div>');
+			// var input = '<div class="flex-chan"' + " data-id=\"" + data.list[i]._id  + '\"' +  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');"'+ '</div>';
+			// console.log(input);
+		$(".child").append('<div class="chan"' + " data-id=\"" + data.list[i]._id  + '\"'  
+			+  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
+			+ '</div>');
 	};})
 	
 //})
@@ -61,9 +64,16 @@ function getTVAPI(url) {
 // }
 // })
 
+/*  resize screen	*/
+			// document.write($(document).width()) + "\n ";
+			// $("#iPlayer").attr({
+			// 	"width": document.documentElement.clientWidth, 
+			// 	"height":document.documentElement.clientHeight
+			// });
+/*   -- resize screen --*/
 
 
-	$("#flex-main").on("click",'.flex-item', function(){
+	$(".flex-chans").on("click",'.flex-chan', function(){
 		
 		//this.innerHTML = "OOOPS";	//debug
 		//alert($(this).attr('data-id'));	//debug
