@@ -75,7 +75,7 @@ body {
 /* testing flex*/
 
 .container {
-  visibility: hidden;
+  visibility: visible;
   flex-flow: row wrap;
   justify-content: space-around;
   margin:0;
@@ -98,11 +98,20 @@ body {
 }
 
 .chan {
-	width: 100%;
-	height: 10%;
-	background-color: tomato;
+	width: 115px;
+	height: 80px;
+	opacity: 0.5;
+	background-color: black;
 	border-bottom: solid;
 	border-color:white;
 	text-align: center;
 
+}
+/* При наведении*/
+.chan:hover{
+	opacity: 1;
+}
+.chan:focus{
+	opacity:1;
+	border: 4px solid #00CCFF;
 }

@@ -21,36 +21,28 @@ function getTVAPI(url) {
 
 }
 
-// var $play = {
-// 	init : function (){
+var $play = {
+	init : function (){
 
-// 	},
-// 	load : function (){
+	},
+	load : function (){
 
-// 	}
-// }
-//document.getElementById("test").style["background-image"] = "http://static.lanet.ua/tv/logo/9032.png";
+	}
+}
 
-/* start jquery when web page is loaded */
-// function buildChannels(data, status, xhr){
-// 	for( i=0 ; i<data.list.length ; i++){
-// 		$("#flex-main").append('<div class="flex-item"> 1 </div>')
-// 	};
-// }
 
-//$(document).ready(function(){
-$.getJSON($apiURL + "list.json",function(data){
-		$edge = data.edge;
-		for( i=0 ; i<data.list.length ; i++){
-		$(".child").append('<div class="chan"' + " data-id=\"" + data.list[i]._id  + '\"'  
-			+  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
-			+ '</div>');
-	};});
-	
-//})
+$(document).ready(function(){
+	$.getJSON($apiURL + "list.json",function(data){
+			$edge = data.edge;
+			for( i=0 ; i<data.list.length ; i++){
+				var tabindex = 1;
+			$(".child").append('<div class="chan" tabindex='+ tabindex++ + " data-id=\"" + data.list[i]._id  + '\"'  
+				+  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
+				+ '</div>');
+		};});
+});
 
 //getTVAPI($apiURL + "list.json");
-//Event Listeners
 //
 // $(document).ready(function(){
 // 	var elems = document.getElementsByClassName("flex-item");
@@ -69,13 +61,34 @@ $.getJSON($apiURL + "list.json",function(data){
 			// });
 /*   -- resize screen --*/
 
+												//Event Listeners
+
 		/*  -- On click event handler - change source videoplayer--*/
 	$(".child").on("click",".chan",  function(){
 		console.log("clicked");
 		var playlist = $edge + $(this).attr('data-id') + '.m3u8';
 		$("#iPlayer").attr("src", playlist);
-		//alert(this);
-	});	
+	});
+
+	$(".child").on("focus",".chan", function(){
+		this.addEventListener("keydown", function(event){
+			if(event.keyCode == "0x0D") alert ("49 is pressed when on focus");
+		})
+	})
+
+//	-- increase switch channel speed
+// $(document).ready(function(){
+// 	var chanels = document.getElementsByClassName('chan');
+// 	console.log("channels.length:" + chanels.length);
+// 	for (i = 0 ; i < chanels.length ; i ++){
+// 		chanels[i].addEventListener("click", function(){
+// 			var playlist = $edge + $(this).attr('data-id') + '.m3u8';
+// 			console.log($edge + $(this).attr('data-id') + '.m3u8');
+// 			// document.getElementById('playlist').src = playlist;
+// 			$("#iPlayer").attr("src", playlist);
+// 		}) 	
+// 	}
+// })
 		/* -- On click show/hide channel panel --*/
 	$("#iPlayer").on('click',function(){
 		var visible = $(".child").css("visibility");
@@ -87,3 +100,17 @@ $.getJSON($apiURL + "list.json",function(data){
 		}
 	})
 
+	/* -- -react to the left/right key  to hide/show channel menu ---*/
+	document.addEventListener("keydown", function(event){
+		//           show / hide menu
+		if(event.keyCode == "0x25") $(".child").css('visibility','hidden');
+		if(event.keyCode == "0x27") $(".child").css('visibility', 'visible');
+		//for keyboard down
+		if(event.keyCode == "40") document.getElementsByClassName('chan')[0].focus();
+		//for control panel
+		if(event.keyCode == "0x28") document.getElementsByClassName('chan')[0].focus();
+		//for control panel select\enter
+
+
+
+	})
