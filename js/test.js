@@ -60,16 +60,55 @@ $(document).ready(function(){
 	})
 
 	/* -- -react to the left/right key  to hide/show channel menu ---*/
-	document.addEventListener("keydown", function(event){
+	window.addEventListener("keydown", function(event){
+
+		console.log(event.target.className);
+		switch (event.target.className){
+			case "chan":
+				
+				switch (event.keyCode){
+					case 40: 
+						console.log('switch next channel');
+						var next = event.target.nextSibling;
+						if(next == null) {
+							next = document.querySelector(".left").firstChild;
+						}
+						var playlist = $edge + next.getAttribute('data-id') + '.m3u8';
+						$play.load(playlist);
+						next.focus();	
+					break;
+
+					case 38:
+						console.log('switch previous channel');
+						 var prev = event.target.previousSibling;
+						 if(prev == null){
+						 	prev = document.querySelector(".left").lastChild;
+						 }
+						var playlist = $edge + prev.getAttribute('data-id') + '.m3u8';
+						$play.load(playlist);
+						prev.focus();	
+				}
+
+				// console.log('this is div.chan with id=' + event.target.getAttribute('data-id'));
+				// var next = event.target.nextSibling;
+				// if(next == null) {
+				// 	next = document.querySelector(".left").firstChild;
+				// }
+				// var playlist = $edge + next.getAttribute('data-id') + '.m3u8';
+				// $play.load(playlist);
+				// next.focus();
+				// break;
+			default:
+				console.log('this is default, keyCode = ' + event.keyCode);
+				break;
+		}
 		//           show / hide menu
 		if(event.keyCode == "0x25") $(".left").css('visibility','hidden');
 		if(event.keyCode == "0x27") $(".left").css('visibility', 'visible');
 		//for keyboard down
-		if(event.keyCode == "40") document.getElementsByClassName('chan')[0].focus();
-		//for control panel
-		if(event.keyCode == "0x28") document.getElementsByClassName('chan')[0].focus();
+		// if(event.keyCode == "40") document.getElementsByClassName('chan')[0].focus();
+		// //for control panel
+		// if(event.keyCode == "0x28") document.getElementsByClassName('chan')[0].focus();
 		//for control panel select\enter
-
-
 
 	})
