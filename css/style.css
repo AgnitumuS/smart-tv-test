@@ -12,8 +12,87 @@ body {
 	width: 150px;
 	/* or display :none , when */
 	display: block;
+	visibility: visible;
 	z-index: 2;
 	overflow-y:scroll; 
+}
+
+.epgDay{
+	position: absolute;
+	visibility: hidden;
+	display:block;
+	top:20px;
+	right: 170px;
+	width:640px;
+	/*height: 740px;*/
+	max-height: 740px;
+	background: black;
+	overflow-y:scroll;
+	opacity: 0.7;
+	/*transition:focus 2s;*/
+}
+
+.epgTitle{
+	position: static;
+	width:100%;
+	height: 85px;
+	font-
+}
+
+.epgChanImg {
+	position:static;
+	float: left;
+	width:110px; 
+	height:100%;
+	background: black;
+}
+
+.epgChanName {
+	position:static;
+	width:100%; 
+	height:100%; 
+	font-size:2em; 
+	text-align:center;
+	vertical-align: middle;
+	color: white;
+}
+
+.epgDayEvent {
+	position: static;
+	width:100%; 
+	height:30px; 
+	border:1px solid blue; 
+	background:black;
+	color:white;
+}
+.epgDayEvent span{
+	position:static;
+	display:block;
+	margin-left:65px;
+
+}
+.epgEventTime {
+	height: 100%;
+	width: 57px;
+	float:left;
+	text-align:center;
+	vertical-align: middle;
+	background: rgba(0, 168, 243, 0.5)
+}
+
+/*.centerContent{
+	position: absolute;
+	top:85px;
+	width:100%;
+	height: 655px;
+	background: white;
+	overflow-y: scroll; 
+}*/
+.epgEvents{
+
+}
+.epgDay:focus{
+	background: lightblue;
 }
 
 .chan {
@@ -25,6 +104,7 @@ body {
 	border-color:white;
 	text-align: center;
 }
+
 /* При наведении*/
 .chan:hover{
 	opacity: 1;
@@ -40,4 +120,12 @@ body {
 	width:100%;
 	height: 100%;
 	z-index: 0;
+}
+.logs{
+	position:fixed;
+	bottom:100px;
+	right:100px;
+	width:550px;
+	height: 400px;
+	background: white;
 }

@@ -1,6 +1,6 @@
 {
-    "id": "ua.lanet.vsashyn.lgottwebos",
-    "version": "0.0.1",
+    "id": "ua.lanet.vsashyn.lgottwebos_0.1.1",
+    "version": "0.1.1",
     "vendor": "Lanet Ukraine",
     "type": "web",
     "main": "index.html",

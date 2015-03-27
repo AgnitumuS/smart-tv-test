@@ -1,9 +1,17 @@
-
+var $ARROW_LEFT=37, $ARROW_TOP=38, $ARROW_RIGHT=39, $ARROW_DOWN=40;
 var $apiURL = "http://tvapi.la.net.ua/";
 var $staticURL = "http://static.la.net.ua/";
 var $edge;
+var $channels = [];
 
+function getChannelById(_id){
 
+	for(var i = 0; i < $channels.length; i++){
+			if($channels[i]._id == _id) 
+				channel = $channels[i];
+		}
+		return channel;
+}
 
 var $play = {
 	init : function (){
@@ -18,97 +26,127 @@ var $play = {
 
 $(document).ready(function(){
 	$.getJSON($apiURL + "list.json",function(data){
-			$edge = data.edge;
-			for( i=0 ; i<data.list.length ; i++){
-				var tabindex = 1;
+		$edge = data.edge;
+		$channels = data.list.slice();
+		for( i=0 ; i<data.list.length ; i++){
+			var tabindex = 1;
 			$(".left").append('<div class="chan" tabindex='+ tabindex++ + " data-id=\"" + data.list[i]._id  + '\"'  
-				+  'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
+				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
 				+ '</div>');
 		};});
 });
 
 
+var $epg = {
+	createEpgWidget : function(_id){
+		var channel = getChannelById(_id);
+		var date = new Date().toISOString().substring(0,10);
+		var logoDiv =  '<div class="epgChanImg" '+ 
+			'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ _id + '.png\'); "></div>';
+		var title = '<div class="epgChanName">'+  channel.title  +'</div>';
+		$(".epgTitle").html(logoDiv + title);
+		$.getJSON($apiURL + "epg/day/"+ date +'/'+ channel.epg, function(response){
+			var epgEvents = "";
+			for (var elem=0; elem < response.length; elem ++){
+				epgEvents += '<div class="epgDayEvent">' + '<div class="epgEventTime">'  
+				+  new Date(response[elem].start).getHours() + ":"
+				+  new Date(response[elem].start).getMinutes() 
+				+  '</div><span>' 
+				+  response[elem].lang.ru.title + '</span></div>';
+			}
+			$(".epgEvents").html(epgEvents);
+		})
+	}
+}
+												/*  resize screen	*/
+ $("#iPlayer").attr({
+ 	"width": document.documentElement.clientWidth, 
+ 	"height":document.documentElement.clientHeight
+ });
 
-/*  resize screen	*/
-			 $("#iPlayer").attr({
-			 	"width": document.documentElement.clientWidth, 
-			 	"height":document.documentElement.clientHeight
-			 });
-/*   -- resize screen --*/
-
-												//Event Listeners
+												/* Event Listeners */
 
 		/*  -- On click event handler - change source videoplayer--*/
-	$(".left").on("click",".chan",  function(){
-		console.log("clicked");
-		var playlist = $edge + $(this).attr('data-id') + '.m3u8';
-		$play.load(playlist);
-	});
+$(".left").on("click",".chan",  function(){
+	console.log("clicked");
+	var playlist = $edge + $(this).attr('data-id') + '.m3u8';
+	$play.load(playlist);
+});
 
+$("#iPlayer").on('click',function(){
+	var visible = $(".left").css("visibility");
+	if(visible=="hidden"){
+		$(".left").css('visibility','visible');
+	} else {
+		$(".left").css('visibility','hidden');
+	}
+})
 
-
-
-		/* -- On click show/hide channel panel --*/
-	$("#iPlayer").on('click',function(){
-		var visible = $(".left").css("visibility");
-		//$(".child").css("visibility","visible");
-		if(visible=="hidden"){
-			$(".left").css('visibility','visible');
-		} else {
-			$(".left").css('visibility','hidden');
-		}
-	})
-
-	/* -- -react to the left/right key  to hide/show channel menu ---*/
-	window.addEventListener("keydown", function(event){
-
-		console.log(event.target.className);
-		switch (event.target.className){
-			case "chan":
+window.addEventListener("keydown", function(event){
+	// $(".logs").append(event.target.className + "\n");
+	switch (event.target.className){
+		case "chan":
+			switch (event.keyCode){
 				
-				switch (event.keyCode){
-					case 40: 
-						console.log('switch next channel');
-						var next = event.target.nextSibling;
-						if(next == null) {
-							next = document.querySelector(".left").firstChild;
-						}
-						var playlist = $edge + next.getAttribute('data-id') + '.m3u8';
-						$play.load(playlist);
-						next.focus();	
-					break;
-
-					case 38:
-						console.log('switch previous channel');
-						 var prev = event.target.previousSibling;
-						 if(prev == null){
-						 	prev = document.querySelector(".left").lastChild;
-						 }
-						var playlist = $edge + prev.getAttribute('data-id') + '.m3u8';
-						$play.load(playlist);
-						prev.focus();	
-				}
-
-				// console.log('this is div.chan with id=' + event.target.getAttribute('data-id'));
-				// var next = event.target.nextSibling;
-				// if(next == null) {
-				// 	next = document.querySelector(".left").firstChild;
-				// }
-				// var playlist = $edge + next.getAttribute('data-id') + '.m3u8';
-				// $play.load(playlist);
-				// next.focus();
-				// break;
-			default:
-				console.log('this is default, keyCode = ' + event.keyCode);
+				case $ARROW_DOWN: 								//switch to the next channel							
+					console.log('switch next channel');
+					var next = event.target.nextSibling;
+					if(next == null) {
+						next = document.querySelector(".left").firstChild;
+					}
+					var playlist = $edge + next.getAttribute('data-id') + '.m3u8';
+					$play.load(playlist);
+					$epg.createEpgWidget(next.getAttribute('data-id'));
+					next.focus();	
 				break;
-		}
-		//           show / hide menu
-		if(event.keyCode == "0x25") $(".left").css('visibility','hidden');
-		if(event.keyCode == "0x27") $(".left").css('visibility', 'visible');
-		//for keyboard down
-		// if(event.keyCode == "40") document.getElementsByClassName('chan')[0].focus();
-		// //for control panel
-		// if(event.keyCode == "0x28") document.getElementsByClassName('chan')[0].focus();
-		//for control panel select\enter
+				
+				case $ARROW_TOP: 								//switch previous channel
+					console.log('switch previous channel');
+					 var prev = event.target.previousSibling;
+					 if(prev == null){
+					 	prev = document.querySelector(".left").lastChild;
+					 }
+					var playlist = $edge + prev.getAttribute('data-id') + '.m3u8';
+					$play.load(playlist);
+					prev.focus();
+				break;
+				
+				case $ARROW_RIGHT: 								//show channel info and epg
+					console.log('show channel info ');
+					//filling the div with content
+					$epg.createEpgWidget(event.target.getAttribute('data-id'));
+					var block = document.querySelector(".epgDay");
+					block.style.visibility = 'visible';
+				break;
 
-	})
+				case $ARROW_LEFT: 								//hide epg or channel menu
+					var targetToHide;
+					if($(".epgDay").css("visibility") == 'visible') { 
+						targetToHide = document.querySelector(".epgDay");
+					} else if ($(".left").css("visibility") == 'visible' ) {
+						targetToHide = document.querySelector("div.left");
+					};
+					if(targetToHide) targetToHide.style.visibility = 'hidden'; 
+					document.querySelector(".body").focus();
+					event.stopPropagation();
+				break;
+			}
+		break;
+
+		case "body":
+			switch (event.keyCode){
+				case $ARROW_RIGHT: 								// show channel menu
+					$(".left").css('visibility', 'visible');
+					document.querySelector('.chan').focus();
+				break;
+				case $ARROW_LEFT: 								// hide channel menu
+					$(".left").css('visibility','hidden');
+				break;
+			}
+		break;
+	
+		default:
+			console.log('this is default, keyCode = ' + event.keyCode);
+		break;
+	}
+})
