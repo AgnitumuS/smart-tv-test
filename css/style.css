@@ -1,4 +1,5 @@
-body {
+
+body > *{
 	margin: 0;
 	padding: 0;
 }
@@ -9,12 +10,13 @@ body {
 	top:0;
 	left:0;
 	height: 100%;
-	width: 150px;
+	width: 130px;
 	/* or display :none , when */
 	display: block;
 	visibility: visible;
 	z-index: 2;
 	overflow-y:scroll; 
+	background:white; 
 }
 
 .epgDay{
@@ -28,6 +30,7 @@ body {
 	max-height: 740px;
 	background: black;
 	overflow-y:scroll;
+	overflow-x:hidden; 
 	opacity: 0.7;
 	/*transition:focus 2s;*/
 }
@@ -99,21 +102,74 @@ body {
 	width: 115px;
 	height: 80px;
 	opacity: 0.5;
-	background-color: black;
-	border-bottom: solid;
-	border-color:white;
+	border: 1px solid white; 
+	border-radius: 2px;
 	text-align: center;
+	background: black;
+	transition: all 50ms linear;
 }
 
-/* При наведении*/
 .chan:hover{
 	opacity: 1;
+	box-shadow: 10px 10px 5px #888888;
 }
 
 .chan:focus{
 	opacity:1;
-	border: 4px solid #00CCFF;
+	box-shadow: 10px 10px 5px #888888;
+	/*border: 4px solid ;*/
 }
+
+.footer {
+	position: absolute;
+	visibility: hidden;
+	bottom:20px;
+	left: 160px;
+	min-width:85%;
+	z-index: 5;
+	height: 120px;
+	background: white;
+	font-size:1em;
+
+	
+	/*font-size: 2em; */
+}
+.footer  span{
+	padding-left:20px;
+	font-size:2em;
+	color:white;
+}
+.epgNow {
+	width:50%;
+	float:left;
+	height: 85%;
+	background: #004D40;
+	-webkit-box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.epgNext {
+	width:50%;
+	height: 85%;
+	float:right;
+	background: #3F51B5;
+	-webkit-box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.progress {
+  position: absolute;
+  top: 100px;
+  height: 6px;
+  display: block;
+  width: 100%;
+  background-color: #0d47a1;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  background-clip: padding-box;
+  margin: 0.5rem 0 1rem 0;
+  overflow: hidden; 
+  -webkit-transition: width 0.3s linear;
+}
+/* При наведении*/
+
 
 #iPlayer{
 	position: relative;
@@ -129,3 +185,7 @@ body {
 	height: 400px;
 	background: white;
 }
+.divider {
+  height: 1px;
+  overflow: hidden;
+  background-color: #e0e0e0; }

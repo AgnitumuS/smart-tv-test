@@ -46,6 +46,10 @@ var $epg = {
 		var title = '<div class="epgChanName">'+  channel.title  +'</div>';
 		$(".epgTitle").html(logoDiv + title);
 		$.getJSON($apiURL + "epg/day/"+ date +'/'+ channel.epg, function(response){
+			if(response.length == 0){
+				$(".epgEvents").html("<span> Нет программы телепередач</span>");
+				return;
+			}
 			var epgEvents = "";
 			for (var elem=0; elem < response.length; elem ++){
 				epgEvents += '<div class="epgDayEvent">' + '<div class="epgEventTime">'  
@@ -56,6 +60,38 @@ var $epg = {
 			}
 			$(".epgEvents").html(epgEvents);
 		})
+	},
+	fillingEpgNowNext : function(_id){
+		var channel = getChannelById(_id);
+		var date = new Date();
+		$.getJSON($apiURL + "epg/day/"+ date.toISOString().substring(0,10) +'/'+ channel.epg, function(response){
+			if(response.length == 0){
+				$(".epgNowContent").html("<span> Нет программы телепередач</span>");
+				$(".epgNextContent").html("");
+				return;
+			}
+			var telecast=0;
+			for( ; telecast < response.length ; ){
+				if( response[telecast].start < date.getTime() && response[telecast].stop > date.getTime()){
+					break;
+			} else {
+				 telecast++;
+			}
+			};
+			$(".epgNowContent").attr( {"data-start":response[telecast].start, "data-stop":response[telecast].stop} );
+			// $(".epgNextContent").attr( {"data-stop":response[telecast].start, "data-stop":response[telecast].stop} );
+			$(".epgNowContent").html("<span>" + response[telecast].lang.ru.title + "</span>");
+			$(".epgNextContent").html("<span>" + response[++telecast].lang.ru.title + "</span>");
+			$epg.drawTimeLine();	
+		
+		})
+	},
+	drawTimeLine : function(_id){
+		if(!_id) {
+			var duration = $(".epgNowContent").attr("data-stop") -  $(".epgNowContent").attr("data-start");
+			var gone = new Date().getTime() -  $(".epgNowContent").attr("data-start");
+			$(".epgTimeLine").css("width", gone / duration * 100 + "%" );
+		}
 	}
 }
 												/*  resize screen	*/
@@ -71,6 +107,8 @@ $(".left").on("click",".chan",  function(){
 	console.log("clicked");
 	var playlist = $edge + $(this).attr('data-id') + '.m3u8';
 	$play.load(playlist);
+	$epg.fillingEpgNowNext($(this).attr('data-id'));
+	$(".footer").css("visibility","visible");
 });
 
 $("#iPlayer").on('click',function(){
@@ -97,6 +135,7 @@ window.addEventListener("keydown", function(event){
 					var playlist = $edge + next.getAttribute('data-id') + '.m3u8';
 					$play.load(playlist);
 					$epg.createEpgWidget(next.getAttribute('data-id'));
+					$epg.fillingEpgNowNext(next.getAttribute('data-id'));
 					next.focus();	
 				break;
 				
@@ -108,6 +147,8 @@ window.addEventListener("keydown", function(event){
 					 }
 					var playlist = $edge + prev.getAttribute('data-id') + '.m3u8';
 					$play.load(playlist);
+					$epg.createEpgWidget(prev.getAttribute('data-id'));
+					$epg.fillingEpgNowNext(prev.getAttribute('data-id'));
 					prev.focus();
 				break;
 				
@@ -137,10 +178,12 @@ window.addEventListener("keydown", function(event){
 			switch (event.keyCode){
 				case $ARROW_RIGHT: 								// show channel menu
 					$(".left").css('visibility', 'visible');
+					$(".footer").css('visibility', 'visible');
 					document.querySelector('.chan').focus();
 				break;
 				case $ARROW_LEFT: 								// hide channel menu
 					$(".left").css('visibility','hidden');
+					$(".footer").css('visibility', 'hidden');
 				break;
 			}
 		break;
