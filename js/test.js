@@ -100,7 +100,14 @@ var $epg = {
  	"height":document.documentElement.clientHeight
  });
 
-												/* Event Listeners */
+setInterval(function(){
+	// console.log("drawTimeLine");
+	$epg.drawTimeLine();
+	// console.log("width timeline:");
+	// console.log($(".epgTimeLine").css('width'));
+
+}, 6 * 1000);
+											/* Event Listeners */
 
 		/*  -- On click event handler - change source videoplayer--*/
 $(".left").on("click",".chan",  function(){
