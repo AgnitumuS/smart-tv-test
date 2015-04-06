@@ -1,0 +1,191 @@
+body{
+	margin:0;
+	padding: 0;
+}
+
+body > div {
+	height: 300px;
+	width: 300px;
+	position: absolute;
+	visibility: hidden;
+	/*opacity: 0.25;*/
+
+}
+
+
+div:focus{
+	border:5px solid blue;
+	opacity:1;
+}
+
+
+.header {
+	height: 100px;
+	width: 100%;
+	top:0;
+	left:0;
+	z-index: 2;
+	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	background: lightblue;}
+.logo{
+	width:100px;
+	height: 100%;
+	background: green;
+	background-image: url("logo.jpg");
+	background-size: cover;
+}
+.left{
+	top:100px;
+	left:110px;
+	min-height: 85%;
+	width: 117px;
+    overflow-y:hidden;
+    overflow-x:hidden;}
+.footer {
+	position: absolute;
+	visibility: hidden;
+	bottom:300px;
+	right: 100px;
+	min-width:60%;
+	z-index: 5;
+	height: 120px;
+	background: #ADB7B7;
+	font-size:1em;}
+.genres {
+	position: absolute;
+	top:100px;
+	/*left:20px;*/
+	width: 100px;
+	height: 300px;
+	background: purple;
+	z-index: 6;
+	/*visibility: visible;*/
+}
+
+.genre{
+	width:100%;
+	height:30px;
+	background: tomato;
+	border: 1px solid white;
+}
+.leftContent{
+	/*position: relative;*/
+	/*top:100px;*/
+	width: 100%;
+	height: 95px;
+	opacity: 0.5;
+	border: 1px solid white; 
+	border-radius: 2px;
+	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	text-align: center;
+	background: black;
+    background-repeat: no-repeat;
+}
+
+.footer  span{
+	padding-left:20px;
+	font-size:1.7em;
+	color:black;
+}
+.epgNow,  .epgNext{
+	margin:10px;
+	width:47%;
+	height: 78%;
+
+}
+.infoicon{
+	position: static;
+	float:right;
+	/*right:34px;
+	top:0px;*/
+	height: 31px;
+
+}
+.epgNow {
+	float:left;
+	background: white;
+	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.epgNext {
+	float:right;
+	background: white;
+	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+
+.epgDay{
+	position: absolute;
+	visibility: hidden;
+	display:block;
+	bottom:0px;
+	right: 70px;
+	width:640px;
+	height: 300px;
+	/*height: 740px;*/
+	max-height: 740px;
+	background: black;
+	overflow-y:scroll;
+	overflow-x:hidden; 
+	opacity: 0.7;
+	/*transition:focus 2s;*/
+}
+
+.epgTitle{
+	position: static;
+	width:100%;
+	height: 85px;
+	/*font-*/
+}
+
+.epgChanImg {
+	position:static;
+	float: left;
+	width:110px; 
+	height:100%;
+	background: black;
+}
+
+.epgChanName {
+	position:static;
+	width:100%; 
+	height:100%; 
+	font-size:2em; 
+	text-align:center;
+	vertical-align: middle;
+	color: white;
+}
+
+.epgDayEvent {
+	position: static;
+	width:100%; 
+	height:30px; 
+	border:1px solid blue; 
+	background:black;
+	color:white;
+}
+.epgDayEvent span{
+	position:static;
+	display:block;
+	margin-left:65px;
+
+}
+.epgEventTime {
+	height: 100%;
+	width: 57px;
+	float:left;
+	text-align:center;
+	vertical-align: middle;
+	background: rgba(0, 168, 243, 0.5)
+}
+
+/*.centerContent{
+	position: absolute;
+	top:85px;
+	width:100%;
+	height: 655px;
+	background: white;
+	overflow-y: scroll; 
+}*/
+.epgEvents{
+
+}

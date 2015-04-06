@@ -5,7 +5,6 @@ var $edge;
 var $channels = [];
 
 function getChannelById(_id){
-
 	for(var i = 0; i < $channels.length; i++){
 			if($channels[i]._id == _id) 
 				channel = $channels[i];
