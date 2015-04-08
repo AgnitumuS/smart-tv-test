@@ -2,33 +2,81 @@
 body > *{
 	margin: 0;
 	padding: 0;
+	position:absolute;
 }
 
+
+div:focus{
+	/*border:5px solid blue;*/
+	opacity:0.87;
+}
+
+.header {
+	position: absolute;
+	visibility: hidden;
+	height: 50px;
+	width: 100%;
+	top:0;
+	left:0;
+	z-index: 2;
+	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	background: #6b6b6b;}
+
+.logo{
+	width:325px;
+	height: 100%;
+	background-image: url("../assets/lanet-link-kiev-ua.png");
+	background-size: 100% 100%;
+	/*background-repeat: no-repeat;*/
+	z-index: 7;
+}
 
 .left {
 	position:absolute;
-	top:0;
-	left:0;
-	height: 100%;
+	top:50px;
+	left:160px;
+	max-height: 90%;
 	width: 117px;
 	/* or display :none , when */
 	display: block;
-	visibility: visible;
+	visibility: hidden;
 	z-index: 2;
 	overflow-y:scroll;
 	overflow-x: hidden;  
-	background:white; 
+	background:#6b6b6b; 
+}
+.genres {
+	position: absolute;
+	top:64px;
+	width: 150px;
+	z-index: 6;
+	visibility: hidden;
 }
 
+.genre{
+	width:100%;
+	height: 48px;
+	/*padding-left:24px;
+	padding-right: 16px;*/
+	background: #6b6b6b;
+	border-bottom: 1px solid white;
+	color:white;
+	opacity: 0.54;
+}
+.genre:focus{
+	background-color: white;
+	color:green;
+	opacity: 1;
+}
 .epgDay{
 	position: absolute;
 	visibility: hidden;
 	display:block;
-	top:20px;
+	bottom:140px;
 	right: 170px;
 	width:640px;
 	/*height: 740px;*/
-	max-height: 740px;
+	max-height: 400px;
 	background: black;
 	overflow-y:scroll;
 	overflow-x:hidden; 
@@ -84,30 +132,20 @@ body > *{
 	background: rgba(0, 168, 243, 0.5)
 }
 
-/*.centerContent{
-	position: absolute;
-	top:85px;
-	width:100%;
-	height: 655px;
-	background: white;
-	overflow-y: scroll; 
-}*/
-.epgEvents{
-
-}
 .epgDay:focus{
 	background: lightblue;
 }
 
 .chan {
-	width: 115px;
-	height: 95px;
-	opacity: 0.5;
-	border: 1px solid white; 
+	width: 128px;
+	height: 80px;
+	opacity: 0.54;
+	/*margin-left:8px;*/
+	/*border: 1px solid white; */
 	border-radius: 2px;
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	text-align: center;
-	background: black;
+	background: rgb(61,61,61);
     background-repeat: no-repeat;
 }
 
@@ -126,43 +164,33 @@ body > *{
 	position: absolute;
 	visibility: hidden;
 	bottom:20px;
-	left: 160px;
-	min-width:85%;
+	right: 160px;
+	min-width:70%;
 	z-index: 5;
 	height: 120px;
-	background: white;
+	background: #6b6b6b;
 	font-size:1em;
-
-	
 	/*font-size: 2em; */
 }
 .footer  span{
 	padding-left:20px;
 	font-size:1.7em;
-	color:black;
+	color:white;
 }
 .epgNow,  .epgNext{
 	margin:10px;
 	width:47%;
 	height: 78%;
-
+	background: #6b6b6b;
+	color:white;
 }
-.infoicon{
-	position: static;
-	float:right;
-	/*right:34px;
-	top:0px;*/
-	height: 31px;
 
-}
 .epgNow {
 	float:left;
-	background: white;
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .epgNext {
 	float:right;
-	background: white;
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
@@ -191,7 +219,7 @@ body > *{
 }
 .logs{
 	position:fixed;
-	bottom:100px;
+	top:100px;
 	right:100px;
 	width:550px;
 	height: 400px;
