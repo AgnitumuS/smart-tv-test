@@ -1,0 +1,27 @@
+.epgNextToday{
+  height: 500px;
+  width:400px;
+  overflow-y: auto;
+  overflow-x: hidden; 
+  /*background: green;*/
+  opacity: 0.75;
+  transition: height 1s ease-out 0s;
+}
+.epgNext{
+  width:100%;
+  height: 150px;
+  opacity: 0.87;
+  border-radius: 2px;
+  margin:4px;
+  background-clip: padding-box;
+  background: #000000;
+  color: white;
+  /*opacity: 0.35;*/
+
+}
+.epgNext span {
+  color:white;
+  /*opacity: 1;*/
+  font-size:2em;
+  margin:4px;
+}

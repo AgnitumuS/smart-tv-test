@@ -1,48 +1,21 @@
-var $ARROW_LEFT=37, $ARROW_TOP=38, $ARROW_RIGHT=39, $ARROW_DOWN=40, $ENTER=13;
-var $apiURL = "http://tvapi.la.net.ua/";
-var $staticURL = "http://static.la.net.ua/";
-var $edge;
-var $channels = [];
-var $classes = [
-	{
-		"id": 0,
-		"caption": "my TV"
-	},
-	{
-		"id": 1,
-		"caption": "общее"
-	},
-	{
-		"id": 2,
-		"caption": "новости"
-	},
-	{
-		"id": 3,
-		"caption": "шоу"
-	},
-	{
-		"id": 4,
-		"caption": "Док. фильмы"
-	},
-	{
-		"id": 5,
-		"caption": "Фильмы"
-	},
-	{
-		"id": 6,
-		"caption": "Музыка"
-	},
-	{
-		"id": 7,
-		"caption": "Спорт"
-	},
-	{
-		"id": 8,
-		"caption": "Детям"
-	}
+var $ARROW_LEFT=37, $ARROW_TOP=38, $ARROW_RIGHT=39, $ARROW_DOWN=40, $ENTER=13,
+ $tvApi = "http://tvapi.la.net.ua/",
+ $staticURL = "http://static.la.net.ua/",
+ $edge = '',
+ $channels = [],
+ $classes = [
+	{"id": 0,
+		"caption": "my TV"},
+	{"id": 1,
+		"caption": "общее"	},
+	{"id": 2,"caption": "новости"	},
+	{"id": 3,"caption": "шоу"},
+	{"id": 4,"caption": "Док. фильмы"},
+	{"id": 5,"caption": "Фильмы"},
+	{"id": 6,"caption": "Музыка"},
+	{"id": 7,"caption": "Спорт"},
+	{"id": 8,"caption": "Детям"}
 ];
-
-
 
 window.addEventListener("keydown", function(event){
 	var _triggered ;
@@ -51,7 +24,6 @@ window.addEventListener("keydown", function(event){
 	switch (event.target.parentNode){
 		case html.element:
 			console.log("html.element");
-			console.log(html);
 			_triggered = html;
 			break;
 		case header.element:
@@ -70,9 +42,9 @@ window.addEventListener("keydown", function(event){
 			console.log("genres.element");
 			_triggered = genres;
 			break;
-		case epgDay.element:
-			console.log("epgDay.element");
-			_triggered = epgDay;
+		case epgFromNow.element:
+			console.log("epgFromNow.element");
+			_triggered = epgFromNow;
 			break;
 		default:
 			console.log(event.target);
@@ -138,7 +110,7 @@ window.addEventListener("keydown", function(event){
 //make content
 
 for(var iter = 0; iter < $classes.length;iter++){
-	$(".genres").append('<div class="genre" tabindex='+ iter + ' data-id='+ $classes[iter].id+  ' data-position=' + iter + '>'+$classes[iter].caption + '</div>')
+	$(".genres").append('<div class="genre" tabindex='+ iter + ' data-id='+ $classes[iter].id+  ' data-position=' + iter + '><span>'+$classes[iter].caption + '</span></div>')
 }
  $("#iPlayer").attr({
  	"width": document.documentElement.clientWidth, 
@@ -146,7 +118,7 @@ for(var iter = 0; iter < $classes.length;iter++){
  });
 
 $(document).ready(function(){
-	$.getJSON($apiURL + "list.json",function(data){
+	$.getJSON($tvApi + "list.json",function(data){
 		$edge = data.edge;
 		$channels = data.list.slice();
 		for( i=0 ; i<data.list.length ; i++){
@@ -158,25 +130,17 @@ $(document).ready(function(){
 		};});
 });
 
+							//Event listeners
 $(".genre").on("click", function(){
 	drawList($(this).attr("data-id"));
-})
-$(".epgNext").on("click", function(){
-	var _elem = document.querySelector(".chan[data-position='" 
-			+ $(".footer").attr("data-position")+ "']" )
-	$epg.createEpgWidget(_elem.getAttribute("data-id"));
 })
 
 $(".left").on("click",".chan",  function(){
 	console.log("clicked");
 	var playlist = $edge + $(this).attr('data-id') + '.m3u8';
 	$play.load(playlist);
-	
 });
 
-$(document).on("click", function(event){
-	console.log(event);
-})
 $(".epgDay").on("click",function(){
 	$(this).css("visibility","hidden");
 })
@@ -186,6 +150,7 @@ $("#iPlayer").on("click", function(){
 		$(".left").css("visibility","hidden");
 		$(".footer").css("visibility","hidden");
 		$(".genres").css("visibility","hidden");
+		$(".epgFromNow").css("visibility","hidden");
 	} else {
 		$(".header").css("visibility", "visible");
 		$(".left").css("visibility","visible");

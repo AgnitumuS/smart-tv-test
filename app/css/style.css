@@ -1,16 +1,15 @@
-
-body > *{
+body > div{
 	margin: 0;
 	padding: 0;
-	position:absolute;
+	/*position:absolute;*/
 }
-
-
-div:focus{
-	/*border:5px solid blue;*/
-	opacity:0.87;
+/*div {
+	opacity: 0.54;
+}*/
+span {
+	font-size:1.5em;
+	margin-left:8px;
 }
-
 .header {
 	position: absolute;
 	visibility: hidden;
@@ -20,16 +19,15 @@ div:focus{
 	left:0;
 	z-index: 2;
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	background: #6b6b6b;}
-
-.logo{
-	width:325px;
-	height: 100%;
-	background-image: url("../assets/lanet-link-kiev-ua.png");
-	background-size: 100% 100%;
-	/*background-repeat: no-repeat;*/
-	z-index: 7;
+	/*background: #6b6b6b;*/
 }
+	.logo{
+		width:325px;
+		height: 100%;
+		background-image: url("../assets/lanet-link-kiev-ua.png");
+		background-size: 100% 100%;
+		/*background-repeat: no-repeat;*/
+		z-index: 7;}
 
 .left {
 	position:absolute;
@@ -37,128 +35,53 @@ div:focus{
 	left:160px;
 	max-height: 90%;
 	width: 117px;
-	/* or display :none , when */
 	display: block;
 	visibility: hidden;
 	z-index: 2;
 	overflow-y:scroll;
 	overflow-x: hidden;  
-	background:#6b6b6b; 
-}
+	}
+	.chan {
+		width: 128px;
+		height: 80px;
+		opacity: 0.54;
+		/*margin-left:8px;*/
+		/*border: 1px solid white; */
+		border-radius: 2px;
+		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		text-align: center;
+		background: rgb(61,61,61);
+	    background-repeat: no-repeat;}
+
+	.chan:hover{
+		opacity: 1;
+		box-shadow: 3px 3px 5px #888888;}
+
+	.chan:focus{
+		opacity:1;
+		box-shadow: 10px 10px 5px #888888;}
+
 .genres {
 	position: absolute;
 	top:64px;
 	width: 150px;
 	z-index: 6;
-	visibility: hidden;
-}
+	visibility: hidden;}
 
-.genre{
-	width:100%;
-	height: 48px;
-	/*padding-left:24px;
-	padding-right: 16px;*/
-	background: #6b6b6b;
-	border-bottom: 1px solid white;
-	color:white;
-	opacity: 0.54;
-}
-.genre:focus{
-	background-color: white;
-	color:green;
-	opacity: 1;
-}
-.epgDay{
-	position: absolute;
-	visibility: hidden;
-	display:block;
-	bottom:140px;
-	right: 170px;
-	width:640px;
-	/*height: 740px;*/
-	max-height: 400px;
-	background: black;
-	overflow-y:scroll;
-	overflow-x:hidden; 
-	opacity: 0.7;
-	/*transition:focus 2s;*/
-}
+	.genre{
+		width:100%;
+		height: 68px;
+		border-bottom: 1px solid white;
+		color:white;
+		opacity: 0.54;
+	}
+	.genre:focus{
+		background-color: white;
+		color:black;
+		opacity: 1;
+		box-shadow: 10px 10px 5px #888888;
+	}
 
-.epgTitle{
-	position: static;
-	width:100%;
-	height: 85px;
-	/*font-*/
-}
-
-.epgChanImg {
-	position:static;
-	float: left;
-	width:110px; 
-	height:100%;
-	background: black;
-}
-
-.epgChanName {
-	position:static;
-	width:100%; 
-	height:100%; 
-	font-size:2em; 
-	text-align:center;
-	vertical-align: middle;
-	color: white;
-}
-
-.epgDayEvent {
-	position: static;
-	width:100%; 
-	height:30px; 
-	border:1px solid blue; 
-	background:black;
-	color:white;
-}
-.epgDayEvent span{
-	position:static;
-	display:block;
-	margin-left:65px;
-
-}
-.epgEventTime {
-	height: 100%;
-	width: 57px;
-	float:left;
-	text-align:center;
-	vertical-align: middle;
-	background: rgba(0, 168, 243, 0.5)
-}
-
-.epgDay:focus{
-	background: lightblue;
-}
-
-.chan {
-	width: 128px;
-	height: 80px;
-	opacity: 0.54;
-	/*margin-left:8px;*/
-	/*border: 1px solid white; */
-	border-radius: 2px;
-	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	text-align: center;
-	background: rgb(61,61,61);
-    background-repeat: no-repeat;
-}
-
-.chan:hover{
-	opacity: 1;
-	box-shadow: 3px 3px 5px #888888;
-}
-
-.chan:focus{
-	opacity:1;
-	box-shadow: 10px 10px 5px #888888;
-	/*border: 4px solid ;*/
-}
 
 .footer {
 	position: absolute;
@@ -168,47 +91,75 @@ div:focus{
 	min-width:70%;
 	z-index: 5;
 	height: 120px;
-	background: #6b6b6b;
-	font-size:1em;
-	/*font-size: 2em; */
-}
-.footer  span{
-	padding-left:20px;
-	font-size:1.7em;
-	color:white;
-}
-.epgNow,  .epgNext{
-	margin:10px;
-	width:47%;
-	height: 78%;
-	background: #6b6b6b;
-	color:white;
-}
+	/*background: #6b6b6b;*/
+	font-size:1em;}
+	.footer  span{
+		padding-left:20px;
+		font-size:1.7em;
+		color:white;}
+		.epgWhen {
+			display: block;
+			}
+	.epgNow,  .epgAfter {
+		/*position:absolute;*/
+		margin:10px;
+		width:47%;
+		height: 120px;
+		opacity: 0.87;
+		/*background: #6b6b6b;*/
+		color:white;}
+	.epgNow:focus, .epgAfter:focus{
+		opacity: 1;
+	}
+	.epgAfter{
+		/*position: relative;*/
+		bottom:0px;
+		float:right;
+		/*right: 0px;*/
+	}
+	.epgFromNow{
+		position: absolute;
+		/*top:-400px;*/
+		max-height: 500px;
+		/*height: 100%;*/
+		width: 47%;
+		overflow-y:scroll;
+		overflow-x:hidden; 
+		transition: height 0.5s ease-out 0s;
+	}
+	.epgNow {
+		float:left;
+		bottom:0px;
+		left:0px;
+		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
+	.epgNext {
+		width:100%;
+		border-radius: 2px;
+		background-clip: padding-box;
+		color: white;
+		height: 65px;
+		opacity: 0.87;
+		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	}
+	/*.epgNext:focus, .epgAfter:focus{
+		opacity: 0.87;
+	}*/
 
-.epgNow {
-	float:left;
-	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-.epgNext {
-	float:right;
-	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-.progress {
-  position: absolute;
-  top: 100px;
-  height: 6px;
-  display: block;
-  width: 100%;
-  background-color: #0d47a1;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  background-clip: padding-box;
-  margin: 0.5rem 0 1rem 0;
-  overflow: hidden; 
-  -webkit-transition: width 0.3s linear;
-}
-/* При наведении*/
+	.progress {
+	  position: absolute;
+	  top: 100px;
+	  height: 6px;
+	  display: block;
+	  width: 100%;
+	  background-color: #0d47a1;
+	  -webkit-border-radius: 2px;
+	  border-radius: 2px;
+	  background-clip: padding-box;
+	  margin: 0.5rem 0 1rem 0;
+	  overflow: hidden; 
+	  -webkit-transition: width 0.3s linear;
+	}
+	/* При наведении*/
 
 
 #iPlayer{
