@@ -1,5 +1,5 @@
 var $edge;
-var $api = "http://api.lanet.tv/"
+var $api = "http://api.lanet.tv/";
 var $play = {
 	init : function (){
 		$("#iPlayer").attr('src', 'http://kirito.la.net.ua/tv/9006.m3u8');
@@ -8,7 +8,7 @@ var $play = {
 		$('#iPlayer').attr('src', playlist);
 	}
 }
-
+var sessionStorage = window.sessionStorage;
 function getChannelById(_id){
 	var channel;
 	for(var i = 0; i < $channels.length; i++){
@@ -57,19 +57,26 @@ var $epg = {
 			if(res.length !== 0){
 		 		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = res[0].title;
 				document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;
-
 			} else {
 				document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = "Нет программы телепередач";
 				document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = "";
 			}
-
+				$epg.drawTimeLine();
 		})			
 	},
-	drawTimeLine : function(_id){
-		if(!_id) {
-			var duration = $(".epgNowContent").attr("data-stop") -  $(".epgNowContent").attr("data-start");
-			var gone = new Date().getTime() -  $(".epgNowContent").attr("data-start");
-			$(".epgTimeLine").css("width", gone / duration * 100 + "%" );
+	drawTimeLine : function(percent){
+		var _epgDayFromNow = JSON.parse(sessionStorage["epgDayFromNow"]); 
+		if(_epgDayFromNow.length !== 0) {
+			var _duration = _epgDayFromNow[0].stop - _epgDayFromNow[0]["start"];
+			var _gone = new Date().getTime() / 1000 - _epgDayFromNow[0]["start"];
+			console.log("epgTimeLine width:" + _gone / _duration * 100 + "%");
+			if( _gone / _duration < 1){
+				$(".epgTimeLine").css("width", _gone / _duration * 100 + "%" );
+			} else {
+				$(".epgTimeLine").css("width", "100%" );
+			}
+		} else {
+				$(".epgTimeLine").css("width", "100%" );
 		}
 	}
 }

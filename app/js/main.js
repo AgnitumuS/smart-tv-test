@@ -150,10 +150,13 @@ $("#iPlayer").on("click", function(){
 		$(".left").css("visibility","hidden");
 		$(".footer").css("visibility","hidden");
 		$(".genres").css("visibility","hidden");
-		$(".epgFromNow").css("visibility","hidden");
+		// $(".epgFromNow").css("visibility","hidden");
 	} else {
 		$(".header").css("visibility", "visible");
 		$(".left").css("visibility","visible");
 	}
 
 })
+setInterval(function(){
+	$epg.drawTimeLine();
+}, 10000);
