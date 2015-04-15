@@ -1,27 +1,23 @@
-.epgNextToday{
-  height: 500px;
-  width:400px;
-  overflow-y: auto;
-  overflow-x: hidden; 
-  /*background: green;*/
-  opacity: 0.75;
-  transition: height 1s ease-out 0s;
+body{
+  margin-left: 0;
 }
-.epgNext{
-  width:100%;
-  height: 150px;
-  opacity: 0.87;
-  border-radius: 2px;
-  margin:4px;
-  background-clip: padding-box;
-  background: #000000;
-  color: white;
-  /*opacity: 0.35;*/
-
+#wrapper{
+  position: absolute;
+  top:0;
+  margin:0;
+  padding: 0;
+/*  height: 100%;
+  width: 100%;*/
+  display: block;
+/* min-height: 100%;
+ min-width: 100%;*/
+ background-size: 100% 100%;
+ background: yellow;
+  box-shadow: inset -15px -19px 300px 39px rgba(0,0,0,1);
 }
-.epgNext span {
-  color:white;
-  /*opacity: 1;*/
-  font-size:2em;
-  margin:4px;
+.test{
+  width:100px;
+  height: 100px;
+  margin: 8px;
+  background: blue;
 }

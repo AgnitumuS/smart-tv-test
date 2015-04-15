@@ -69,7 +69,7 @@ var $epg = {
 		if(_epgDayFromNow.length !== 0) {
 			var _duration = _epgDayFromNow[0].stop - _epgDayFromNow[0]["start"];
 			var _gone = new Date().getTime() / 1000 - _epgDayFromNow[0]["start"];
-			console.log("epgTimeLine width:" + _gone / _duration * 100 + "%");
+			// console.log("epgTimeLine width:" + _gone / _duration * 100 + "%");
 			if( _gone / _duration < 1){
 				$(".epgTimeLine").css("width", _gone / _duration * 100 + "%" );
 			} else {
@@ -106,6 +106,7 @@ function Block( element, direction ){
 		}
 	}
 	this.focusPrev = function(evntTarget){
+		console.log("foucs prev");
 		if(!(evntTarget == this.element.firstElementChild)){
 			var _position = parseInt(evntTarget.getAttribute("data-position")) -1 ;
 			this.element.querySelector("[data-position=\"" + _position + "\"]").focus();
@@ -123,7 +124,9 @@ function Block( element, direction ){
 	
 	this.hideBlock = function (args){
 		var _position = this.element.getAttribute("data-position");
+		console.log("hiding block");
 		if(_position && this.father.element.style.visibility == "visible"){
+			console.log("first true");
 			this.father.element.querySelector("[data-position=\"" + _position + "\"]").focus();
 			this.element.removeAttribute("data-position");
 		} else {
@@ -151,6 +154,7 @@ var html = new Block($("html")[0],"row");
 	html.hideBlock = function(){}
 	html.displayChild = function(){
 		this.child[0].element.style.visibility = "visible"; 
+		$("#wrapper").css({"visibility":"visible"});
 		this.child[0].focusFirst();
 	}
 	html.focusPrev = function(){}
@@ -159,6 +163,7 @@ var html = new Block($("html")[0],"row");
 var header 	= new Block($(".header")[0], "row");
 	header.hideBlock = function(args){
 		this.element.style.visibility = "hidden";
+		$("#wrapper").css({"visibility":"hidden"});
 		$("body").focus();
 	}
 	header.displayChild = function(evntTarget){
@@ -199,6 +204,22 @@ var footer 	= new Block($(".footer")[0], "row");
 				+ $(".footer").attr("data-position")+ "']" )
 		$epg.fillingEpgNowNext(_elem.getAttribute("data-id"));
 	}
+	footer.displayChild = function(eventTarget){
+		if(eventTarget == $(".epgNow")[0]){
+			var _position = eventTarget.getAttribute("data-position");
+			console.log(this.child[1]);
+			this.child[1].element.setAttribute("data-position", _position);
+			this.child[1].prepareContent(eventTarget);
+			this.child[1].element.style.visibility = "visible";
+			this.child[1].focusFirst();
+		} else if (eventTarget == $(".epgAfter")[0]){
+			var _position = eventTarget.getAttribute("data-position");
+			this.child[0].element.setAttribute("data-position",_position);
+			this.child[0].prepareContent(eventTarget);
+			this.child[0].element.style.visibility = "visible";
+			this.child[0].focusFirst();
+		}
+	}
 var epgFromNow = new Block($(".epgFromNow")[0],"column");
 	epgFromNow.prepareContent = function(evntTarget, bla, bla){
 		var _elem = document.querySelector(".chan[data-position='" 
@@ -228,14 +249,24 @@ var epgFromNow = new Block($(".epgFromNow")[0],"column");
 			this.element.style.visibility = "inherit";
 	}
 
+var epgProgramInfo = new Block($("#epgProgramInfo")[0],"column");
+	epgProgramInfo.prepareContent = function(eventTarget){
+		var _html = '';
+		var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+		if(res.length !== 0) {
+			_html += '<h2>' + res[0].title +'</h2>';
+			_html += res[0].text;
+		} else {
+			_html = '';
+		}
+		$(".epgProgramContent").html(_html);
+
+	}
+
 html.addChild(header);
 header.addChild(genres);
 genres.addChild(left);
 left.addChild(footer);
 footer.addChild(epgFromNow);
-
-
-
-
-
+footer.addChild(epgProgramInfo);
 

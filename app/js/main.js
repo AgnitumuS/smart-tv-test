@@ -1,13 +1,15 @@
-var $ARROW_LEFT=37, $ARROW_TOP=38, $ARROW_RIGHT=39, $ARROW_DOWN=40, $ENTER=13,
+var $ARROW_LEFT=37, 
+	$ARROW_TOP=38, 
+	$ARROW_RIGHT=39, 
+	$ARROW_DOWN=40, 
+	$ENTER=13,
  $tvApi = "http://tvapi.la.net.ua/",
  $staticURL = "http://static.la.net.ua/",
  $edge = '',
  $channels = [],
  $classes = [
-	{"id": 0,
-		"caption": "my TV"},
-	{"id": 1,
-		"caption": "общее"	},
+	{"id": 0,"caption": "my TV"},
+	{"id": 1,"caption": "общее"	},
 	{"id": 2,"caption": "новости"	},
 	{"id": 3,"caption": "шоу"},
 	{"id": 4,"caption": "Док. фильмы"},
@@ -16,6 +18,9 @@ var $ARROW_LEFT=37, $ARROW_TOP=38, $ARROW_RIGHT=39, $ARROW_DOWN=40, $ENTER=13,
 	{"id": 7,"caption": "Спорт"},
 	{"id": 8,"caption": "Детям"}
 ];
+// window.addEventListener("click", function(event){
+// 	$(".logs").append('<span>  ' + event.target + "  "+ event.target.className + ' ,<span>');
+// })
 
 window.addEventListener("keydown", function(event){
 	var _triggered ;
@@ -45,6 +50,10 @@ window.addEventListener("keydown", function(event){
 		case epgFromNow.element:
 			console.log("epgFromNow.element");
 			_triggered = epgFromNow;
+			break;
+		case epgProgramInfo.element:
+			console.log("epgProgramInfo.element")
+			_triggered = epgProgramInfo;
 			break;
 		default:
 			console.log(event.target);
@@ -144,18 +153,25 @@ $(".left").on("click",".chan",  function(){
 $(".epgDay").on("click",function(){
 	$(this).css("visibility","hidden");
 })
-$("#iPlayer").on("click", function(){
+$("#wrapper").on("click", function(){
 	if($(".header").css("visibility") == "visible"){
 		$(".header").css("visibility", "hidden");
 		$(".left").css("visibility","hidden");
 		$(".footer").css("visibility","hidden");
 		$(".genres").css("visibility","hidden");
+		// $(".epgFromNow").css("visibility", "hidden");
+		$("#wrapper").css({"visibility":"hidden"});
 		// $(".epgFromNow").css("visibility","hidden");
 	} else {
 		$(".header").css("visibility", "visible");
 		$(".left").css("visibility","visible");
 	}
 
+})
+$("#iPlayer").on("click", function(){
+	$("#wrapper").css({"visibility":"visible"});
+	$(".header").css("visibility", "visible");
+	$(".left").css("visibility","visible");
 })
 setInterval(function(){
 	$epg.drawTimeLine();
