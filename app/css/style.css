@@ -1,15 +1,16 @@
 body > div{
 	margin: 0;
 	padding: 0;
+	font-family: "Roboto", san-serif;
 	/*position:absolute;*/
 }
 /*div {
 	opacity: 0.54;
 }*/
-span {
+/*span {
 	font-size:1.5em;
 	margin-left:8px;
-}
+}*/
 .header {
 	position: absolute;
 	visibility: hidden;
@@ -19,7 +20,6 @@ span {
 	left:0;
 	z-index: 2;
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	/*background: #6b6b6b;*/
 }
 	.logo{
 		width:325px;
@@ -33,7 +33,7 @@ span {
 	position:absolute;
 	top:50px;
 	left:160px;
-	max-height: 90%;
+	height: calc(100% - 50px);
 	width: 117px;
 	display: block;
 	visibility: hidden;
@@ -44,15 +44,14 @@ span {
 	.chan {
 		width: 128px;
 		height: 80px;
-		opacity: 0.54;
 		/*margin-left:8px;*/
 		/*border: 1px solid white; */
 		border-radius: 2px;
 		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 		text-align: center;
+		opacity: 0.54;
 		background: rgb(61,61,61);
 	    background-repeat: no-repeat;}
-
 	.chan:hover{
 		opacity: 1;
 		box-shadow: 3px 3px 5px #888888;}
@@ -72,8 +71,16 @@ span {
 		width:100%;
 		height: 68px;
 		border-bottom: 1px solid white;
+		border-right: 1px solid white;
+
 		color:white;
 		opacity: 0.54;
+	}
+	.genre span{
+		font-size: 1.2em;
+		padding-left:20px;
+		line-height: 68px;
+		font-weight: thin;
 	}
 	.genre:focus{
 		background-color: white;
@@ -81,7 +88,6 @@ span {
 		opacity: 1;
 		box-shadow: 10px 10px 5px #888888;
 	}
-
 
 .footer {
 	position: absolute;
@@ -91,6 +97,7 @@ span {
 	min-width:70%;
 	z-index: 5;
 	height: 120px;
+	background: rgba(61,61,61,0);
 	/*background: #6b6b6b;*/
 	font-size:1em;}
 	.footer  span{
@@ -101,33 +108,24 @@ span {
 			display: block;
 			}
 	.epgNow,  .epgAfter {
-		/*position:absolute;*/
-		margin:10px;
 		width:47%;
 		height: 120px;
-		opacity: 0.87;
-		/*background: #6b6b6b;*/
 		color:white;}
-	.epgNow:focus, .epgAfter:focus{
-		opacity: 1;
+	.epgNow, .epgNext{
+		background: rgba(61,61,61,0.26);
+	}
+	.epgNow:focus, .epgNext:focus, .epgAfter:focus{
+		background: rgba(61,61,61,0.87);
 	}
 	.epgAfter{
-		/*position: relative;*/
 		bottom:0px;
-		float:right;
-		/*right: 0px;*/
-	}
+		float:right;}
 	.epgFromNow{
 		position: absolute;
-		/*top:-400px;*/
-		max-height: 500px;
-		/*height: 100%;*/
+		max-height: 700px;
 		width: 47%;
 		overflow-y:scroll;
 		overflow-x:hidden; 
-		/*transition: height, top 0.5s ease-out 0s;*/
-		/*transition: top 1s ease-out 0s;*/
-
 	}
 	.epgNow {
 		float:left;
@@ -139,9 +137,12 @@ span {
 		border-radius: 2px;
 		background-clip: padding-box;
 		color: white;
-		height: 65px;
-		opacity: 0.87;
+		height: 120px;
+		background: rgba(61,61,61,0.54);
 		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	}
+	.epgNow:focus, .epgNext:focus, .epgAfter:focus{
+		/*opacity: 0.87;*/
 	}
 	.epgTimeLine {
 		position: relative;
@@ -169,8 +170,7 @@ span {
 	width: 700px;
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius:2px; 
-	/*background: lightblue;*/
-	background-color: rgba(255,255,255,0.5);
+	background-color: rgba(0,0,0,0.87);
 	overflow-y: scroll;
 	overflow-x: hidden;}
 	.epgProgramContent{

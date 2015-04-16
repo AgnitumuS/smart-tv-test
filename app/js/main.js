@@ -8,10 +8,10 @@ var $ARROW_LEFT=37,
  $edge = '',
  $channels = [],
  $classes = [
-	{"id": 0,"caption": "my TV"},
-	{"id": 1,"caption": "общее"	},
-	{"id": 2,"caption": "новости"	},
-	{"id": 3,"caption": "шоу"},
+	{"id": 0,"caption": "Всё"},
+	{"id": 1,"caption": "Общее"	},
+	{"id": 2,"caption": "Новости"	},
+	{"id": 3,"caption": "Шоу"},
 	{"id": 4,"caption": "Док. фильмы"},
 	{"id": 5,"caption": "Фильмы"},
 	{"id": 6,"caption": "Музыка"},
@@ -119,12 +119,13 @@ window.addEventListener("keydown", function(event){
 //make content
 
 for(var iter = 0; iter < $classes.length;iter++){
-	$(".genres").append('<div class="genre" tabindex='+ iter + ' data-id='+ $classes[iter].id+  ' data-position=' + iter + '><span>'+$classes[iter].caption + '</span></div>')
+	$(".genres").append('<div class="genre" tabindex='+ iter + ' data-id='+ $classes[iter].id+  ' data-position=' 
+		+ iter + '><span>'+$classes[iter].caption + '</span></div>')
 }
- $("#iPlayer").attr({
- 	"width": document.documentElement.clientWidth, 
- 	"height":document.documentElement.clientHeight
- });
+ // $("#iPlayer").attr({
+ // 	"width": document.documentElement.clientWidth, 
+ // 	"height":document.documentElement.clientHeight
+ // });
 
 $(document).ready(function(){
 	$.getJSON($tvApi + "list.json",function(data){

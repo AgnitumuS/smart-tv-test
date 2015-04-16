@@ -43,8 +43,8 @@ var $epg = {
 					_html += '<div class="epgNext" tabindex="50" ' + ' data-position='+ index +
 					'><span class="epgNextTitle">' + current.title+'</span></div>';
 				})
-				$(".epgFromNow").css("top","-400px");
-				$(".epgFromNow").css("height",'500px');
+				$(".epgFromNow").css("top","-600px");
+				$(".epgFromNow").css("height",'700px');
 			} else {
 				_html += '<div class="epgNext" tabindex="50" ' 
 				+ ' data-position=0><span class="epgNextTitle"></span></div>';
