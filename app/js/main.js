@@ -47,10 +47,10 @@ window.addEventListener("keydown", function(event){
 			console.log("genres.element");
 			_triggered = genres;
 			break;
-		case epgFromNow.element:
-			console.log("epgFromNow.element");
-			_triggered = epgFromNow;
-			break;
+		// case epgFromNow.element:
+		// 	console.log("epgFromNow.element");
+		// 	_triggered = epgFromNow;
+		// 	break;
 		case epgProgramInfo.element:
 			console.log("epgProgramInfo.element")
 			_triggered = epgProgramInfo;
@@ -174,6 +174,6 @@ $("#iPlayer").on("click", function(){
 	$(".header").css("visibility", "visible");
 	$(".left").css("visibility","visible");
 })
-setInterval(function(){
-	$epg.drawTimeLine();
-}, 10000);
+// setInterval(function(){
+// 	$epg.drawTimeLine();
+// }, 10000);

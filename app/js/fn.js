@@ -9,6 +9,13 @@ var $play = {
 	}
 }
 var sessionStorage = window.sessionStorage;
+var $db = {
+	prefix: '_db_',
+	db: window.localStorage || {},
+	get: function (k) { return this.db[this.prefix + k] },
+	set: function (k, v) { this.db[this.prefix + k] = v }
+};
+
 function getChannelById(_id){
 	var channel;
 	for(var i = 0; i < $channels.length; i++){
@@ -35,9 +42,14 @@ function drawList(_class){
 	} 
 }
 var $epg = {
+	
+	_addCardHTML : function(index, current){ return '<div class="epgNext" tabindex="20" data-position=' + index +
+			'><div class="epgTimeLine"> </div><span class="epgNowTitle">' + current.title +'</span>	</div>'},
+
 	fillEpgAfter : function(_id){
 			var _html = '';
-			var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+			// var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+			var res = JSON.parse($db.get("epgDayFromNow"));
 			if(res.length !== 0 ){
 				res.slice(1).forEach( function( current, index){
 					_html += '<div class="epgNext" tabindex="50" ' + ' data-position='+ index +
@@ -51,17 +63,34 @@ var $epg = {
 			}
 			$(".epgFromNow").html(_html);
 	},
+	showCards : function(_id){
+		$.getJSON($api + "epg/" + _id + "/dayfromnow", function(res){
+			// window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
+			$db.set("epgDayFromNow", JSON.stringify(res));
+			var innerHTML = '';
+			// console.log(JSON.parse(res);
+			if(res.length !== 0){
+				res.forEach(function(current, index){
+					innerHTML += $epg._addCardHTML( index, current);
+				});	
+			}
+			$(".footer").html(innerHTML);
+		})
+	},
 	fillingEpgNowNext : function(_id){
 		$.getJSON($api + "epg/" + _id + "/dayfromnow", function(res){
-			window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
-			if(res.length !== 0){
-		 		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = res[0].title;
-				document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;
-			} else {
-				document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = "Нет программы телепередач";
-				document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = "";
-			}
-				$epg.drawTimeLine();
+			// window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
+			$db.set("epgDayFromNow", JSON.stringify(res));
+			$epg.showCards();
+		// 	if(res.length !== 0){
+		//  		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = res[0].title;
+		// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;
+		// 	} else {
+		// 		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = "<span>Нет программы телепередач</span>";
+		// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = "";
+		// 	}
+		// 		$epg.drawTimeLine();
+		// }
 		})			
 	},
 	drawTimeLine : function(percent){
@@ -201,58 +230,61 @@ var genres 	= new Block($(".genres")[0], "column");
 var footer 	= new Block($(".footer")[0], "row");
 	footer.prepareContent = function(evntTarget, bla, bla){
 		var _elem = document.querySelector(".chan[data-position='" 
-				+ $(".footer").attr("data-position")+ "']" )
-		$epg.fillingEpgNowNext(_elem.getAttribute("data-id"));
-	}
+				+ $(".footer").attr("data-position")+ "']" );
+		$epg.showCards(_elem.getAttribute("data-id"));
+	};
 	footer.displayChild = function(eventTarget){
 		if(eventTarget == $(".epgNow")[0]){
 			var _position = eventTarget.getAttribute("data-position");
-			console.log(this.child[1]);
-			this.child[1].element.setAttribute("data-position", _position);
-			this.child[1].prepareContent(eventTarget);
-			this.child[1].element.style.visibility = "visible";
-			this.child[1].focusFirst();
-		} else if (eventTarget == $(".epgAfter")[0]){
-			var _position = eventTarget.getAttribute("data-position");
-			this.child[0].element.setAttribute("data-position",_position);
+			console.log(this.child[0]);
+			this.child[0].element.setAttribute("data-position", _position);
 			this.child[0].prepareContent(eventTarget);
 			this.child[0].element.style.visibility = "visible";
 			this.child[0].focusFirst();
-		}
+		} 
+		// else 
+		// if (eventTarget == $(".epgAfter")[0]){
+		// 	var _position = eventTarget.getAttribute("data-position");
+		// 	this.child[0].element.setAttribute("data-position",_position);
+		// 	this.child[0].prepareContent(eventTarget);
+		// 	this.child[0].element.style.visibility = "visible";
+		// 	this.child[0].focusFirst();
+		// }
 	}
-var epgFromNow = new Block($(".epgFromNow")[0],"column");
-	epgFromNow.prepareContent = function(evntTarget, bla, bla){
-		var _elem = document.querySelector(".chan[data-position='" 
-				+ $(".footer").attr("data-position")+ "']" )
-		$epg.fillEpgAfter(_elem.getAttribute("data-id"));
-	}
-	epgFromNow.hideBlock = function(args){
-		//сузить epgFromNow
-		$(".epgFromNow").css("height","100%");
-		$(".epgFromNow").css("top","0px");
-		//убрать лишнее
-		this.element.innerHTML = '<div class="epgNext" tabindex="21" data-position="2">' 
-		+ '<span class="epgWhen"> Далее: </span>' 
-		+ '<span class="epgNextTitle"></span></div>';
-		var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
-		if(res.length !== 0){
-			document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;			
-		}
-		//focus on epgAfter
-		var _position = this.element.getAttribute("data-position");
-			if(_position && this.father.element.style.visibility == "visible"){
-				this.father.element.querySelector("[data-position=\"" + _position + "\"]").focus();
-				this.element.removeAttribute("data-position");
-			} else {
-				this.focusOnFather();
-			}
-			this.element.style.visibility = "inherit";
-	}
+// var epgFromNow = new Block($(".epgFromNow")[0],"column");
+// 	epgFromNow.prepareContent = function(evntTarget, bla, bla){
+// 		var _elem = document.querySelector(".chan[data-position='" 
+// 				+ $(".footer").attr("data-position")+ "']" )
+// 		$epg.fillEpgAfter(_elem.getAttribute("data-id"));
+// 	}
+	// epgFromNow.hideBlock = function(args){
+	// 	//сузить epgFromNow
+	// 	$(".epgFromNow").css("height","100%");
+	// 	$(".epgFromNow").css("top","0px");
+	// 	//убрать лишнее
+	// 	this.element.innerHTML = '<div class="epgNext" tabindex="21" data-position="2">' 
+	// 	+ '<span class="epgWhen"> Далее: </span>' 
+	// 	+ '<span class="epgNextTitle"></span></div>';
+	// 	var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+	// 	if(res.length !== 0){
+	// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;			
+	// 	}
+	// 	//focus on epgAfter
+	// 	var _position = this.element.getAttribute("data-position");
+	// 		if(_position && this.father.element.style.visibility == "visible"){
+	// 			this.father.element.querySelector("[data-position=\"" + _position + "\"]").focus();
+	// 			this.element.removeAttribute("data-position");
+	// 		} else {
+	// 			this.focusOnFather();
+	// 		}
+	// 		this.element.style.visibility = "inherit";
+	// }
 
 var epgProgramInfo = new Block($("#epgProgramInfo")[0],"column");
 	epgProgramInfo.prepareContent = function(eventTarget){
 		var _html = '';
-		var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+		// var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+		var res = JSON.parse($db.get("epgDayFromNow"));
 		if(res.length !== 0) {
 			_html += '<h2>' + res[0].title +'</h2>';
 			_html += res[0].text;
@@ -267,6 +299,6 @@ html.addChild(header);
 header.addChild(genres);
 genres.addChild(left);
 left.addChild(footer);
-footer.addChild(epgFromNow);
+// footer.addChild(epgFromNow);
 footer.addChild(epgProgramInfo);
 

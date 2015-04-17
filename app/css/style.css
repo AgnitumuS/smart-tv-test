@@ -88,7 +88,7 @@ body > div{
 		opacity: 1;
 		box-shadow: 10px 10px 5px #888888;
 	}
-
+/*
 .footer {
 	position: absolute;
 	visibility: hidden;
@@ -98,36 +98,69 @@ body > div{
 	z-index: 5;
 	height: 120px;
 	background: rgba(61,61,61,0);
-	/*background: #6b6b6b;*/
+	font-size:1em;}*/
+.footer {
+	position: absolute;
+	visibility: hidden;
+	bottom:0;
+	left: 160px;
+	width:calc(100% - 305px);
+	z-index: 5;
+    white-space:nowrap;	
+	height: 120px;
+	background: rgba(61,61,61,0);
+	z-index: 5;
+	overflow: auto;
 	font-size:1em;}
-	.footer  span{
+  
+ /* .epgNow, .epgNext{
+    margin-left:0;
+    width:352px;
+    height: 100%;
+    display: inline-block;
+    margin-right:8px;
+    border-radius: 2px;
+    transition: all 150ms linear;
+    background: rgba(61,61,61,0.54);
+  }*/
+	.epgNow, .epgNext{
+		margin-left:0;
+		margin-top:0;
+		margin-bottom: 0;
+		color: white;
+		/*margin-bottom: -4px;*/
+		width:352px;
+		height: 100%;
+		/*float:right;*/
+		display: inline-block;
+		/*float:left;*/
+		margin-right:8px;
+		border-radius: 2px;
+		transition: all 150ms linear;
+		background: rgba(61,61,61,0.54);
+	}
+	/*.footer  span{
 		padding-left:20px;
 		font-size:1.7em;
-		color:white;}
-		.epgWhen {
+		color:white;}*/
+		/*.epgWhen {
 			display: block;
-			}
-	.epgNow,  .epgAfter {
+			}*/
+	/*.epgNow,  .epgAfter {
 		width:47%;
 		height: 120px;
-		color:white;}
-	.epgNow, .epgNext{
+		color:white;}*/
+/*	.epgNow, .epgNext{
 		background: rgba(61,61,61,0.26);
-	}
-	.epgNow:focus, .epgNext:focus, .epgAfter:focus{
+	}*/
+	/*.epgNow:focus, .epgNext:focus, .epgAfter:focus{
 		background: rgba(61,61,61,0.87);
-	}
-	.epgAfter{
+	*/
+	/*.epgAfter{
 		bottom:0px;
 		float:right;}
-	.epgFromNow{
-		position: absolute;
-		max-height: 700px;
-		width: 47%;
-		overflow-y:scroll;
-		overflow-x:hidden; 
-	}
-	.epgNow {
+	*/
+	/*.epgNow {
 		float:left;
 		bottom:0px;
 		left:0px;
@@ -140,13 +173,10 @@ body > div{
 		height: 120px;
 		background: rgba(61,61,61,0.54);
 		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	}
-	.epgNow:focus, .epgNext:focus, .epgAfter:focus{
-		/*opacity: 0.87;*/
-	}
+	}*/
 	.epgTimeLine {
 		position: relative;
-		top:5px;
+		top:-2px;
 		height: 2px;
 		display: block;
 		width: 100%;
