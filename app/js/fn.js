@@ -75,24 +75,25 @@ var $epg = {
 				});	
 			}
 			$(".footer").html(innerHTML);
+			document.getElementsByClassName("epgNext")[0].focus();
 		})
 	},
-	fillingEpgNowNext : function(_id){
-		$.getJSON($api + "epg/" + _id + "/dayfromnow", function(res){
-			// window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
-			$db.set("epgDayFromNow", JSON.stringify(res));
-			$epg.showCards();
-		// 	if(res.length !== 0){
-		//  		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = res[0].title;
-		// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;
-		// 	} else {
-		// 		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = "<span>Нет программы телепередач</span>";
-		// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = "";
-		// 	}
-		// 		$epg.drawTimeLine();
-		// }
-		})			
-	},
+	// fillingEpgNowNext : function(_id){
+	// 	$.getJSON($api + "epg/" + _id + "/dayfromnow", function(res){
+	// 		// window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
+	// 		$db.set("epgDayFromNow", JSON.stringify(res));
+	// 		$epg.showCards();
+	// 	// 	if(res.length !== 0){
+	// 	//  		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = res[0].title;
+	// 	// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;
+	// 	// 	} else {
+	// 	// 		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = "<span>Нет программы телепередач</span>";
+	// 	// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = "";
+	// 	// 	}
+	// 	// 		$epg.drawTimeLine();
+	// 	// }
+	// 	})			
+	// },
 	drawTimeLine : function(percent){
 		var _epgDayFromNow = JSON.parse(sessionStorage["epgDayFromNow"]); 
 		if(_epgDayFromNow.length !== 0) {
@@ -122,6 +123,7 @@ function Block( element, direction ){
 	}
 	this.focusFirst = function(){
 		if(this.element.firstElementChild){
+			console.log("im focus first");
 			console.log(this.element.firstElementChild);
 			this.element.firstElementChild.focus();
 		} else {
@@ -240,7 +242,7 @@ var footer 	= new Block($(".footer")[0], "row");
 			this.child[0].element.setAttribute("data-position", _position);
 			this.child[0].prepareContent(eventTarget);
 			this.child[0].element.style.visibility = "visible";
-			this.child[0].focusFirst();
+			// this.child[0].focusFirst();
 		} 
 		// else 
 		// if (eventTarget == $(".epgAfter")[0]){

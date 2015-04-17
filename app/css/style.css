@@ -139,6 +139,9 @@ body > div{
 		transition: all 150ms linear;
 		background: rgba(61,61,61,0.54);
 	}
+	.epgNow:focus, .epgNext:focus{
+		transform:scale(1.5);
+	}
 	/*.footer  span{
 		padding-left:20px;
 		font-size:1.7em;
