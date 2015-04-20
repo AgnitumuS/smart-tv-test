@@ -285,7 +285,9 @@ $(".left").on("keydown", ".chan",  function(event){
 			break;
 
 		case $ENTER:
-			$play.load($(this).attr("data-id"));
+			// $play.load($(this).attr("data-id"));
+			var playlist = $edge + $(this).attr('data-id') + '.m3u8';
+			$play.load(playlist);
 			break;
 
 		case $ARROW_DOWN:
