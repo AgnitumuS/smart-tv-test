@@ -43,26 +43,32 @@ function drawList(_class){
 }
 var $epg = {
 	
-	_addCardHTML : function(index, current){ return '<div class="epgNext" tabindex="20" data-position=' + index +
-			'><div class="epgTimeLine"> </div><span>' + current.title +'</span>	</div>'},
-
-	fillEpgAfter : function(_id){
-			var _html = '';
-			// var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
-			var res = JSON.parse($db.get("epgDayFromNow"));
-			if(res.length !== 0 ){
-				res.slice(1).forEach( function( current, index){
-					_html += '<div class="epgNext" tabindex="50" ' + ' data-position='+ index +
-					'><span class="epgNextTitle">' + current.title+'</span></div>';
-				})
-				$(".epgFromNow").css("top","-600px");
-				$(".epgFromNow").css("height",'700px');
+	_addCardHTML : function(index, current){ 
+		if (current){
+			return '<div class="epgNext" tabindex="20" data-position=' + index +
+				'><div class="epgTimeLine"> </div><span>' + current.title +'</span>	</div>'
 			} else {
-				_html += '<div class="epgNext" tabindex="50" ' 
-				+ ' data-position=0><span class="epgNextTitle"></span></div>';
-			}
-			$(".epgFromNow").html(_html);
-	},
+				return '<div class="epgNext" tabindex="20" data-position=0' +
+				'><div class="epgTimeLine"> </div><span>' + "Нет программы телепередач" +'</span>	</div>';
+			}},
+
+	// fillEpgAfter : function(_id){
+	// 		var _html = '';
+	// 		// var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+	// 		var res = JSON.parse($db.get("epgDayFromNow"));
+	// 		if(res.length !== 0 ){
+	// 			res.slice(1).forEach( function( current, index){
+	// 				_html += '<div class="epgNext" tabindex="50" ' + ' data-position='+ index +
+	// 				'><span class="epgNextTitle">' + current.title+'</span></div>';
+	// 			})
+	// 			$(".epgFromNow").css("top","-600px");
+	// 			$(".epgFromNow").css("height",'700px');
+	// 		} else {
+	// 			_html += '<div class="epgNext" tabindex="50" ' 
+	// 			+ ' data-position=0><span class="epgNextTitle"></span></div>';
+	// 		}
+	// 		$(".epgFromNow").html(_html);
+	// },
 	showCards : function(_id){
 		$.getJSON($api + "epg/" + _id + "/dayfromnow", function(res){
 			// window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
@@ -73,40 +79,28 @@ var $epg = {
 				res.forEach(function(current, index){
 					innerHTML += $epg._addCardHTML( index, current);
 				});	
+			} else {
+				innerHTML = $epg._addCardHTML();
 			}
 			$(".footer").html(innerHTML);
-			document.getElementsByClassName("epgNext")[0].focus();
+			$(".epgNext").first().focus();
+			$epg.drawTimeLine();
+			$(".epgTimeLine").first().addClass("epgTimeLineActive");
 		})
 	},
-	// fillingEpgNowNext : function(_id){
-	// 	$.getJSON($api + "epg/" + _id + "/dayfromnow", function(res){
-	// 		// window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
-	// 		$db.set("epgDayFromNow", JSON.stringify(res));
-	// 		$epg.showCards();
-	// 	// 	if(res.length !== 0){
-	// 	//  		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = res[0].title;
-	// 	// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = res[1].title;
-	// 	// 	} else {
-	// 	// 		document.querySelector(".epgNow").querySelector(".epgNowTitle").innerHTML = "<span>Нет программы телепередач</span>";
-	// 	// 		document.querySelector(".epgNext").querySelector(".epgNextTitle").innerHTML = "";
-	// 	// 	}
-	// 	// 		$epg.drawTimeLine();
-	// 	// }
-	// 	})			
-	// },
-	drawTimeLine : function(percent){
-		var _epgDayFromNow = JSON.parse(sessionStorage["epgDayFromNow"]); 
+	drawTimeLine : function(){
+		var _epgDayFromNow = JSON.parse($db.get("epgDayFromNow")); 
 		if(_epgDayFromNow.length !== 0) {
 			var _duration = _epgDayFromNow[0].stop - _epgDayFromNow[0]["start"];
 			var _gone = new Date().getTime() / 1000 - _epgDayFromNow[0]["start"];
 			// console.log("epgTimeLine width:" + _gone / _duration * 100 + "%");
 			if( _gone / _duration < 1){
-				$(".epgTimeLine").css("width", _gone / _duration * 100 + "%" );
+				$(".epgTimeLine").first().css("width", _gone / _duration * 100 + "%" );
 			} else {
-				$(".epgTimeLine").css("width", "100%" );
+				$(".epgTimeLine").first().css("width", "100%" );
 			}
 		} else {
-				$(".epgTimeLine").css("width", "100%" );
+				$(".epgTimeLine").first().css("width", "100%" );
 		}
 	}
 }

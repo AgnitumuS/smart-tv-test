@@ -174,6 +174,6 @@ $("#iPlayer").on("click", function(){
 	$(".header").css("visibility", "visible");
 	$(".left").css("visibility","visible");
 })
-// setInterval(function(){
-// 	$epg.drawTimeLine();
-// }, 10000);
+setInterval(function(){
+	$epg.drawTimeLine();
+}, 10000);
