@@ -4,9 +4,7 @@ body > div{
 	font-family: "Roboto", san-serif;
 	/*position:absolute;*/
 }
-.visible{
-	visibility: visible;
-}
+
 .hidden{
 	visibility: hidden;
 }
@@ -26,7 +24,7 @@ body > div{
 	left:0;
 	z-index: 2;
 	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
+	}
 	.logo{
 		width:325px;
 		height: 100%;
@@ -38,7 +36,7 @@ body > div{
 .left {
 	position:absolute;
 	top:50px;
-	left:160px;
+	left:16px;
 	height: calc(100% - 50px);
 	width: 117px;
 	display: block;
@@ -46,6 +44,9 @@ body > div{
 	z-index: 2;
 	overflow-y:scroll;
 	overflow-x: hidden;  
+	}
+	.withGenres{
+		left:160px;
 	}
 	.chan {
 		width: 128px;
@@ -69,19 +70,21 @@ body > div{
 .genres {
 	position: absolute;
 	top:64px;
+	left:-136px;
 	width: 150px;
 	z-index: 6;
 	/*visibility: hidden;*/
 	}	
-
+	.showGenres{
+		left:0px;
+	}
 	.genre{
 		width:100%;
 		height: 68px;
-		border-bottom: 1px solid white;
-		border-right: 1px solid white;
-
+	/*	border-bottom: 1px solid white;
+		border-right: 1px solid white;*/
 		color:white;
-		opacity: 0.54;
+		opacity: 1;
 	}
 	.genre span{
 		font-size: 1.2em;

@@ -160,28 +160,18 @@ $(".left").on("click",".chan",  function(){
 	$play.load(playlist);
 });
 
-$(".epgDay").on("click",function(){
-	$(this).css("visibility","hidden");
-})
-$("#wrapper").on("click", function(){
-	if($(".header").css("visibility") == "visible"){
-		$(".header").css("visibility", "hidden");
-		$(".left").css("visibility","hidden");
-		$(".footer").css("visibility","hidden");
-		$(".genres").css("visibility","hidden");
-		// $(".epgFromNow").css("visibility", "hidden");
-		$("#wrapper").css({"visibility":"hidden"});
-		// $(".epgFromNow").css("visibility","hidden");
-	} else {
-		$(".header").css("visibility", "visible");
-		$(".left").css("visibility","visible");
-	}
+// $(".epgDay").on("click",function(){
+// 	$(this).css("visibility","hidden");
+// })
 
+$(".wrapper").on("click", function(){
+	hideAll();
 })
 $("#iPlayer").on("click", function(){
-	$("#wrapper").css({"visibility":"visible"});
-	$(".header").css("visibility", "visible");
-	$(".left").css("visibility","visible");
+	$(".wrapper").removeClass("hidden");
+	$(".header").removeClass("hidden");
+	$(".left").removeClass("hidden");
+	$(".genres").removeClass("hidden");
 })
 setInterval(function(){
 	$epg.drawTimeLine();
@@ -217,6 +207,15 @@ hideAll = function(){
 	$(".wrapper").addClass("hidden");
 	$("body").focus();
 }
+showGenres = function(opt){
+	if(opt){
+		$(".left").addClass("withGenres");
+		$(".genres").addClass("showGenres");
+	} else {
+		$(".left").removeClass("withGenres");
+		$(".genres").removeClass("showGenres");
+	}
+}
 
 $("body").on("keydown", function(event){
 	console.log("key pressed on body");
@@ -225,6 +224,7 @@ $("body").on("keydown", function(event){
 			$(".wrapper").removeClass("hidden");
 			$(".header").removeClass("hidden");
 			$(".left").removeClass("hidden");
+			$(".genres").removeClass("hidden");
 			$(".logo").first().focus();
 			break;
 		default:
@@ -266,6 +266,7 @@ $(".left").on("keydown", ".chan",  function(event){
 
 		case $ARROW_LEFT:
 			$(".genres").removeClass("hidden");
+			showGenres(true);
 			$(".genre").first().focus();
 			break;
 
@@ -306,13 +307,19 @@ $(".genres").on("keydown", ".genre",  function(event){
 			break;
 		
 		case $ARROW_TOP:
-			$(this).prev().focus();
+			if($(this).prev().length !== 0) {
+				$(this).prev().focus();
+			} else {
+				showGenres(false);
+				$(".logo").focus() ;
+			}
 			break;
 
 		case $ENTER:
 		case $ARROW_RIGHT:
 			$(".chan").first().focus();
-			$(".genres").addClass("hidden");
+			// $(".genres").addClass("hidden");
+			showGenres(false);
 			break;
 		
 		case $ARROW_DOWN:
@@ -324,7 +331,9 @@ $(".genres").on("keydown", ".genre",  function(event){
 			
 });
 $(".genres").on("focus", ".genre", function(){
-	console.log("on focus");
+	if(! $(".genres").hasClass("showGenres")){
+		showGenres(true);
+	}
 	drawList($(this).attr("data-id"));
 })
 
