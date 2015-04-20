@@ -22,10 +22,17 @@ var $ARROW_LEFT=37,
 // 	$(".logs").append('<span>  ' + event.target + "  "+ event.target.className + ' ,<span>');
 // })
 
-window.addEventListener("keydown", function(event){
-	var _triggered ;
-	console.log(event);
+
+
+
+// window.addEventListener("keydown", function(event){
+// 	var _triggered ;
+// 	console.log(event);
+
 	// $(".logs").append('<span>  ' + event.target + "  "+ event.target.className + ' ,<span>');
+
+
+/*
 	switch (event.target.parentNode){
 		case html.element:
 			console.log("html.element");
@@ -112,9 +119,9 @@ window.addEventListener("keydown", function(event){
 		};
 
 	}
+*/
 
-})
-
+// })
 
 //make content
 
@@ -137,7 +144,9 @@ $(document).ready(function(){
 				+ " data-position=\"" + i + "\"" 
 				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
 				+ '</div>');
-		};});
+		};
+		
+	});
 });
 
 							//Event listeners
@@ -177,3 +186,192 @@ $("#iPlayer").on("click", function(){
 setInterval(function(){
 	$epg.drawTimeLine();
 }, 10000);
+
+// window.addEventListener("keydown", function(e) {
+//     // space and arrow keys
+//     if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+//         e.preventDefault();
+//     }
+// }, false);
+
+// $(window).on("keydown", function(event){
+// 	console.log(event);
+// 			if(event.keyCode == $ARROW_DOWN){
+// 				console.log("preventDefault")
+// 				event.preventDefault();
+// 				event.returnValue = false;
+				
+// 			};
+// })
+// $(".left").on("scroll", function(event){
+// 	console.log("something scrolled");
+// 	event.preventDefault();
+// 	event.returnValue = false;
+// })
+
+hideAll = function(){
+	$(".left").addClass("hidden");
+	$(".footer").addClass("hidden");
+	$(".genres").addClass("hidden");
+	$(".header").addClass("hidden");
+	$(".wrapper").addClass("hidden");
+	$("body").focus();
+}
+
+$("body").on("keydown", function(event){
+	console.log("key pressed on body");
+	switch (event.keyCode){
+		case $ARROW_DOWN:
+			$(".wrapper").removeClass("hidden");
+			$(".header").removeClass("hidden");
+			$(".left").removeClass("hidden");
+			$(".logo").first().focus();
+			break;
+		default:
+			console.log(event);
+			break;
+	}
+})
+
+$(".header").on("keydown",  function(event){
+	event.stopPropagation();
+	console.log("key pressed on header");
+	switch (event.keyCode){
+		case $ARROW_LEFT:
+			$(".genres").removeClass("hidden");
+			$(".genre").first().focus();
+			break;
+		case $ARROW_TOP:
+			hideAll();
+		break;
+		case $ARROW_RIGHT:
+			
+			break;
+		case $ENTER:
+			break;
+		case $ARROW_DOWN:
+			console.log($(".chan:first"));
+			$(".chan:first").focus();
+			break;
+		default:
+			console.log(event);
+		break;	
+	}
+});
+
+$(".left").on("keydown", ".chan",  function(event){
+	event.stopPropagation();
+	console.log("key pressed on chan");
+	switch (event.keyCode){
+
+		case $ARROW_LEFT:
+			$(".genres").removeClass("hidden");
+			$(".genre").first().focus();
+			break;
+
+		case $ARROW_TOP:
+			if( $(this).prev().length == 0 ) {
+				$(".logo").focus() ;
+			} else {
+				$(this).prev().focus();
+			}
+			break;
+
+		case $ARROW_RIGHT:
+			$(".footer").attr("data-position", $(this).attr("data-position"));
+			$epg.showCards($(this).attr("data-id"));
+			$(".footer").removeClass("hidden");
+			break;
+
+		case $ENTER:
+			$play.load($(this).attr("data-id"));
+			break;
+
+		case $ARROW_DOWN:
+			$(this).next().focus();
+			break;
+
+		default:
+		break;	
+	};
+			
+});
+
+$(".genres").on("keydown", ".genre",  function(event){
+	event.stopPropagation();
+	console.log("key pressed on genre");
+	switch (event.keyCode){
+		
+		case $ARROW_LEFT:
+			break;
+		
+		case $ARROW_TOP:
+			$(this).prev().focus();
+			break;
+
+		case $ENTER:
+		case $ARROW_RIGHT:
+			$(".chan").first().focus();
+			$(".genres").addClass("hidden");
+			break;
+		
+		case $ARROW_DOWN:
+			$(this).next().focus();
+			break;
+		default:
+		break;	
+	};
+			
+});
+$(".genres").on("focus", ".genre", function(){
+	console.log("on focus");
+	drawList($(this).attr("data-id"));
+})
+
+$(".footer").on("keydown", ".epgNext",  function(event){
+	event.stopPropagation();
+	console.log("key pressed on footer");
+	switch (event.keyCode){
+
+		case $ARROW_LEFT:
+			if( $(this).prev().length == 0 ) {
+				console.log("true");
+				$(".chan[data-position=" + $(".footer").attr("data-position")+ "]").focus() ;
+				$(".footer").addClass("hidden");	
+			} else {
+				$(this).prev().focus();
+			}
+			break;
+
+		case $ARROW_TOP:
+			$(".chan[data-position=" + $(".footer").attr("data-position")+ "]").focus() ;
+			$(".footer").addClass("hidden");
+			break;
+
+		case $ARROW_RIGHT:
+			$(this).next().focus();
+			break;
+
+		case $ENTER:
+		case $ARROW_DOWN:
+			//prevent down scroll
+			event.preventDefault();
+			$programInfo.prepareContent($(this).attr("data-position"));
+			$(".epgProgramInfo").attr("data-position", $(this).attr("data-position"));
+			$(".epgProgramInfo").removeClass("hidden");
+			$(".epgProgramContent").focus();
+			break;
+		default:
+		break;	
+	};
+});
+$(".epgProgramInfo").on("keydown", function(event){
+	event.stopPropagation();
+	switch (event.keyCode) {
+		case $ARROW_TOP:
+		case $ENTER:
+			$(".epgNext[data-position=" + $(".epgProgramInfo").attr("data-position")+ "]").focus() ;
+			$(this).addClass("hidden");
+			break;
+	}
+})

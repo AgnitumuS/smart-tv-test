@@ -275,6 +275,21 @@ var footer 	= new Block($(".footer")[0], "row");
 	// 		}
 	// 		this.element.style.visibility = "inherit";
 	// }
+var $programInfo = {
+	prepareContent : function(position){
+		var _html = '';
+		// var  res = JSON.parse(window.sessionStorage["epgDayFromNow"]);
+		var res = JSON.parse($db.get("epgDayFromNow"));
+		if(res.length !== 0) {
+			_html += '<h2>' + res[position].title +'</h2>';
+			_html += res[position].text;
+		} else {
+			_html = '';
+		}
+		$(".epgProgramContent").html(_html);
+
+	}
+}
 
 var epgProgramInfo = new Block($("#epgProgramInfo")[0],"column");
 	epgProgramInfo.prepareContent = function(eventTarget){

@@ -4,6 +4,12 @@ body > div{
 	font-family: "Roboto", san-serif;
 	/*position:absolute;*/
 }
+.visible{
+	visibility: visible;
+}
+.hidden{
+	visibility: hidden;
+}
 /*div {
 	opacity: 0.54;
 }*/
@@ -13,7 +19,7 @@ body > div{
 }*/
 .header {
 	position: absolute;
-	visibility: hidden;
+	/*visibility: hidden;*/
 	height: 50px;
 	width: 100%;
 	top:0;
@@ -36,7 +42,7 @@ body > div{
 	height: calc(100% - 50px);
 	width: 117px;
 	display: block;
-	visibility: hidden;
+	/*visibility: hidden;*/
 	z-index: 2;
 	overflow-y:scroll;
 	overflow-x: hidden;  
@@ -65,7 +71,8 @@ body > div{
 	top:64px;
 	width: 150px;
 	z-index: 6;
-	visibility: hidden;}
+	/*visibility: hidden;*/
+	}	
 
 	.genre{
 		width:100%;
@@ -101,7 +108,7 @@ body > div{
 	font-size:1em;}*/
 .footer {
 	position: absolute;
-	visibility: hidden;
+	/*visibility: hidden;*/
 	bottom:0;
 	left: 285px;
 	width:calc(100% - 305px);
@@ -208,9 +215,9 @@ body > div{
 	
 	/* При наведении*/
 
-#epgProgramInfo {
+.epgProgramInfo {
 	position: absolute;
-	visibility: hidden;
+	/*visibility: hidden;*/
 	top:100px;
 	left: 300px;
 	height: 500px;
@@ -254,14 +261,14 @@ body > div{
 
   background-color: #e0e0e0; }
 
-#wrapper{
+.wrapper{
 	position: absolute;
 	top:0;
 	margin:0;
 	padding: 0;
 	height: 100%;
 	width: 100%;
-	visibility: hidden;
+	/*visibility: hidden;*/
 	/*z-index: 1;*/
 	background: url(../assets/Mask.png) 100% 100% no-repeat;
   	background-size: 100% 100%;
