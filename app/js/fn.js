@@ -44,7 +44,7 @@ function drawList(_class){
 var $epg = {
 	
 	_addCardHTML : function(index, current){ return '<div class="epgNext" tabindex="20" data-position=' + index +
-			'><div class="epgTimeLine"> </div><span class="epgNowTitle">' + current.title +'</span>	</div>'},
+			'><div class="epgTimeLine"> </div><span>' + current.title +'</span>	</div>'},
 
 	fillEpgAfter : function(_id){
 			var _html = '';

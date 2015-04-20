@@ -103,14 +103,15 @@ body > div{
 	position: absolute;
 	visibility: hidden;
 	bottom:0;
-	left: 160px;
+	left: 285px;
 	width:calc(100% - 305px);
 	z-index: 5;
     white-space:nowrap;	
 	height: 120px;
 	background: rgba(61,61,61,0);
 	z-index: 5;
-	overflow: auto;
+	overflow-x: auto;
+	overflow-y: auto; 
 	font-size:1em;}
   
  /* .epgNow, .epgNext{
@@ -123,24 +124,32 @@ body > div{
     transition: all 150ms linear;
     background: rgba(61,61,61,0.54);
   }*/
-	.epgNow, .epgNext{
-		margin-left:0;
+	.epgNext{
+		/*margin-left:8px;*/
+		word-wrap:break-word;
+    	white-space:normal;	
+
 		margin-top:0;
 		margin-bottom: 0;
 		color: white;
+		padding:8px;
 		/*margin-bottom: -4px;*/
 		width:352px;
 		height: 100%;
 		/*float:right;*/
-		display: inline-block;
-		/*float:left;*/
+		display:block;
+		float:left;
 		margin-right:8px;
 		border-radius: 2px;
 		transition: all 150ms linear;
 		background: rgba(61,61,61,0.54);
 	}
+	.epgNext span{
+		word-wrap:break-word;
+		display: inline;
+	}
 	.epgNow:focus, .epgNext:focus{
-		transform:scale(1.5);
+		/*transform:scale(1.5);*/
 	}
 	/*.footer  span{
 		padding-left:20px;
@@ -179,10 +188,11 @@ body > div{
 	}*/
 	.epgTimeLine {
 		position: relative;
-		top:-2px;
+		padding: 0;
+		top:-6px;
 		height: 2px;
 		display: block;
-		width: 100%;
+		width: 90%;
 		background-color: rgba(255,255,255,0.7);
 		-webkit-border-radius: 2px;
 		border-radius: 2px;
