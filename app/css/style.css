@@ -110,7 +110,7 @@ body > div{
 	width:calc(100% - 305px);
 	z-index: 5;
     white-space:nowrap;	
-	height: 120px;
+	height: 140px;
 	background: rgba(61,61,61,0);
 	z-index: 5;
 	overflow-x: auto;
@@ -121,14 +121,14 @@ body > div{
 		/*margin-left:8px;*/
 		word-wrap:break-word;
     	white-space:normal;	
-
+    	position:relative;
 		margin-top:0;
 		margin-bottom: 0;
 		color: white;
 		padding:8px;
 		/*margin-bottom: -4px;*/
 		width:352px;
-		height: 100%;
+		height: 120px;
 		/*float:right;*/
 		display:block;
 		float:left;
@@ -143,6 +143,11 @@ body > div{
 	}
 	.epgNow:focus, .epgNext:focus{
 		/*transform:scale(1.5);*/
+	}
+	.epgTime{
+		position:absolute;
+		bottom:8px;
+		right: 8px;
 	}
 
 	.epgTimeLine {

@@ -45,8 +45,13 @@ var $epg = {
 	
 	_addCardHTML : function(index, current){ 
 		if (current){
+			var date =  new Date(current.start * 1000);
+			var minutes = date.getMinutes().toString(); 
+			minutes = (minutes.length == 1) ? '0' + minutes : minutes;
+
 			return '<div class="epgNext" tabindex="20" data-position=' + index +
-				'><div class="epgTimeLine"> </div><span>' + current.title +'</span>	</div>'
+				'><div class="epgTimeLine"> </div><span>' + current.title 
+				+'</span> <div class="epgTime"> ' + date.getHours() + ':' +  minutes +' </div></div>'
 			} else {
 				return '<div class="epgNext" tabindex="20" data-position=0' +
 				'><div class="epgTimeLine"> </div><span>' + "Нет программы телепередач" +'</span>	</div>';
@@ -87,6 +92,8 @@ var $epg = {
 			$(".epgTimeLine").first().prepend('<div class="epgTimeLineActive"></div>');
 			$epg.drawTimeLine();
 			// $(".epgTimeLine").first().addClass("epgTimeLineActive");
+
+
 		})
 	},
 	drawTimeLine : function(){
