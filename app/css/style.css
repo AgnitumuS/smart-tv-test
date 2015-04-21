@@ -98,17 +98,10 @@ body > div{
 		opacity: 1;
 		box-shadow: 10px 10px 5px #888888;
 	}
-/*
-.footer {
-	position: absolute;
-	visibility: hidden;
-	bottom:20px;
-	right: 160px;
-	min-width:70%;
-	z-index: 5;
-	height: 120px;
-	background: rgba(61,61,61,0);
-	font-size:1em;}*/
+	.genre:hover{
+		/*border-left:7px solid white;*/
+	}
+
 .footer {
 	position: absolute;
 	/*visibility: hidden;*/
@@ -123,17 +116,7 @@ body > div{
 	overflow-x: auto;
 	overflow-y: auto; 
 	font-size:1em;}
-  
- /* .epgNow, .epgNext{
-    margin-left:0;
-    width:352px;
-    height: 100%;
-    display: inline-block;
-    margin-right:8px;
-    border-radius: 2px;
-    transition: all 150ms linear;
-    background: rgba(61,61,61,0.54);
-  }*/
+
 	.epgNext{
 		/*margin-left:8px;*/
 		word-wrap:break-word;
@@ -161,50 +144,16 @@ body > div{
 	.epgNow:focus, .epgNext:focus{
 		/*transform:scale(1.5);*/
 	}
-	/*.footer  span{
-		padding-left:20px;
-		font-size:1.7em;
-		color:white;}*/
-		/*.epgWhen {
-			display: block;
-			}*/
-	/*.epgNow,  .epgAfter {
-		width:47%;
-		height: 120px;
-		color:white;}*/
-/*	.epgNow, .epgNext{
-		background: rgba(61,61,61,0.26);
-	}*/
-	/*.epgNow:focus, .epgNext:focus, .epgAfter:focus{
-		background: rgba(61,61,61,0.87);
-	*/
-	/*.epgAfter{
-		bottom:0px;
-		float:right;}
-	*/
-	/*.epgNow {
-		float:left;
-		bottom:0px;
-		left:0px;
-		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
-	.epgNext {
-		width:100%;
-		border-radius: 2px;
-		background-clip: padding-box;
-		color: white;
-		height: 120px;
-		background: rgba(61,61,61,0.54);
-		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	}*/
+
 	.epgTimeLine {
 		position: relative;
 		padding: 0;
 		top:-6px;
 		height: 2px;
 		display: block;
-		width:100%;
-		opacity: 0.54;
-		background-color: rgba(255,255,255,0.7);
+		width:352px;
+		/*opacity: 0.54;*/
+		background-color: rgba(255,255,255,0.24);
 		-webkit-border-radius: 2px;
 		border-radius: 2px;
 		background-clip: padding-box;
@@ -213,7 +162,12 @@ body > div{
 		-webkit-transition: width 0.3s linear;
 		}
 		.epgTimeLineActive {
-			opacity: 1;
+			position:absolute;
+      		top:0px;
+      		height: 100%;
+			opacity: 0.87;
+			width:60%;
+			background: white;
 		}
 	
 	/* При наведении*/

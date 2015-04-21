@@ -4,11 +4,11 @@ var $play = {
 	init : function (){
 		$("#iPlayer").attr('src', 'http://kirito.la.net.ua/tv/9006.m3u8');
 	},
-	load : function (playlist){
-		$('#iPlayer').attr('src', playlist);
+	load : function (chan){
+		$('#iPlayer').attr('src', $edge + $(chan).attr("data-id") + '.m3u8');
 	}
 }
-var sessionStorage = window.sessionStorage;
+// var sessionStorage = window.sessionStorage;
 var $db = {
 	prefix: '_db_',
 	db: window.localStorage || {},
@@ -16,14 +16,14 @@ var $db = {
 	set: function (k, v) { this.db[this.prefix + k] = v }
 };
 
-function getChannelById(_id){
-	var channel;
-	for(var i = 0; i < $channels.length; i++){
-			if($channels[i]._id == _id) 
-				channel = $channels[i];
-		}
-		return channel;
-}
+// function getChannelById(_id){
+// 	var channel;
+// 	for(var i = 0; i < $channels.length; i++){
+// 			if($channels[i]._id == _id) 
+// 				channel = $channels[i];
+// 		}
+// 		return channel;
+// }
 
 function drawList(_class){
 	var resHtml = '';
@@ -84,8 +84,9 @@ var $epg = {
 			}
 			$(".footer").html(innerHTML);
 			$(".epgNext").first().focus();
+			$(".epgTimeLine").first().prepend('<div class="epgTimeLineActive"></div>');
 			$epg.drawTimeLine();
-			$(".epgTimeLine").first().addClass("epgTimeLineActive");
+			// $(".epgTimeLine").first().addClass("epgTimeLineActive");
 		})
 	},
 	drawTimeLine : function(){
@@ -93,15 +94,13 @@ var $epg = {
 		if(_epgDayFromNow.length !== 0) {
 			var _duration = _epgDayFromNow[0].stop - _epgDayFromNow[0]["start"];
 			var _gone = new Date().getTime() / 1000 - _epgDayFromNow[0]["start"];
-			// console.log("epgTimeLine width:" + _gone / _duration * 100 + "%");
+			// var activeElem = document.createElement('div');
 			if( _gone / _duration < 1){
-				$(".epgTimeLine").first().css("width", _gone / _duration * 100 + "%" );
+				$(".epgTimeLineActive").css("width", _gone / _duration * 100 + "%" );
 			} else {
-				$(".epgTimeLine").first().css("width", "100%" );
+				$(".epgTimeLineActive").css("width", "100%" );
 			}
-		} else {
-				$(".epgTimeLine").first().css("width", "100%" );
-		}
+		} 
 	}
 }
 

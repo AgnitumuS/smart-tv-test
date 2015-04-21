@@ -155,9 +155,8 @@ $(".genre").on("click", function(){
 })
 
 $(".left").on("click",".chan",  function(){
-	console.log("clicked");
-	var playlist = $edge + $(this).attr('data-id') + '.m3u8';
-	$play.load(playlist);
+	// var playlist = $edge + $(this).attr('data-id') + '.m3u8';
+	$play.load($(this));
 });
 
 // $(".epgDay").on("click",function(){
