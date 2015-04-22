@@ -25,6 +25,7 @@ hideAll = function(){
 	$(".genres").addClass("hidden");
 	$(".header").addClass("hidden");
 	$(".wrapper").addClass("hidden");
+	$(".epgProgramInfo").addClass("hidden");
 	$("body").focus();
 }
 showGenres = function(opt){
@@ -79,6 +80,14 @@ $(".genresHead").on("click", function(){
 })
 $(".wrapper").on("click", function(){
 	hideAll();
+})
+$(".footer").on("click",".epgNext",  function(){
+	$programInfo.prepareContent($(this).attr("data-position"));
+			$(".epgProgramInfo").attr("data-position", $(this).attr("data-position"));
+			$(".epgProgramInfo").removeClass("hidden");
+})
+$(".epgProgramInfo").on("click", function(){
+			$(".epgProgramInfo").addClass("hidden");
 })
 $("#iPlayer").on("click", function(){
 	$(".wrapper").removeClass("hidden");
