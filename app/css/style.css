@@ -23,7 +23,7 @@ body > div{
 	top:0;
 	left:0;
 	z-index: 2;
-	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	/*box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
 	}
 	.logo{
 		width:325px;
@@ -46,71 +46,91 @@ body > div{
 	overflow-x: hidden;  
 	}
 	.withGenres{
-		left:160px;
+		left:188px;
 	}
 	.chan {
 		width: 128px;
 		height: 80px;
-		/*margin-left:8px;*/
+		margin:8px;
 		/*border: 1px solid white; */
 		border-radius: 2px;
-		box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		/*box-shadow: 2px 2px 10px #000000;*/
 		text-align: center;
 		opacity: 0.54;
-		background: rgb(61,61,61);
+		/*background: rgb(61,61,61);*/
 	    background-repeat: no-repeat;}
 	.chan:hover{
-		opacity: 1;
-		box-shadow: 3px 3px 5px #888888;}
+		opacity: 0.87;
+		/*box-shadow: 2px 2px 10px #000000;*/
+		/*box-shadow: 8px 8px 15px #000000;*/
+	}
 
 	.chan:focus{
-		opacity:1;
-		box-shadow: 10px 10px 5px #888888;}
+		opacity:0.87;
+
+		/*box-shadow: 10px 10px 5px #888888;*/
+	}
 
 .genres {
 	position: absolute;
 	top:64px;
-	left:-136px;
+	left:-150px;
 	width: 150px;
 	z-index: 6;
+	margin:20px;
 	/*visibility: hidden;*/
 	}	
 	.showGenres{
 		left:0px;
 	}
+	.genresHead span{
+		color:white;
+		font-size: 1.5rem;
+		display: block;
+		margin-bottom: 2rem;
+		padding-left: 16px;
+		opacity: 0.87;
+	}
 	.genre{
 		width:100%;
 		height: 68px;
-	/*	border-bottom: 1px solid white;
-		border-right: 1px solid white;*/
 		color:white;
-		opacity: 1;
+		padding-left: 16px;
+		/*font-size:3rem;
+		padding-bottom: 20px;
+		padding-top: 16px;*/
+		opacity: 0.54;
+		border-radius: 2px;
+		/*box-shadow: 2px 2px 5px #000000;*/
 	}
 	.genre span{
 		font-size: 1.2em;
-		padding-left:20px;
+		/*padding-left:20px;*/
 		line-height: 68px;
 		font-weight: thin;
 	}
 	.genre:focus{
 		background-color: white;
 		color:black;
-		opacity: 1;
-		box-shadow: 10px 10px 5px #888888;
+		opacity: 0.87;
+		box-shadow: 2px 2px 10px #ffffff;
 	}
 	.genre:hover{
+		/*box-shadow: 2px 2px 10px #ffffff;*/
+		background-color: white;
+		color:black;
+		opacity: 0.87;
 		/*border-left:7px solid white;*/
 	}
 
 .footer {
 	position: absolute;
-	/*visibility: hidden;*/
 	bottom:0;
 	left: 285px;
 	width:calc(100% - 305px);
 	z-index: 5;
     white-space:nowrap;	
-	height: 140px;
+	height: 115px;
 	background: rgba(61,61,61,0);
 	z-index: 5;
 	overflow-x: auto;
@@ -118,30 +138,49 @@ body > div{
 	font-size:1em;}
 
 	.epgNext{
-		/*margin-left:8px;*/
 		word-wrap:break-word;
     	white-space:normal;	
     	position:relative;
-		margin-top:0;
-		margin-bottom: 0;
+		margin:0;
 		color: white;
-		padding:8px;
-		/*margin-bottom: -4px;*/
+		/*padding:8px;*/
+		/*padding-top: 16px;*/
+		/*padding-bottom: 20px;*/
 		width:352px;
-		height: 120px;
-		/*float:right;*/
+		height: 100px;
 		display:block;
 		float:left;
-		margin-right:8px;
+		margin:8px;
 		border-radius: 2px;
+		overflow: hidden;
 		transition: all 150ms linear;
 		background: rgba(61,61,61,0.54);
+		box-shadow: 2px 2px 3px #000000;
 	}
 	.epgNext span{
 		word-wrap:break-word;
-		display: inline;
+		display: block;
+		opacity: 0.87;
+		font-size: 1.2rem;
+		margin-left: 72px;
+		margin-right: 16px;
+		/*padding-top:16px;*/
 	}
-	.epgNow:focus, .epgNext:focus{
+	.ic_bookmark, .ic_favorite{
+		display: block;
+		position: absolute;
+		left:16px;
+	}
+		.ic_favorite{
+			top:26px;
+		}
+		.ic_bookmark{
+			bottom:20px;
+		}
+
+	.epgNext:focus{
+		box-shadow: 6px 6px 1rem #000000;
+
 		/*transform:scale(1.5);*/
 	}
 	.epgTime{
@@ -203,8 +242,10 @@ body > div{
 	
 #iPlayer{
 	/*position: relative;*/
-	width:100%;
-	height: 100%;
+	min-width:100%;
+	min-height: 100%;
+	width:auto;
+	height: auto;
 	z-index: 0;
 }
 .logs{

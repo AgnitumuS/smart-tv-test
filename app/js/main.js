@@ -18,110 +18,24 @@ var $ARROW_LEFT=37,
 	{"id": 7,"caption": "Спорт"},
 	{"id": 8,"caption": "Детям"}
 ];
-// window.addEventListener("click", function(event){
-// 	$(".logs").append('<span>  ' + event.target + "  "+ event.target.className + ' ,<span>');
-// })
 
-
-
-
-// window.addEventListener("keydown", function(event){
-// 	var _triggered ;
-// 	console.log(event);
-
-	// $(".logs").append('<span>  ' + event.target + "  "+ event.target.className + ' ,<span>');
-
-
-/*
-	switch (event.target.parentNode){
-		case html.element:
-			console.log("html.element");
-			_triggered = html;
-			break;
-		case header.element:
-			console.log("header.element");
-			_triggered = header;
-			break;
-		case left.element:
-			console.log("left.element");
-			_triggered = left;
-			break;
-		case footer.element:
-			console.log("footer.element");
-			_triggered = footer;
-			break;
-		case genres.element:
-			console.log("genres.element");
-			_triggered = genres;
-			break;
-		// case epgFromNow.element:
-		// 	console.log("epgFromNow.element");
-		// 	_triggered = epgFromNow;
-		// 	break;
-		case epgProgramInfo.element:
-			console.log("epgProgramInfo.element")
-			_triggered = epgProgramInfo;
-			break;
-		default:
-			console.log(event.target);
-			break;
+hideAll = function(){
+	$(".left").addClass("hidden");
+	$(".footer").addClass("hidden");
+	$(".genres").addClass("hidden");
+	$(".header").addClass("hidden");
+	$(".wrapper").addClass("hidden");
+	$("body").focus();
+}
+showGenres = function(opt){
+	if(opt){
+		$(".left").addClass("withGenres");
+		$(".genres").addClass("showGenres");
+	} else {
+		$(".left").removeClass("withGenres");
+		$(".genres").removeClass("showGenres");
 	}
-
-	
-	if(_triggered){
-
-
-		if( _triggered.direction == "column" ){
-			switch (event.keyCode){
-				case $ARROW_LEFT:
-					// _triggered.hideBlock(event.target);
-					// _triggered.displaySecondChild(event.target);					
-					// display parent
-					_triggered.customAction(event.target);
-				break;
-
-				case $ARROW_TOP:
-					_triggered.focusPrev(event.target);
-				break;
-				case $ENTER:
-					// $play.load();
-					_triggered.select(event.target);
-					break;
-				case $ARROW_RIGHT:
-					_triggered.displayChild(event.target);
-				break;
-				case $ARROW_DOWN:
-					_triggered.focusNext(event.target);
-				break;
-				default:
-				break;	
-			};
-
-		} else if (	_triggered.direction == "row" ) {
-			switch (event.keyCode){
-				case $ARROW_LEFT:
-					_triggered.focusPrev(event.target);
-				break;
-				case $ARROW_TOP:
-					_triggered.hideBlock(event.target);
-				break;
-				case $ARROW_RIGHT:
-					_triggered.focusNext(event.target);
-				break;
-				case $ENTER:
-				case $ARROW_DOWN:
-					_triggered.displayChild(event.target);
-				break;
-				default:
-				break;	
-			};
-
-		};
-
-	}
-*/
-
-// })
+}
 
 //make content
 
@@ -155,14 +69,14 @@ $(".genre").on("click", function(){
 })
 
 $(".left").on("click",".chan",  function(){
-	// var playlist = $edge + $(this).attr('data-id') + '.m3u8';
 	$play.load($(this));
+	if(! $(".footer").hasClass("hidden") ) {
+		$epg.showCards($(this));
+	}
 });
-
-// $(".epgDay").on("click",function(){
-// 	$(this).css("visibility","hidden");
-// })
-
+$(".genresHead").on("click", function(){
+	showGenres(false);
+})
 $(".wrapper").on("click", function(){
 	hideAll();
 })
@@ -176,45 +90,6 @@ setInterval(function(){
 	$epg.drawTimeLine();
 }, 10000);
 
-// window.addEventListener("keydown", function(e) {
-//     // space and arrow keys
-//     if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-//         e.preventDefault();
-//     }
-// }, false);
-
-// $(window).on("keydown", function(event){
-// 	console.log(event);
-// 			if(event.keyCode == $ARROW_DOWN){
-// 				console.log("preventDefault")
-// 				event.preventDefault();
-// 				event.returnValue = false;
-				
-// 			};
-// })
-// $(".left").on("scroll", function(event){
-// 	console.log("something scrolled");
-// 	event.preventDefault();
-// 	event.returnValue = false;
-// })
-
-hideAll = function(){
-	$(".left").addClass("hidden");
-	$(".footer").addClass("hidden");
-	$(".genres").addClass("hidden");
-	$(".header").addClass("hidden");
-	$(".wrapper").addClass("hidden");
-	$("body").focus();
-}
-showGenres = function(opt){
-	if(opt){
-		$(".left").addClass("withGenres");
-		$(".genres").addClass("showGenres");
-	} else {
-		$(".left").removeClass("withGenres");
-		$(".genres").removeClass("showGenres");
-	}
-}
 
 $("body").on("keydown", function(event){
 	console.log("key pressed on body");
@@ -279,14 +154,12 @@ $(".left").on("keydown", ".chan",  function(event){
 
 		case $ARROW_RIGHT:
 			$(".footer").attr("data-position", $(this).attr("data-position"));
-			$epg.showCards($(this).attr("data-id"));
+			$epg.showCards($(this));
 			$(".footer").removeClass("hidden");
 			break;
 
 		case $ENTER:
-			// $play.load($(this).attr("data-id"));
-			var playlist = $edge + $(this).attr('data-id') + '.m3u8';
-			$play.load(playlist);
+			$play.load($(this));
 			break;
 
 		case $ARROW_DOWN:
