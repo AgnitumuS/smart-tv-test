@@ -4,6 +4,9 @@ body > div{
 	font-family: "Roboto", san-serif;
 	/*position:absolute;*/
 }
+body{
+	margin:0px;
+}
 
 .hidden{
 	visibility: hidden;
@@ -78,11 +81,14 @@ body > div{
 		background: rgba(0,0,0,0.26);
 	}
 	/*non fixed*/
+	.genresHead{
+		height: 80px;
+		line-height: 80px;
+	}
 	.genresHead span{
 		color:white;
 		font-size: 24px;
-		display: block;
-		margin-bottom: 2rem;
+		/*display: block;*/
 		padding-left: 16px;
 		opacity: 0.87;
 	}
