@@ -44,8 +44,8 @@ var $epg = {
 
 			return '<div class="epgNext" tabindex="20" data-position=' + index +
 				'><div class="epgTimeLine"> </div><span>' + current.title +'</span>' 
-				+  '<img src="'+ _icons + 'ic_favorite_grey600_24dp.png" class="ic_favorite">'
-				+  '<img src="' + _icons + 'ic_bookmark_grey600_24dp.png" class="ic_bookmark">'
+				// +  '<img src="'+ _icons + 'ic_favorite_grey600_24dp.png" class="ic_favorite">'
+				// +  '<img src="' + _icons + 'ic_bookmark_grey600_24dp.png" class="ic_bookmark">'
 				+' <div class="epgTime"> ' + date.getHours() + ':' +  minutes +' </div></div>' 
 			} else {
 				return '<div class="epgNext" tabindex="20" data-position=0' +

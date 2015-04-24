@@ -63,6 +63,13 @@ $(document).ready(function(){
 		
 	});
 });
+// $(".logs").append('height: ' + window.screen.height);
+// $(".logs").append('width: ' + window.screen.width);
+// $(".logs").append('device pixel ratio: ' + window.devicePixelRatio);
+// $(".logs").append('device pixel depth: ' + window.screen.pixelDepth);
+
+
+
 
 							//Event listeners
 $(".genre").on("click", function(){
