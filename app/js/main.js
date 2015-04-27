@@ -3,21 +3,12 @@ var $ARROW_LEFT=37,
 	$ARROW_RIGHT=39, 
 	$ARROW_DOWN=40, 
 	$ENTER=13,
- $tvApi = "http://tvapi.la.net.ua/",
  $staticURL = "http://static.la.net.ua/",
- $edge = '',
  $channels = [],
- $classes = [
-	{"id": 0,"caption": "Всё"},
-	{"id": 1,"caption": "Общее"	},
-	{"id": 2,"caption": "Новости"	},
-	{"id": 3,"caption": "Шоу"},
-	{"id": 4,"caption": "Док. фильмы"},
-	{"id": 5,"caption": "Фильмы"},
-	{"id": 6,"caption": "Музыка"},
-	{"id": 7,"caption": "Спорт"},
-	{"id": 8,"caption": "Детям"}
-];
+ $epgNowAll = {},
+ $cats = []
+ ;
+
 
 hideAll = function(){
 	$(".left").addClass("hidden");
@@ -40,29 +31,69 @@ showGenres = function(opt){
 
 //make content
 
-for(var iter = 0; iter < $classes.length;iter++){
-	$(".genres").append('<div class="genre" tabindex='+ iter + ' data-id='+ $classes[iter].id+  ' data-position=' 
-		+ iter + '><span>'+$classes[iter].caption + '</span></div>')
-}
+// for(var iter = 0; iter < $classes.length;iter++){
+// 	$(".genres").append('<div class="genre" tabindex='+ iter + ' data-id='+ $classes[iter].id+  ' data-position=' 
+// 		+ iter + '><span>'+$classes[iter].caption + '</span></div>')
+// }
  // $("#iPlayer").attr({
  // 	"width": document.documentElement.clientWidth, 
  // 	"height":document.documentElement.clientHeight
  // });
 
 $(document).ready(function(){
-	$.getJSON($tvApi + "list.json",function(data){
+	$.getJSON($api + "list.json",function(data){
 		$edge = data.edge;
 		$channels = data.list.slice();
-		for( i=0 ; i<data.list.length ; i++){
-			var tabindex = 1;
-			$(".left").append('<div class="chan" tabindex='+ tabindex++ + " data-id=\"" + data.list[i]._id  + '\"'  
-				+ " data-position=\"" + i + "\"" 
-				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i]._id + '.png\');">' 
+		// for( i=0 ; i<data.list.length ; i++){
+			$channels.forEach(function(current, index){
+				console.log('for channel');
+				$(".left").append('<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
+				+ " data-position=\"" + index + "\"" 
+				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ current.id + '.png\');">' 
 				+ '</div>');
-		};
+
+				$.getJSON($api + 'epg/' + current.id + '/now', function(res){
+					$epgNowAll[current.id] = res;
+					console.log($epgNowAll);
+				})
+			})
+
+			// var tabindex = 1;
+			// $(".left").append('<div class="chan" tabindex='+ tabindex++ + " data-id=\"" + data.list[i].id  + '\"'  
+			// 	+ " data-position=\"" + i + "\"" 
+			// 	+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i].id + '.png\');">' 
+			// 	+ '</div>');
+		// };
 		
 	});
 });
+$(document).ready(function(){
+	$.getJSON($api + 'categories.json', function(res){
+		if(!res){
+			return;
+		}
+		$cats = res;
+		$cats[0][0] = 'Без жанра';
+		$(".genres").append('<div class="genre" tabindex=1' + ' data-id=-1' + ' data-position=-1' + '><span>'
+			+ "Все" + '</span></div>');
+		$cats.forEach(function(val , index){
+			$(".genres").append('<div class="genre" tabindex='+ index + ' data-id=' + index + ' data-position=' + index + '><span>'
+			+ val[0] + '</span></div>');
+		});
+	})
+})
+// setTimeout(console.log($epgNowAll), 10000);
+// console.log($epgNowAll);
+//sort by genres
+// $(document).ready(function(){
+// 	console.log($channels);
+// 	$channels.forEach(function(current, index){
+// 		$.getJSON($api + 'epg/'+ current.id + '/now', function(res){
+// 			$epgNowAll[current.id] = res;
+// 			console.log($epgNowAll);
+// 		})
+// 	})
+// })
 // $(".logs").append('height: ' + window.screen.height);
 // $(".logs").append('width: ' + window.screen.width);
 // $(".logs").append('device pixel ratio: ' + window.devicePixelRatio);

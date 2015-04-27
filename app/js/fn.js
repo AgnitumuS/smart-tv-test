@@ -7,6 +7,7 @@ var $play = {
 	},
 	load : function (chan){
 		$('#iPlayer').attr('src', $edge + $(chan).attr("data-id") + '.m3u8');
+
 	}
 }
 // var sessionStorage = window.sessionStorage;
@@ -18,21 +19,28 @@ var $db = {
 };
 
 
-function drawList(_class){
+function drawList(_cat){
 	var resHtml = '';
-	var _position = 0;
-	$channels.forEach(function(current, index, array){
-		if(current.class == _class || _class == '0'){
-			resHtml += '<div class="chan" tabindex='+ index + " data-id=\"" + current._id  + '\"'  
-				+ " data-position=\"" + _position + "\"" 
-				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ current._id + '.png\');">' 
+	// var _position = 0;
+	$channels.forEach(function(current, index){
+		// if(current.class == _class || _class == '0'){
+			if ( ($epgNowAll[ current.id ].length !== 0 && $epgNowAll[ current.id ][0].cat.slice(0,1)  == _cat) || _cat === "-1" ){
+				console.log("chan is in category");
+				resHtml += '<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
+				+ " data-position=\"" + index + "\"" 
+				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ current.id + '.png\');">' 
 				+ '</div>' ; 
-			_position++;
-		}
+			}
+			// resHtml += '<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
+			// 	+ " data-position=\"" + index + "\"" 
+			// 	+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ current.id + '.png\');">' 
+			// 	+ '</div>' ; 
+			// // _position++;
+		// }
 	})
-	if(resHtml){
+	// if(resHtml){
 		$(".left").html(resHtml);
-	} 
+	// } 
 }
 var $epg = {
 	
