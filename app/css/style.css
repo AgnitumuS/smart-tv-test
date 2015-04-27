@@ -85,8 +85,6 @@ body{
 	z-index: 6;
 	background: rgba(0,0,0,0.12);
 	/*need fix*/
-	overflow-y:scroll;
-	overflow-x:hidden;  
 	box-shadow: 0px 1px 0px 3px rgba(0,0,0,0.12);
 	}	
 
@@ -106,6 +104,16 @@ body{
 		/*display: block;*/
 		padding-left: 48px;
 		opacity: 0.87;
+	}
+	.sort{
+		background-color: white;
+		height: 173px;
+	}
+	.genreslist{
+		height: calc(100% - 144px - 173px);
+		
+		overflow-y: scroll;
+		overflow-x: hidden; 
 	}
 	/*non*/
 	.genre{
@@ -135,10 +143,7 @@ body{
 		color:black;
 		opacity: 0.87;
 	}*/
-	.sort{
-		background-color: white;
-		height: 173px;
-	}
+	
 .footer {
 	position: absolute;
 	bottom:0;

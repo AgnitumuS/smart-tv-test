@@ -54,7 +54,6 @@ $(document).ready(function(){
 
 				$.getJSON($api + 'epg/' + current.id + '/now', function(res){
 					$epgNowAll[current.id] = res;
-					console.log($epgNowAll);
 				})
 			})
 
@@ -74,10 +73,10 @@ $(document).ready(function(){
 		}
 		$cats = res;
 		$cats[0][0] = 'Без жанра';
-		$(".genres").append('<div class="genre" tabindex=1' + ' data-id=-1' + ' data-position=-1' + '><span>'
+		$(".genreslist").append('<div class="genre" tabindex=1' + ' data-id=-1' + ' data-position=-1' + '><span>'
 			+ "Все" + '</span></div>');
 		$cats.forEach(function(val , index){
-			$(".genres").append('<div class="genre" tabindex='+ index + ' data-id=' + index + ' data-position=' + index + '><span>'
+			$(".genreslist").append('<div class="genre" tabindex='+ index + ' data-id=' + index + ' data-position=' + index + '><span>'
 			+ val[0] + '</span></div>');
 		});
 	})
@@ -118,6 +117,12 @@ $(".genresHead").on("click", function(){
 })
 $(".wrapper").on("click", function(){
 	hideAll();
+})
+$("#myswitch").on('click', function(){
+	// console.log($(this));
+	if( $(this).prop('checked') ){
+		alert('checked');
+	}
 })
 $(".footer").on("click",".epgNext",  function(){
 	$programInfo.prepareContent($(this).attr("data-position"));
