@@ -287,9 +287,10 @@ $(".footer").on("keydown", ".epgNext",  function(event){
 			$(this).next().focus();
 			break;
 
-		case $ENTER:
 		case $ARROW_DOWN:
-			//prevent down scroll
+			event.preventDefault();
+			break;
+		case $ENTER:
 			event.preventDefault();
 			$programInfo.prepareContent($(this).attr("data-position"));
 			$(".epgProgramInfo").attr("data-position", $(this).attr("data-position"));
