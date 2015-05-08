@@ -108,7 +108,22 @@ body{
 	.sort{
 		background-color: white;
 		height: 120px;
+		font-size: 20px;
 	}
+		.sorttype{
+			position: relative;
+			display: block;
+			height: 60px;
+			margin-left:41px;
+			line-height: 60px;
+		}
+		.sorttype [type=checkbox]{
+			position: absolute;
+			right:41px;
+			top:20px;
+		}
+
+
 	.genreslist{
 		height: calc(100% - 100px - 120px);
 		

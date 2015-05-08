@@ -3,10 +3,11 @@ var $api = "http://api.lanet.tv/";
 var _icons = "assets/icons/";
 var $play = {
 	init : function (){
-		$("#iPlayer").attr('src', 'http://kirito.la.net.ua/tv/9006.m3u8');
+		drawList("-1");
+		$("#iPlayer").attr('src', $edge + $(".chan").first().attr("data-id") + '.m3u8');
 	},
 	load : function (chan){
-		$('#iPlayer').attr('src', $edge + $(chan).attr("data-id") + '.m3u8');
+		$('#iPlayer').attr('src', $edge + $(".chan").attr("data-id") + '.m3u8');
 
 	}
 }
@@ -22,21 +23,15 @@ var $db = {
 function drawList(_cat){
 	var resHtml = '';
 	// var _position = 0;
-	$channels.forEach(function(current, index){
-		// if(current.class == _class || _class == '0'){
-			if ( ($epgNowAll[ current.id ].length !== 0 && $epgNowAll[ current.id ][0].cat.slice(0,1)  == _cat) || _cat === "-1" ){
+	$channels.chans.forEach(function(current, index){
+			if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
 				console.log("chan is in category");
 				resHtml += '<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
 				+ " data-position=\"" + index + "\"" 
-				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ current.id + '.png\');">' 
+				+ 'style="background-image: url(\'' +$staticURL + 'logo/'+ current.id + '.png\');">' 
 				+ '</div>' ; 
 			}
-			// resHtml += '<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
-			// 	+ " data-position=\"" + index + "\"" 
-			// 	+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ current.id + '.png\');">' 
-			// 	+ '</div>' ; 
-			// // _position++;
-		// }
+			
 	})
 	// if(resHtml){
 		$(".left").html(resHtml);

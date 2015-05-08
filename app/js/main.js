@@ -3,8 +3,28 @@ var $ARROW_LEFT=37,
 	$ARROW_RIGHT=39, 
 	$ARROW_DOWN=40, 
 	$ENTER=13,
- $staticURL = "http://static.la.net.ua/",
- $channels = [],
+ $staticURL = '',
+ $pack = '',
+ $channels = {
+ 	sort : function(type){
+ 		var arr;
+ 		if (type === "rating"){
+ 			arr = $channels.rating;
+ 		} else if (type == "cable"){
+ 			arr = $channels.cable;
+ 		}
+ 		this.chans.sort(function( a , b ){
+ 			if ( arr.indexOf(a) && arr.indexOf(b) ) {
+ 				return arr.indexOf(a.id) - arr.indexOf(b.id);
+ 			} else {
+ 				return 0;
+ 			}
+ 		})
+ 	},
+ 	chans : [] ,
+ 	rating : [] ,
+ 	cable : []
+ },
  $epgNowAll = {},
  $cats = []
  ;
@@ -23,47 +43,36 @@ showGenres = function(opt){
 	if(opt){
 		$(".left").addClass("withGenres");
 		$(".genres").addClass("showGenres");
+		$(".genres").trigger("getAllEpgNow");
 	} else {
 		$(".left").removeClass("withGenres");
 		$(".genres").removeClass("showGenres");
 	}
 }
 
-//make content
-
-// for(var iter = 0; iter < $classes.length;iter++){
-// 	$(".genres").append('<div class="genre" tabindex='+ iter + ' data-id='+ $classes[iter].id+  ' data-position=' 
-// 		+ iter + '><span>'+$classes[iter].caption + '</span></div>')
-// }
- // $("#iPlayer").attr({
- // 	"width": document.documentElement.clientWidth, 
- // 	"height":document.documentElement.clientHeight
- // });
 
 $(document).ready(function(){
-	$.getJSON($api + "list.json",function(data){
-		$edge = data.edge;
-		$channels = data.list.slice();
-		// for( i=0 ; i<data.list.length ; i++){
-			$channels.forEach(function(current, index){
-				console.log('for channel');
-				$(".left").append('<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
-				+ " data-position=\"" + index + "\"" 
-				+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ current.id + '.png\');">' 
-				+ '</div>');
-
-				$.getJSON($api + 'epg/' + current.id + '/now', function(res){
-					$epgNowAll[current.id] = res;
-				})
-			})
-
-			// var tabindex = 1;
-			// $(".left").append('<div class="chan" tabindex='+ tabindex++ + " data-id=\"" + data.list[i].id  + '\"'  
-			// 	+ " data-position=\"" + i + "\"" 
-			// 	+ 'style="background-image: url(\'' +$staticURL + 'tv/logo/'+ data.list[i].id + '.png\');">' 
-			// 	+ '</div>');
-		// };
+	$.getJSON($api + "list.json",function (data){
 		
+		$edge = data.edge;
+		$staticURL = data.img;
+		$channels.chans = data.list.slice();
+		$pack = data.pack;
+		data.list.forEach(function(cur, index){
+			$channels.cable.push(cur.id)
+
+		})
+
+		$.getJSON($api + "list/rating/" + data.pack, function(res){
+			$channels.rating = res;
+			if ($("#switchByRating").prop("checked")) {
+				// $channels.sortRating();
+				$(".left").trigger("sortByRating");
+			}	
+		})
+		
+		$(".genres").trigger("getAllEpgNow");
+		$play.init();
 	});
 });
 $(document).ready(function(){
@@ -106,6 +115,17 @@ $(".genre").on("click", function(){
 	drawList($(this).attr("data-id"));
 })
 
+$(".genres").on("getAllEpgNow", function(){
+	$.getJSON($api + "epg/now" , function(res){
+		$epgNowAll = res;
+	})
+})
+//testing
+$(".left").on("sortByRating", function(){
+	console.log("custom event sortByRating");
+	$channels.sort("rating");
+})
+//testing
 $(".left").on("click",".chan",  function(){
 	$play.load($(this));
 	if(! $(".footer").hasClass("hidden") ) {
@@ -118,12 +138,12 @@ $(".genresHead").on("click", function(){
 $(".wrapper").on("click", function(){
 	hideAll();
 })
-$("#myswitch").on('click', function(){
-	// console.log($(this));
-	if( $(this).prop('checked') ){
-		alert('checked');
-	}
-})
+// $("#myswitch").on('click', function(){
+// 	// console.log($(this));
+// 	if( $(this).prop('checked') ){
+// 		alert('checked');
+// 	}
+// })
 $(".footer").on("click",".epgNext",  function(){
 	$programInfo.prepareContent($(this).attr("data-position"));
 			$(".epgProgramInfo").attr("data-position", $(this).attr("data-position"));
@@ -223,10 +243,66 @@ $(".left").on("keydown", ".chan",  function(event){
 	};
 			
 });
+$(".sort").on("keydown",".sorttype", function(event){
+	switch (event.keyCode) {
+		case $ENTER:
+			event.stopPropagation();
+			if($(this).children().first().prop("disabled")){
+				return;
+			}
+			if( $(this).children().first().is(":checked") ) {
+				$(this).children().first().prop("checked", false);
+			} else {
+				$(this).children().first().prop("checked", true);
+			}
+			$(this).children().first().trigger("change");
+			break;
+
+		case $ARROW_LEFT:
+			break;
+
+		case $ARROW_TOP:
+			event.stopPropagation();
+			if( $(this).prev().length == 0 ) {
+				$(".logo").focus() ;
+			} else {
+				$(this).prev().focus();
+			}
+			break;
+
+		case $ARROW_RIGHT:
+			$(".chan").first().focus();
+			showGenres(false);
+			break;
+
+		case $ARROW_DOWN:
+			event.stopPropagation();
+			console.log($(this));
+			if( $(this).next().length !== 0) {
+				$(this).next().focus();
+			} else {
+				console.log("else");
+				$(".genre").first().focus();
+			}
+			break;
+
+		default:
+		break;	
+	}
+})
+
+$("#switchByRating").on("change", function(){
+	if( $(this).prop("checked") ){
+		console.log("$channels sort by rating");
+		$channels.sort("rating")
+	} else {
+		$channels.sort("cable");
+		console.log("$channels sort by cable");
+	}
+});
 
 $(".genres").on("keydown", ".genre",  function(event){
 	event.stopPropagation();
-	console.log("key pressed on genre");
 	switch (event.keyCode){
 		
 		case $ARROW_LEFT:
@@ -236,8 +312,10 @@ $(".genres").on("keydown", ".genre",  function(event){
 			if($(this).prev().length !== 0) {
 				$(this).prev().focus();
 			} else {
-				showGenres(false);
-				$(".logo").focus() ;
+				// showGenres(false);
+				// $(".logo").focus() ;
+				console.log("jump to sort");
+				$(".sort").children().last().focus();
 			}
 			break;
 

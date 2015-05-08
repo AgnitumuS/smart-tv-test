@@ -14,9 +14,9 @@
 <body tabindex="1">
 
 
-	 <video id="iPlayer" autoplay>
-		<!-- <source src="/home/vsashyn/Downloads/big_buck_bunny_720p_surround.avi" type="video/avi">	</source> -->
-		<source src="http://kirito.la.net.ua/tv/9006.m3u8">	</source>
+	 <video id="iPlayer" autoplay muted>
+		<!-- <source src="/home/vsashyn/Downloads/big_buck_bunny_720p_stereo.ogg" type="video/ogg">	</source> -->
+		<!-- <source src="http://kirito.la.net.ua/tv/9006.m3u8">	</source> -->
 	</video> 
 <div class="wrapper hidden"> </div>
 
@@ -38,7 +38,15 @@
 					        <span class="onoffswitch-switch"></span>
 					    </label>
 						</div> -->
-						<input type="checkbox" name="switch" id="myswitch">
+						<div class="sorttype" tabindex="1">
+						
+								По рейтингу
+							<input type="checkbox" name="switch"  id="switchByRating" >
+						</div>
+						<div class="sorttype" tabindex="2">
+								Мой топ
+							<input type="checkbox" name="switch" id="switchMyTop" disabled="true">
+						</div>
 		</div>
 		<div class="genreslist">
 			
