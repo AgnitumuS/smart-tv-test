@@ -14,7 +14,7 @@
 <body tabindex="1">
 
 
-	 <video id="iPlayer" autoplay muted>
+	 <video id="iPlayer" muted>
 		<!-- <source src="/home/vsashyn/Downloads/big_buck_bunny_720p_stereo.ogg" type="video/ogg">	</source> -->
 		<!-- <source src="http://kirito.la.net.ua/tv/9006.m3u8">	</source> -->
 	</video> 
@@ -39,12 +39,15 @@
 					    </label>
 						</div> -->
 						<div class="sorttype" tabindex="1">
-						
+							<span>
 								По рейтингу
+							</span>
 							<input type="checkbox" name="switch"  id="switchByRating" >
 						</div>
-						<div class="sorttype" tabindex="2">
+						<div class="sorttype" tabindex="2" disabled="true">
+							<span>
 								Мой топ
+								</span>
 							<input type="checkbox" name="switch" id="switchMyTop" disabled="true">
 						</div>
 		</div>
@@ -57,7 +60,8 @@
 	</div>
 
 	<div class="footer hidden" >
-
+		<div class="epgContainer">
+		</div>
 	</div>
 	<div class="epgProgramInfo hidden"> <div class="epgProgramContent" tabindex="1"></div></div>
 	<!-- <div class="logs"> </div> -->

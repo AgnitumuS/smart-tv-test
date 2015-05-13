@@ -2,14 +2,18 @@ var $edge;
 var $api = "http://api.lanet.tv/";
 var _icons = "assets/icons/";
 var $play = {
-	init : function (){
-		drawList("-1");
-		$("#iPlayer").attr('src', $edge + $(".chan").first().attr("data-id") + '.m3u8');
-	},
-	load : function (chan){
-		$('#iPlayer').attr('src', $edge + $(".chan").attr("data-id") + '.m3u8');
+		player : $("#iPlayer"),
+		init : function (){
+			this.player.on("canplay", function(){
+				this.player[0].play();
+			})
+			drawList("-1");
+			this.player.attr('src', $edge + $(".chan").first().attr("data-id") + '.m3u8');
+		},
+		load : function (_chan){
+			this.player.attr('src', $edge + $(_chan).attr("data-id") + '.m3u8');
 
-	}
+		}
 }
 // var sessionStorage = window.sessionStorage;
 var $db = {
@@ -85,7 +89,8 @@ var $epg = {
 			} else {
 				innerHTML = $epg._addCardHTML();
 			}
-			$(".footer").html(innerHTML);
+			$(".epgContainer").html(innerHTML);
+			$(".epgContainer").css("width", res.length * 612);
 			$(".epgNext").first().focus();
 			$(".epgTimeLine").first().prepend('<div class="epgTimeLineActive"></div>');
 			$epg.drawTimeLine();

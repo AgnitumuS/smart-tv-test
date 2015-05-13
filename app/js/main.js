@@ -29,6 +29,18 @@ var $ARROW_LEFT=37,
  $cats = []
  ;
 
+$(".logo").on("click", function(){
+	var
+      el = document.documentElement
+    , rfs =
+           el.requestFullScreen
+        || el.webkitRequestFullScreen
+        || el.mozRequestFullScreen
+    ;
+    rfs.call(el);
+    console.log()
+    // $("#iPlayer").attr({"width" : "100%", "height" : "40%"});
+})
 
 hideAll = function(){
 	$(".left").addClass("hidden");
@@ -43,9 +55,11 @@ showGenres = function(opt){
 	if(opt){
 		$(".left").addClass("withGenres");
 		$(".genres").addClass("showGenres");
+		$(".footer").addClass("footerWithGenres");
 		$(".genres").trigger("getAllEpgNow");
 	} else {
 		$(".left").removeClass("withGenres");
+		$(".footer").removeClass("footerWithGenres");
 		$(".genres").removeClass("showGenres");
 	}
 }
@@ -232,6 +246,7 @@ $(".left").on("keydown", ".chan",  function(event){
 
 		case $ENTER:
 			$play.load($(this));
+			$epg.showCards($(this));
 			break;
 
 		case $ARROW_DOWN:
@@ -247,15 +262,15 @@ $(".sort").on("keydown",".sorttype", function(event){
 	switch (event.keyCode) {
 		case $ENTER:
 			event.stopPropagation();
-			if($(this).children().first().prop("disabled")){
+			if($(this).children("input").first().prop("disabled")){
 				return;
 			}
-			if( $(this).children().first().is(":checked") ) {
-				$(this).children().first().prop("checked", false);
+			if( $(this).children("input[type=checkbox]").first().is(":checked") ) {
+				$(this).children("input[type=checkbox]").first().prop("checked", false);
 			} else {
-				$(this).children().first().prop("checked", true);
+				$(this).children("input[type=checkbox]").first().prop("checked", true);
 			}
-			$(this).children().first().trigger("change");
+			$(this).children("input[type=checkbox]").first().trigger("change");
 			break;
 
 		case $ARROW_LEFT:
@@ -265,6 +280,7 @@ $(".sort").on("keydown",".sorttype", function(event){
 			event.stopPropagation();
 			if( $(this).prev().length == 0 ) {
 				$(".logo").focus() ;
+				showGenres(false);
 			} else {
 				$(this).prev().focus();
 			}
@@ -299,6 +315,7 @@ $("#switchByRating").on("change", function(){
 		$channels.sort("cable");
 		console.log("$channels sort by cable");
 	}
+	drawList("-1");
 });
 
 $(".genres").on("keydown", ".genre",  function(event){
@@ -321,9 +338,11 @@ $(".genres").on("keydown", ".genre",  function(event){
 
 		case $ENTER:
 		case $ARROW_RIGHT:
-			$(".chan").first().focus();
-			// $(".genres").addClass("hidden");
-			showGenres(false);
+			if( $(".left").is(":empty") ){
+			} else {
+				$(".chan").first().focus();
+				showGenres(false);
+			}
 			break;
 		
 		case $ARROW_DOWN:
@@ -334,11 +353,18 @@ $(".genres").on("keydown", ".genre",  function(event){
 	};
 			
 });
-$(".genres").on("focus", ".genre", function(){
+$(".genres").on("click", ".sorttype", function(event){
+
+})
+$(".genres").on("focus", ".genre, .sorttype", function(event){
 	if(! $(".genres").hasClass("showGenres")){
 		showGenres(true);
 	}
-	drawList($(this).attr("data-id"));
+	console.log(event);
+	if(! $(event.target).hasClass("sorttype")){
+		drawList($(this).attr("data-id"));
+	}
+
 })
 
 $(".footer").on("keydown", ".epgNext",  function(event){
