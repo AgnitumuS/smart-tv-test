@@ -4,9 +4,6 @@ var _icons = "assets/icons/";
 var $play = {
 		player : $("#iPlayer"),
 		init : function (){
-			this.player.on("canplay", function(){
-				this.player[0].play();
-			})
 			drawList("-1");
 			this.player.attr('src', $edge + $(".chan").first().attr("data-id") + '.m3u8');
 		},
@@ -91,6 +88,7 @@ var $epg = {
 			}
 			$(".epgContainer").html(innerHTML);
 			$(".epgContainer").css("width", res.length * 612);
+			$(".footer").attr("data-position", $(_chan).attr("data-position"));
 			$(".epgNext").first().focus();
 			$(".epgTimeLine").first().prepend('<div class="epgTimeLineActive"></div>');
 			$epg.drawTimeLine();

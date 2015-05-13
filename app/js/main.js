@@ -239,7 +239,6 @@ $(".left").on("keydown", ".chan",  function(event){
 			break;
 
 		case $ARROW_RIGHT:
-			$(".footer").attr("data-position", $(this).attr("data-position"));
 			$epg.showCards($(this));
 			$(".footer").removeClass("hidden");
 			break;
