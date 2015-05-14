@@ -29,18 +29,18 @@ var $ARROW_LEFT=37,
  $cats = []
  ;
 
-$(".logo").on("click", function(){
-	var
-      el = document.documentElement
-    , rfs =
-           el.requestFullScreen
-        || el.webkitRequestFullScreen
-        || el.mozRequestFullScreen
-    ;
-    rfs.call(el);
-    console.log()
-    // $("#iPlayer").attr({"width" : "100%", "height" : "40%"});
-})
+// $(".logo").on("f", function(){
+// 	var
+//       el = document.documentElement
+//     , rfs =
+//            el.requestFullScreen
+//         || el.webkitRequestFullScreen
+//         || el.mozRequestFullScreen
+//     ;
+//     rfs.call(el);
+//     console.log()
+//     // $("#iPlayer").attr({"width" : "100%", "height" : "40%"});
+// })
 
 hideAll = function(){
 	$(".left").addClass("hidden");
@@ -56,6 +56,7 @@ showGenres = function(opt){
 		$(".left").addClass("withGenres");
 		$(".genres").addClass("showGenres");
 		$(".footer").addClass("footerWithGenres");
+		$(".footer").addClass("hidden");
 		$(".genres").trigger("getAllEpgNow");
 	} else {
 		$(".left").removeClass("withGenres");
@@ -152,17 +153,13 @@ $(".genresHead").on("click", function(){
 $(".wrapper").on("click", function(){
 	hideAll();
 })
-// $("#myswitch").on('click', function(){
-// 	// console.log($(this));
-// 	if( $(this).prop('checked') ){
-// 		alert('checked');
-// 	}
-// })
+/* 					next release feature
 $(".footer").on("click",".epgNext",  function(){
 	$programInfo.prepareContent($(this).attr("data-position"));
 			$(".epgProgramInfo").attr("data-position", $(this).attr("data-position"));
 			$(".epgProgramInfo").removeClass("hidden");
 })
+*/
 $(".epgProgramInfo").on("click", function(){
 			$(".epgProgramInfo").addClass("hidden");
 })
@@ -171,6 +168,7 @@ $("#iPlayer").on("click", function(){
 	$(".header").removeClass("hidden");
 	$(".left").removeClass("hidden");
 	$(".genres").removeClass("hidden");
+	$(".footer").removeClass("hidden");
 })
 setInterval(function(){
 	$epg.drawTimeLine();
@@ -232,15 +230,18 @@ $(".left").on("keydown", ".chan",  function(event){
 
 		case $ARROW_TOP:
 			if( $(this).prev().length == 0 ) {
-				$(".logo").focus() ;
+				$(".logo").focus();
+				$(".footer").addClass("hidden");
 			} else {
 				$(this).prev().focus();
 			}
 			break;
 
 		case $ARROW_RIGHT:
-			$epg.showCards($(this));
-			$(".footer").removeClass("hidden");
+			// $epg.showCards($(this));
+			// $(".footer").removeClass("hidden");
+				$(".epgNext:first").focus();
+				$(".footer").scrollTo(0,0);
 			break;
 
 		case $ENTER:
@@ -257,6 +258,9 @@ $(".left").on("keydown", ".chan",  function(event){
 	};
 			
 });
+$(".left").on("focus", ".chan" ,function(){
+	$epg.showCards($(this));
+})
 $(".sort").on("keydown",".sorttype", function(event){
 	switch (event.keyCode) {
 		case $ENTER:
@@ -322,6 +326,8 @@ $(".genres").on("keydown", ".genre",  function(event){
 	switch (event.keyCode){
 		
 		case $ARROW_LEFT:
+			// showGenres(false);
+			// hideAll();
 			break;
 		
 		case $ARROW_TOP:
@@ -352,14 +358,13 @@ $(".genres").on("keydown", ".genre",  function(event){
 	};
 			
 });
-$(".genres").on("click", ".sorttype", function(event){
+// $(".genres").on("click", ".sorttype", function(event){
 
-})
+// })
 $(".genres").on("focus", ".genre, .sorttype", function(event){
 	if(! $(".genres").hasClass("showGenres")){
 		showGenres(true);
 	}
-	console.log(event);
 	if(! $(event.target).hasClass("sorttype")){
 		drawList($(this).attr("data-id"));
 	}
@@ -391,14 +396,14 @@ $(".footer").on("keydown", ".epgNext",  function(event){
 			break;
 
 		case $ARROW_DOWN:
-			event.preventDefault();
+			// event.preventDefault();
 			break;
 		case $ENTER:
-			event.preventDefault();
-			$programInfo.prepareContent($(this).attr("data-position"));
-			$(".epgProgramInfo").attr("data-position", $(this).attr("data-position"));
-			$(".epgProgramInfo").removeClass("hidden");
-			$(".epgProgramContent").focus();
+			// event.preventDefault();
+			// $programInfo.prepareContent($(this).attr("data-position"));
+			// $(".epgProgramInfo").attr("data-position", $(this).attr("data-position"));
+			// $(".epgProgramInfo").removeClass("hidden");
+			// $(".epgProgramContent").focus();
 			break;
 		default:
 		break;	

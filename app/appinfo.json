@@ -1,6 +1,6 @@
 {
-    "id": "ua.lanet.vsashyn.LanetTV_webos",
-    "version": "0.1.1",
+    "id": "ua.lanet.vsashyn.LanetTV",
+    "version": "0.8.0-a",
     "vendor": "Lanet Ukraine",
     "type": "web",
     "main": "index.html",

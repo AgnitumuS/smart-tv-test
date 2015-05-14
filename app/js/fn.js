@@ -73,7 +73,7 @@ var $epg = {
 	// 		}
 	// 		$(".epgFromNow").html(_html);
 	// },
-	showCards : function(_chan){
+	showCards : function(_chan, focusFirst){
 		$.getJSON($api + "epg/" + $(_chan).attr("data-id") + "/dayfromnow", function(res){
 			// window.sessionStorage["epgDayFromNow"] = JSON.stringify(res);
 			$db.set("epgDayFromNow", JSON.stringify(res));
@@ -88,12 +88,16 @@ var $epg = {
 			}
 			$(".epgContainer").html(innerHTML);
 			$(".epgContainer").css("width", res.length * 612);
+			if ( $(".footer").hasClass("hidden") ){
+				$(".footer").removeClass("hidden");
+			}
 			$(".footer").attr("data-position", $(_chan).attr("data-position"));
-			$(".epgNext").first().focus();
+			$(".footer").scrollTo(0,0);
+			if (focusFirst) {
+				$(".epgNext").first().focus();
+			}
 			$(".epgTimeLine").first().prepend('<div class="epgTimeLineActive"></div>');
 			$epg.drawTimeLine();
-			// $(".epgTimeLine").first().addClass("epgTimeLineActive");
-
 
 		})
 	},

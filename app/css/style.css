@@ -87,24 +87,21 @@ body{
 	width: 326px;
 	z-index: 6;
 	background: rgba(0,0,0,0.12);
-	/*need fix*/
 	box-shadow: 0px 1px 0px 3px rgba(0,0,0,0.12);
+	transition: all 150ms ease-in-out;
 	}	
 
 	.showGenres{
 		left:0px;
 		background: rgba(0,0,0,0.26);
 	}
-	/*non fixed*/
 	.genresHead{
 		height: 100px;
 	}
 	.genresHead span{
 		color:white;
-		/*need fix*/
 		font-size: 30px;
 		line-height: 100px;
-		/*display: block;*/
 		padding-left: 41px;
 		opacity: 0.87;
 	}
@@ -114,29 +111,6 @@ body{
 		font-size: 20px;
 		color:black;
 	}
-		/*.sorttype{
-			position: relative;
-			display: block;
-			height: 60px;
-			margin-left:41px;
-			line-height: 60px;
-			opacity: 0.54;
-
-		}
-		.sorttype [type=checkbox]{
-			position: absolute;
-			right:41px;
-			top:20px;
-		}
-		.sorttype:focus{
-			opacity: 0.87;
-		}
-		.sorttype[disabled=true]{
-			opacity: 0.26;
-		}
-		.sorttype[disabled=true]:focus{
-			opacity: 0.26;
-		}*/
 		.sorttype{
 			position: relative;
 			width: 100%;
@@ -210,11 +184,9 @@ body{
 	z-index: 5;
     white-space:nowrap;	
 	height: 90px;
-	/*background: rgba(0,61,61,0);*/
 	z-index: 5;
 	overflow-x: auto;
-/*	overflow-y: auto;*/ 
-	/*font-size:1em;*/
+	/*transition:all 300ms ease-in-out;*/
 }
 	.footer.footerWithGenres{
 		left: 544px;
@@ -235,7 +207,7 @@ body{
 		color: white;
 		margin-left: 14px;
 		border-radius: 2px;
-		transition: all 150ms linear;
+		transition: all 300ms linear;
 		opacity: 0.54;
 		background: rgba(0,0,0,0.54);
 		/*box-shadow: 2px 2px 3px #ffffff;*/
