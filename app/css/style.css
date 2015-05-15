@@ -122,9 +122,41 @@ body{
 			margin-left: 41px;
 		}
 		.sorttype [type=checkbox] {
+			display: none;
+			/*position: absolute;
+			right: 41px;
+			top: 20px;*/
+		}
+		.sorttype [type=checkbox] + label{
+			display: inline-block;
 			position: absolute;
 			right: 41px;
 			top: 20px;
+			cursor: pointer;
+			width: 65px;
+			height: 16px;
+			background: #b9b8b8;
+			border-radius:10px;
+			transition:all 150ms ;
+		}
+		.sorttype [type=checkbox] + label:before{
+			display:block;
+			content:" ";
+			margin: -5px 0px 0px 0px;
+			width: 25px;
+			height: 25px;
+			background:#f1f1f1;
+			border:;
+			box-shadow: 0px 2px 0px  1px rgba(0, 0, 0, 0.34);
+			border-radius: 50%;
+			transition:all 150ms;
+		}
+		.sorttype [type=checkbox]:checked + label:before{
+			margin-left: 40px;
+			background:#009688;
+		}
+		.sorttype [type=checkbox]:checked + label {
+			background: #77c2bb;
 		}
 		.sorttype:focus{
 			border-left-style: inset;
