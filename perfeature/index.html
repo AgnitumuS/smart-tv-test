@@ -1,21 +1,42 @@
-<!DOCTYPE HTML>
+
+<!DOCTYPE html>
 <html>
-
 <head>
-	<title> perfeature</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<meta name="description" content="LanetTV for WebOS"/>
-	<meta charset="UTF-8"/>
-	<link rel="stylesheet" href="style.css">
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300italic,300,100italic,100' rel='stylesheet' type='text/css'>
-</head>
-<body >
- <video id="iPlayer" autoplay>
-		<source src="/home/vsashyn/Downloads/videoplayback.mp4">	</source>
-		<!-- <source src="http://kirito.la.net.ua/tv/9006.m3u8">	</source> -->
-	</video> 
-</body>
-	<script type="text/javascript" src="main.js"></script>
 
+<meta name="description" content="Simplest possible examples of HTML, CSS and JavaScript." />
+<meta name="author" content="//samdutton.com">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+<meta itemprop="name" content="simpl.info: simplest possible examples of HTML, CSS and JavaScript">
+<meta itemprop="image" content="/icon_192x192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta id="theme-color" name="theme-color" content="#fff">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<base target="_blank">
+
+<title>getUserMedia</title>
+
+<link rel="stylesheet" href="style.css" />
+
+<style>
+
+video {
+  object-fit: cover;
+}
+
+@media screen and (min-width: 1000px) {
+  video {
+    height: 480px;
+  }
+}
+</style>
+
+</head>
+
+<body>
+  <video id="iPlayer" autoplay controls ></video>
+
+<script src="main.js"></script>
+
+
+</body>
 </html>

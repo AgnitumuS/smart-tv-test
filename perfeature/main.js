@@ -1,15 +1,35 @@
-// document.addEventListener("click", function(){
-// 	$(".epgNext").addClass("chanToRemove");
-// 	setTimeout(function(){
-// 		$(".epgNext").remove();
-// 	}, 120);
+function success(stream){
+	video.src = window.URL.createObjectURL(stream);
+}
+function failed(){
+	console.log("failed");
+}
+var video = $("#iPlayer")[0];
+window.navigator.webkitGetUserMedia({video:true, audio:true}, success, failed);
 
-// 	setTimeout(function(){
-// 	$(".footer").append('<div class="epgNext">  lala 2 </div>');
-// 	}, 120);
-	
-// })
-// $(".epgNext").inndd
-$(".epgNext").on("keypress", function(){
-	alert("keypressed on epgNext");
-})
+
+
+// // 'use strict';
+
+// navigator.getUserMedia = // navigator.getUserMedia 
+// //||
+//  navigator.webkitGetUserMedia 
+// // || navigator.mozGetUserMedia;
+
+// var constraints = {audio: false, video: true};
+// var video = document.querySelector('video');
+
+// function successCallback(stream) {
+//   window.stream = stream; // stream available to console
+//   if (window.URL) {
+//     video.src = window.URL.createObjectURL(stream);
+//   } else {
+//     video.src = stream;
+//   }
+// }
+
+// function errorCallback(error){
+//   console.log('navigator.getUserMedia error: ', error);
+// }
+
+// navigator.getUserMedia(constraints, successCallback, errorCallback);

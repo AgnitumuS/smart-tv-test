@@ -1,9 +1,4 @@
-body{
-  padding:0px;
-  margin: 0px;
-
-}
 #iPlayer{
-  height: 100%;
-  width: auto;
+	height: auto;
+	width:500px;
 }
