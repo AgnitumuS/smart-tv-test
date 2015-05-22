@@ -26,9 +26,9 @@ body{
 		width: 130px;
 		height: 100%;
 		opacity: 0.54;
-		background-image: url("../assets/lanet-link-kiev-ua.png");
+		background-image: url("../assets/logo_vectorized.png");
 		background-repeat: no-repeat;
-		background-size: 100% 50%;
+		background-size: 100% 30%;
 		background-position: center;
 		z-index: 7;}
 	.logo:focus {
@@ -44,12 +44,12 @@ body{
 	position:absolute;
 	top:60px;
 	left:8px;
-	height: 574px;
+	height: 660px;
 	width: 120px;
 	display: block;
 	/*visibility: hidden;*/
 	z-index: 2;
-	overflow-y:scroll;
+	overflow-y:hidden;
 	overflow-x: hidden;
 	border-radius: 2px;
 	/*background:rgba(0,0,0,0.12);*/
@@ -81,7 +81,7 @@ body{
 .genres {
 	position: absolute;
 	top:60px;
-	height:580px;
+	height:calc( 100% - 60px );
 	left:-184px;
 	width: 192px;
 	z-index: 6;
@@ -172,8 +172,8 @@ body{
 
 
 	.genreslist{
-		height: 400px;
-		overflow-y: scroll;
+		height: 484px;
+		overflow-y: hidden;
 		overflow-x: hidden; 
 	}
 	.genre{
@@ -203,7 +203,7 @@ body{
 	z-index: 5;
     white-space:nowrap;	
 	z-index: 5;
-	overflow-x: auto;
+	overflow-x: hidden;
 }
 	.footer.footerWithGenres{
 		left: 260px;
@@ -315,7 +315,6 @@ body{
 	height: 400px;
 	background: white;
 }
-
 .wrapper{
 	position: absolute;
 	top:0;
@@ -328,3 +327,22 @@ body{
 	background: url(../assets/Mask.png) 100% 100% no-repeat;
   	background-size: 100% 100%;
 }
+/*
+html::-webkit-scrollbar-track {
+	background-color: #000;
+}
+
+html::-webkit-scrollbar {
+	width: 12px;
+	background-color: #F5F5F5;
+}
+
+html::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background-color: #000;
+}
+
+html.open::-webkit-scrollbar-thumb {
+	background-color: #5e5e5e;
+}
+*/

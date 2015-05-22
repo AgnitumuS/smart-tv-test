@@ -65,7 +65,6 @@ showGenres = function(opt){
 	}
 }
 
-
 $(document).ready(function(){
 	$.getJSON($api + "list.json",function (data){
 		
