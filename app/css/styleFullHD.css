@@ -1,81 +1,30 @@
-body > div{
-	margin: 0;
-	padding: 0;
-	font-family: "Roboto", san-serif;
-}
-body{
-	margin:0px;
-}
-
-.hidden{
-	visibility: hidden;
-}
-/* подправить логотип*/
 .header {
-	position: absolute;
 	height: 80px;
-	width: 100%;
-	top:0;
-	left:0;
-	z-index: 2;
-	background: rgba(0,0,0,0.26);
 	}
 	.logo {
-		position: relative;
 		left: 158px;
 		width: 231px;
 		height: 100%;
-		opacity: 0.54;
-		background-repeat: no-repeat;
 		background-size: 100% 50%;
-		background-position: center;
-		z-index: 7;}
-	.logo:focus {
-		opacity: 0.87;
-	}
-	.ic_notifications{
-		position: absolute;
-		right:24px;
-		top:20px;
 	}
 
 .left {
-	position:absolute;
 	top:80px;
 	left:14px;
 	height: calc(100% - 80px);
 	width: 204px;
-	display: block;
-	/*visibility: hidden;*/
-	z-index: 2;
 	overflow-y:scroll;
 	overflow-x: hidden;
-	border-radius: 2px;
-	/*background:rgba(0,0,0,0.12);*/
-	/*box-shadow: 2px 0px 0px 5px rgba(0,0,0,1);  */
 	}
 	.withGenres{
 		left:326px;
-		background:rgba(0,0,0,0.12);
-		box-shadow: 0px 2px 0px 3px rgba(0,0,0,0.12);
 	}
 	.chan {
 		width: 100%;
 		height: 100px;
 		margin-bottom:10px;
-		opacity: 0.54;
-	    background-repeat: no-repeat;
 	    background-size: 60%;
-	    background-position: center;
 	}
-	.chan:hover{
-		opacity: 0.87;
-	}
-
-	.chan:focus{
-		opacity:0.87;
-	}
-	/**/
 
 .genres {
 	position: absolute;
@@ -83,174 +32,90 @@ body{
 	height: calc(100% - 80px);
 	left:-312px;
 	width: 326px;
-	z-index: 6;
-	background: rgba(0,0,0,0.12);
-	box-shadow: 0px 1px 0px 3px rgba(0,0,0,0.12);
 	transition: all 150ms ease-in-out;
 	}	
-
 	.showGenres{
 		left:0px;
-		background: rgba(0,0,0,0.26);
 	}
 	.genresHead{
 		height: 100px;
 	}
 	.genresHead span{
-		color:white;
 		font-size: 30px;
 		line-height: 100px;
 		padding-left: 41px;
-		opacity: 0.87;
 	}
 	.sort{
-		background-color: white;
 		height: 120px;
 		font-size: 20px;
-		color:black;
 	}
 		.sorttype{
-			position: relative;
 			width: 100%;
 			height: 60px;
 			line-height: 60px;
-			opacity: 0.87;
 		}
 		.sorttype   span{
 			margin-left: 41px;
 		}
-		.sorttype [type=checkbox] {
-			display: none;
-			/*position: absolute;
-			right: 41px;
-			top: 20px;*/
-		}
+	
 		.sorttype [type=checkbox] + label{
-			display: inline-block;
-			position: absolute;
 			right: 41px;
 			top: 20px;
-			cursor: pointer;
 			width: 65px;
 			height: 16px;
-			background: #b9b8b8;
-			border-radius:10px;
 			transition:all 150ms ;
 		}
 		.sorttype [type=checkbox] + label:before{
-			display:block;
 			content:" ";
 			margin: -5px 0px 0px 0px;
 			width: 25px;
 			height: 25px;
-			background:#f1f1f1;
-			border:;
-			box-shadow: 0px 2px 0px  1px rgba(0, 0, 0, 0.34);
-			border-radius: 50%;
 			transition:all 150ms;
 		}
 		.sorttype [type=checkbox]:checked + label:before{
 			margin-left: 40px;
-			background:#009688;
 		}
-		.sorttype [type=checkbox]:checked + label {
-			background: #77c2bb;
-		}
-		.sorttype:focus{
-			border-left-style: inset;
-			border-left-color: black;
-			border-left-width: 7px;
-			opacity: 0.87;
-		}
-		.sorttype[disabled=true]{
-			opacity: 0.26;
-		}
-		.sorttype[disabled=true]:focus{
-			opacity: 0.26;
-		}
-
 
 
 	.genreslist{
 		height: calc(100% - 100px - 120px);
-		
 		overflow-y: scroll;
 		overflow-x: hidden; 
 	}
-	/*non*/
 	.genre{
 		width:100%;
 		height: 60px;
-		color:white;
-		/*margin-left: 24px;*/
-		opacity: 0.54;
 	}
-	/*non*/
 	.genre span{
 		font-size: 20px;
 		padding-left:41px;
 		line-height: 60px;
-		/*opacity: 0.54;*/
-		/*font-weight: thin;*/
 	}
-	/*non*/
 	.genre:focus{
 		background-color: white;
 		color:black;
 		opacity: 0.87;
 
 	}
-	/*.genre:hover{
-		background-color: white;
-		color:black;
-		opacity: 0.87;
-	}*/
 	
 .footer {
-	position: absolute;
-	bottom:0;
 	left: 218px;
 	width:calc(100% - 204px);
-	z-index: 5;
-    white-space:nowrap;	
 	height: 90px;
-	z-index: 5;
 	overflow-x: auto;
-	/*transition:all 300ms ease-in-out;*/
 }
 	.footer.footerWithGenres{
 		left: 544px;
 		width: calc(100% - 544px);
 	}
-	.epgContainer{
-		/*width:10000px;*/
-		min-width: 50%;
-	}
 	.epgNext{
-		display:block;
-    	position:relative;
-		float:left;
 		width:598px;
 		height: 90px;
-		word-wrap:break-word;
-    	white-space:normal;	
-		color: white;
 		margin-left: 14px;
 		border-radius: 2px;
 		transition: all 300ms linear;
-		opacity: 0.54;
-		background: rgba(0,0,0,0.54);
-		/*box-shadow: 2px 2px 3px #ffffff;*/
 	}
 	.epgNext span{
-		word-wrap:break-word;
-		white-space: normal;
-		display: -webkit-box;
-		/*height: 50px;*/
-		overflow: hidden;
-		text-overflow:ellipsis;
-		-webkit-line-clamp:2;
-		-webkit-box-orient:vertical;
 		line-height: 1.5;
 		font-size: 20px;
 		margin-left: 82px;
@@ -258,102 +123,50 @@ body{
 		margin-top: 18px;
 		margin-bottom: 24px;
 	}
-/*	.ic_bookmark, .ic_favorite{
-		display: block;
-		position: absolute;
-		left:16px;
-	}
-		.ic_favorite{
-			top:26px;
-		}
-		.ic_bookmark{
-			bottom:20px;
-		}*/
-
-	.epgNext:focus, .epgNext:hover{
-		opacity: 0.87;
-	}
 	.epgTime{
-		position:absolute;
 		top:53px;
 		left: 507px;
 		font-size: 20px;
 	}
 
 	.epgTimeLine {
-		position: relative;
 		margin-top:0px;
 		margin-bottom: -3px;
 		height: 3px;
-		display: block;
 		width:598px;
-		background-color: rgba(255,255,255,0.24);
 		border-radius: 2px;
-		background-clip: padding-box;
 		overflow: hidden; 
 		-webkit-transition: width 0.3s linear;
 		}
 		.epgTimeLineActive {
-			position:absolute;
       		top:0px;
       		height: 100%;
-			opacity: 0.87;
 			width:0%;
-			background: white;
 		}
 	
-	/* При наведении*/
 
 .epgProgramInfo {
-	position: absolute;
-	/*visibility: hidden;*/
 	top:100px;
 	left: 300px;
 	height: 500px;
 	width: 700px;
-	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	border-radius:2px; 
-	background-color: rgba(0,0,0,0.87);
 	overflow-y: scroll;
 	overflow-x: hidden;}
 	.epgProgramContent{
 		width: 100%;
 		height:100%;
-		color: white;
 		font-size: 1.5em;
-		text-align: center;
-		/*background: white;*/
 	}
 	.epgProgramContent span{
 		margin:8px;
 	}
 	
 #iPlayer{
-	/*position: relative;*/
 	min-width:100%;
 	min-height: 100%;
 	width:auto;
 	height: auto;
 	z-index: 0;
 }
-.logs{
-	position:fixed;
-	top:100px;
-	right:100px;
-	width:550px;
-	height: 400px;
-	background: blue;
-}
 
-.wrapper{
-	position: absolute;
-	top:0;
-	margin:0;
-	padding: 0;
-	height: 100%;
-	width: 100%;
-	/*visibility: hidden;*/
-	/*z-index: 1;*/
-	background: url(../assets/Mask.png) 100% 100% no-repeat;
-  	background-size: 100% 100%;
-}
