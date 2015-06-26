@@ -97,7 +97,33 @@ body{
 
 .spotlight {
 	border: 3px solid yellow ;
+	background-color: black;
+}
+.selected {
+	background-color: black;
 }
 
 
+#fullepg{
+	width:300px;
+	height: 900px;
+	overflow: auto;
+	display: block;
+	float:left;
+	background-color: #C51162;
+}
+	.epgentity{
+		display: block;
+		/*border:2px solid blue;*/
+		color:white;
+		height: 20px;
 
+	}
+
+#programinfo{
+	width:300px;
+	height: 100%;
+	display: block;
+	float:left;
+	background: tomato;
+}
