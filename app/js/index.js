@@ -149,56 +149,6 @@ function Model(title) {
 
 
 
-var navigateController =  {
-	
-
-	/**
-	* Return true if returned elements from current widget, or false if switch widget 
-	*
-	*/
-	up :  function(widget){
-		if ( widget.model.hasElem ( widget.model.getSelectedIndex() - widget.grid.x) )	{
-			widget.model.setSelectedIndex ( widget.model.getSelectedIndex() - widget.grid.x );
-			return true;
-		} else {
-			// switch to upNeighbor
-			// bwController.changeWidgetByDirection('UP');
-			return false;
-		}
-	},
-
-	right : function(widget){
-		if( (this.widget.model.getSelectedIndex() +  1)  % this.grid.x  === 0){
-			// switch to rightNeighbor
-				// bwController.changeWidgetByDirection('RIGHT');
-		} else {
-			if( widget.model.hasElem( widget.model.getSelectedIndex() + 1) ){
-				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + 1);
-			}
-		}
-	},
-
-	down : function(widget){
-		if ( widget.model.hasElem ( widget.model.getSelectedIndex() + widget.grid.x  ) )	{
-				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + widget.grid.x);
-				return true;
-		} else {
-				// bwController.changeWidgetByDirection('DOWN');
-				return false;
-		}
-
-	},
-
-	left : function(widget){
-		if( (( widget.model.getSelectedIndex() -  1)  % this.grid.x)  === 0){
-			// bwController.changeWidgetByDirection('LEFT');
-		} else {
-			//switch to left element in matrix
-		}
-		
-	}
-}
-// var navigateController = new NavigateController();
 
 
 //App.components // Chans, Progs, Menu, ChansCats, ProgCats,  
@@ -339,9 +289,10 @@ App.widgets.Catalog = {
 
 App.widgets.ChansList = {
 	model : App.components.Chans,
+	spotlighted : false,
 	grid : {x : 1, y : 1},
 	neighbors : {
-		right : App.widgets.ProgramsList,
+		// right : App.widgets.ProgramsList,
 		left  : App.widgets.Catalog
 	},
 	right : App.widgets.ProgramsList,
@@ -436,7 +387,62 @@ App.widgets.ProgramsList = {
 		PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
 		PubSub.subscribe(App.components.Programs.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
 
+App.widgets.ChansList.neighbors.right = App.widgets.ProgramsList;
 
+
+
+var navigateController =  {
+	/**
+	* Return true if returned elements from current widget, or false if switch widget 
+	*
+	*/
+	up :  function(widget){
+		if ( widget.model.hasElem ( widget.model.getSelectedIndex() - widget.grid.x) )	{
+			widget.model.setSelectedIndex ( widget.model.getSelectedIndex() - widget.grid.x );
+			return true;
+		} else {
+			// switch to upNeighbor
+			// bwController.changeWidgetByDirection('UP');
+			return false;
+		}
+	},
+
+	right : function(widget){
+		if( ( widget.model.getSelectedIndex() +  1)  %  widget.grid.x  === 0){
+			// switch to rightNeighbor
+				// bwController.changeWidgetByDirection('RIGHT');
+				return false;
+		} else {
+			//goto the right elem
+			if( widget.model.hasElem( widget.model.getSelectedIndex() + 1) ){
+				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + 1);
+			}
+			return true;
+		}
+	},
+
+	down : function(widget){
+		if ( widget.model.hasElem ( widget.model.getSelectedIndex() + widget.grid.x  ) )	{
+				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + widget.grid.x);
+				return true;
+		} else {
+				// bwController.changeWidgetByDirection('DOWN');
+				return false;
+		}
+
+	},
+
+	left : function(widget){
+		if( (( widget.model.getSelectedIndex() -  1)  % widget.grid.x)  === 0){
+			// bwController.changeWidgetByDirection('LEFT');
+			return false;
+		} else {
+			//switch to left element in matrix
+			return true;
+		}
+		
+	}
+}
 
 //Принимает управление и передает активному виджету комманду
 function BrowseViewController (argument) {
@@ -450,10 +456,39 @@ function BrowseViewController (argument) {
 		this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() === -1 ? 0 : this.activeWidget.model.getSelectedIndex());
 
 	}
-	this.spotlight = function(){
-		$(this.focusedView.childElem).removeClass('spotlight');
-		var sel =  this.focusedView.childElem +  '[tabindex=' + this._model.getSelectedIndex() + ']' ;
-		$( sel ).addClass("spotlight");
+	// this.spotlight = function(){
+	// 	//get current model, get selected index and add spotlight class
+	// 	this.activeWidget.removeClass('spotlight');
+	// 	var sel =  this.focusedView.childElem +  '[tabindex=' + this._model.getSelectedIndex() + ']' ;
+	// 	$( sel ).addClass("spotlight");
+	// }
+	this.hasNeighbor = function  (orient) {
+		var witch = {};
+		if (orient) {
+
+			switch (orient){
+				case 'UP':
+					witch = this.activeWidget.neighbors.up;
+				break;
+				case 'RIGHT':
+					witch = this.activeWidget.neighbors.right;
+				break;
+				case 'DOWN':
+					witch = this.activeWidget.neighbors.down;
+				break;
+				case 'LEFT':
+					witch = this.activeWidget.neighbors.left;
+				break;
+				default:
+					throw new 'change widget without appropriate orient';
+				break;
+			}
+			console.log('blablalba');
+			return witch ? true :false;
+		}
+		else {
+			throw new 'Illegal changeWidgetByDirection usage (without orient)';
+		}
 	}
 	this.changeWidgetByDirection = function(orient){
 		// $( this.focusedView.childElem +  '[tabindex=' + this._model.getSelectedIndex() + ']').removeClass("spotlight");
@@ -478,17 +513,11 @@ function BrowseViewController (argument) {
 				break;
 			}
 			if (witch) {
-				// $(this.focusedView.childElem).removeClass('spotlight');
 				this.activeWidget = witch;
-				// this._model = this.focusedView._model;
 				console.log('changeWidgetByDirection to : ');
 				console.log(witch);
-				this.spotlight();
-				return true;
-			
-			} else {
-				return false;
-			}
+				// this.spotlight();
+			} 
 		}
 		else {
 			throw new 'Illegal changeWidgetByDirection usage (without orient)';
@@ -508,12 +537,11 @@ function BrowseViewController (argument) {
 	},
 
 	this.RIGHT = function(){
-		if( (this._model.getSelectedIndex() +  1)  % this.focusedView.grid.x  === 0){
-			// switch to rightNeighbor
-				this.changeWidgetByDirection('RIGHT');
+		if ( navigateController.right(this.activeWidget) ){
+			// selected next model.id
 		} else {
-			if( this._model.hasElem(this.focusedView.getSelectedIndex() + 1) ){
-				this._model.setSelectedIndex (this._model.getSelectedIndex() + 1);
+			if( bwController.hasNeighbor('RIGHT')){
+				bwController.changeWidgetByDirection ('RIGHT');
 			}
 		}
 	},
@@ -533,9 +561,13 @@ function BrowseViewController (argument) {
 	},
 
 	this.LEFT = function(){
-		if( ((this._model.getSelectedIndex() -  1)  % this.focusedView.grid.x)  === 0){
-			this.changeWidgetByDirection('LEFT');
+		if(  navigateController.left(this.activeWidget) ){
+			//scroll or another 
 		} else {
+			if ( bwController.hasNeighbor ('LEFT') ){
+				bwController.changeWidgetByDirection ('LEFT');
+			}
+
 			//switch to left element in matrix
 		}
 		
