@@ -94,14 +94,17 @@ body{
 		color:white;
 		margin-bottom: 30px;
 	}
-
+/*Основной центр внимания*/
 .spotlight {
 	border: 3px solid yellow ;
 	background-color: black;
 }
-.selected {
-	background-color: black;
+
+/*Подсветка выбраного индекса*/
+.highlight {
+	background-color:  black;
 }
+
 
 
 #fullepg{

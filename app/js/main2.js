@@ -104,277 +104,6 @@ function Model(title) {
 		});
 	}
 }
-
-var Chans = (function () {
-	function M (){
-		this.title = 'Chans';
-		this.selectedIndex = -1;
-		this.all = [];
-		this.currentList = [];
-		this.rating = [];
-		this.cable = [];
-		this.init = function(){
-			var _this = this;
-			$.getJSON(App.api.main + "list.json", function(res){
-				this.all = res.list.slice();
-				App.api.img = res.img;
-				res.list.forEach(function(cur, indx){
-					this.cable.push(cur.id);
-				})
-				this.currentList = this.all; 
-				PubSub.publish(_this.title + '/init');
-				PubSub.publish(_this.title + '/changed');
-			})
-			$.getJSON(App.api.main + App.api.rating, function(res){
-				this.rating = res;
-			})
-		};
-
-	/*
-	* Sort channels by rating or by cable
-	*/
-	Chans.sort = function(type){
- 		var arr;
- 		if (type === "rating"){
- 			arr = $channels.rating;
- 		} else if (type == "cable"){
- 			arr = $channels.cable;
- 		}
- 		this.chans.sort(function( a , b ){
- 			if ( arr.indexOf(a) && arr.indexOf(b) ) {
- 				return arr.indexOf(a.id) - arr.indexOf(b.id);
- 			} else {
- 				return 0;
- 			}
- 		})
- 	}
-
- 	Chans.handleEvent = function(topic){
- 		var _this = this;
- 		switch(topic){
- 			case RootSubMenu.title + '/changeSelectedIndex':
- 				var filter = function(ind){
- 					console.log(ind);
- 					switch (ind) {
- 						case 0:
- 							_this.set('currentList', _this.all, function(){
- 								PubSub.publish(_this.title + '/changeCurrentList');
- 							})
- 						break;
-
- 						case 1:
- 							_this.set('currentList', [], function(){
- 								PubSub.publish(_this.title + '/changeCurrentList');
- 							}) 
- 						break;
- 						
- 						case 2: 
- 						break;
- 						
- 						default : 
- 							console.log('default in filter');
- 						break;
- 					}
- 				}
-
- 				filter( RootSubMenu.getSelectedIndex() );
-
- 			break;
- 		}
- 	}
- 	Chans.getCur = function(){
- 		return this.currentList[ this.getSelectedIndex() ];
- 	}
-	}
-
-	M.prototype = new Model('Chans');
-	var M = new M();
-
-	function V () {
-		// body...
-	}
-
-	function C (m,v,c) {
-
-	}
-
-
-
-})();
-
-
-var Chans = new Model('Chans');
-	// Chans.title = 'Chans';
-	// Chans.elem = $('#chans');
-	// Chans.selectedIndex = -1;
-	// Chans.all = [];
-	// Chans.currentList = [];
-	// Chans.rating = [];
-	// Chans.cable = [];
-	// Chans.init = function(){
-	// 	var _this = this;
-	// 	$.getJSON(App.api.main + "list.json", function(res){
-	// 		Chans.all = res.list.slice();
-	// 		App.api.img = res.img;
-	// 		res.list.forEach(function(cur, indx){
-	// 			Chans.cable.push(cur.id);
-	// 		})
-	// 		Chans.currentList = Chans.all; 
-	// 		PubSub.publish(_this.title + '/init');
-	// 		PubSub.publish(_this.title + '/changed');
-	// 	})
-	// 	$.getJSON(App.api.main + App.api.rating, function(res){
-	// 		this.rating = res;
-	// 	})
-	// };
-
-	// /*
-	// * Sort channels by rating or by cable
-	// */
-	// Chans.sort = function(type){
- // 		var arr;
- // 		if (type === "rating"){
- // 			arr = $channels.rating;
- // 		} else if (type == "cable"){
- // 			arr = $channels.cable;
- // 		}
- // 		this.chans.sort(function( a , b ){
- // 			if ( arr.indexOf(a) && arr.indexOf(b) ) {
- // 				return arr.indexOf(a.id) - arr.indexOf(b.id);
- // 			} else {
- // 				return 0;
- // 			}
- // 		})
- // 	}
-
- // 	Chans.handleEvent = function(topic){
- // 		var _this = this;
- // 		switch(topic){
- // 			case RootSubMenu.title + '/changeSelectedIndex':
- // 				var filter = function(ind){
- // 					console.log(ind);
- // 					switch (ind) {
- // 						case 0:
- // 							_this.set('currentList', _this.all, function(){
- // 								PubSub.publish(_this.title + '/changeCurrentList');
- // 							})
- // 						break;
-
- // 						case 1:
- // 							_this.set('currentList', [], function(){
- // 								PubSub.publish(_this.title + '/changeCurrentList');
- // 							}) 
- // 						break;
- 						
- // 						case 2: 
- // 						break;
- 						
- // 						default : 
- // 							console.log('default in filter');
- // 						break;
- // 					}
- // 				}
-
- // 				filter( RootSubMenu.getSelectedIndex() );
-
- // 			break;
- // 		}
- // 	}
- // 	Chans.getCur = function(){
- // 		return this.currentList[ this.getSelectedIndex() ];
- // 	}
-
- 	
-function RootMenuModel (argument){
-	this.title = 'RootMenu';
-	this.selectedIndex = 0;
-	this.all = [
-			'channels',
-			'programs',
-			'tags',
-			'genres',
-			'search',
-			'settings',
-			'help'
-		];
-	this.currentList = this.all;
-	this.init = function(){
-		var _this = this;
-		this.set('currentList', this.all, function(){
-			PubSub.publish(_this.title + '/changeCurrentList');
-		})
-		this.set('selectedIndex', 0 , function(){
-			PubSub.publish(_this.title + '/changeSelectedIndex');
-		})
-	}
-	this.getSelectedTitle = function(){
-		return this.currentList[this.selectedIndex];
-	}
-}
-
-RootMenuModel.prototype = new Model();
-var RootMenu = new RootMenuModel();
-
-function RootSubMenuModel (){
-	this.title = 'RootSubMenu';
-	this.selectedIndex = 0;
-	this.all = {
-		//look like in all in root menu
-		'0': ['all', 'selected', 'top' ],
-		'1': ['bookmarks', 'top', 'tags', 'genres'],
-		'2': ['language', 'smartCrop', 'sortChannels']
-	};
-	this.currentList = [],
-	this.changeCurrentList = function(){
-		this.set('currentList', this.all[RootMenu.getSelectedIndex()], function(){
-			PubSub.publish(this.title + '/currentListChanged');
-		this.set('selectedIndex', 0, function(){
-			PubSub.publish(this.title + '/changeSelectedIndex');
-		})
-		console.log('rootSubMenu currentList = ' + this.currentList);
-	})
-	}
-	this.handleEvent = function(topic){
-		switch (topic){
-			case RootMenu.title + '/changeCurrentList':
-			case RootMenu.title + '/changeSelectedIndex':
-				this.changeCurrentList();
-			break;
-			default:
-				console.log("Observer " + this.title +" was subscribed for this topic, but there is no processing");
-			break;
-		}
-	}
-}
-
-RootSubMenuModel.prototype = new Model();
-var RootSubMenu = new RootSubMenuModel();
-
-PubSub.subscribe(RootSubMenu.title + '/changeSelectedIndex', Chans);
-PubSub.subscribe(RootMenu.title + '/changeSelectedIndex', RootSubMenu);
-PubSub.subscribe(RootMenu.title + '/changeCurrentList', RootSubMenu);
-
-
-var Genres = new Model('Genres');
-	Genres.selectedIndex = -1;
-	Genres.all = [];
-	Genres.init = function(){
-		var _this = this;
-		$.getJSON(App.api.main + "categories.json", function(res){
-			Genres.set('all', res, function(){
-				PubSub.publish(_this.title + '/init');
-			})
-		})
-	};
-	Genres.render = function(){
-		var html = '';
-		Genres.all.forEach(function(cur, ind){
-			html += '<span class="genre cat">' + cur[0] +'</span>';
-		})
-		// $("#browseLane").html(html);
-	}
-
-
 		//NavigateController
 
 function NavigateController (model, view, contr) {
@@ -428,8 +157,376 @@ function NavigateController (model, view, contr) {
 	}
 }
 
+// function RootSubMenuView(){
+// 	this._model = RootSubMenu;
+// 	this.childElem = '.subcat';
+// 	this.grid = { x : 1, y : this._model.all.length }
+// 	this.rebuildList = function(){
+// 		var html = '';
+// 		if(this._model.currentList){
+// 			this._model.currentList.forEach(function(cur, ind){
+// 				html += '<span class="subcat"' + 'tabindex='+ ind +  '>' + cur +'</span>';
+// 			})
+// 		}
+// 			$('#rootSubMenu').html(html);	
+// 	}
+// 	this.handleEvent = function(topic){
+// 		switch (topic){
+// 			case RootSubMenu.title + '/changeCurrentList':
+// 			case RootSubMenu.title + '/changeSelectedIndex':
+// 				this.rebuildList();
+// 			break;
+// 			default:
+// 				console.log("Observer " +this.title +" was subscribed for this topic, but there is no processing " + topic);
+// 			break;
+// 		}
+// 	}
+// }
+// RootSubMenu.prototype = new Observer();
+// var rootSubMenuView = new RootSubMenuView();
+// PubSub.subscribe(RootSubMenu.title + '/changeSelectedIndex', rootSubMenuView);
+
+
+
+var RootMenu = (function  () {
+	function M () {
+		this.title = 'RootMenu';
+		this.selectedIndex = 0;
+		this.all = [
+				'channels',
+				'programs',
+				'tags',
+				'genres',
+				'search',
+				'settings',
+				'help'
+			];
+		this.currentList = this.all;
+		this.init = function(){
+			var _this = this;
+			this.set('currentList', this.all, function(){
+				PubSub.publish(_this.title + '/changeCurrentList');
+			})
+			this.set('selectedIndex', 0 , function(){
+				PubSub.publish(_this.title + '/changeSelectedIndex');
+			})
+		}
+		this.getSelectedTitle = function(){
+			return this.currentList[this.selectedIndex];
+		}
+	}
+	M.prototype = new Model('RootMenu');
+	var M = new M();
+
+	function V () {
+		this.childElem = '.cat';
+		this.spotlight = function(ind){
+			$('#rootMenu .cat').removeClass("spotlight");
+			$('.cat[tabindex=' + ind +']').addClass('spotlight');
+		}
+		this.render = function  (arr) {
+			var html = '';
+			arr.forEach(function(cur, ind){
+				html += '<span class="cat"' + 'tabindex='+ ind +  '>' + cur +'</span>';
+			})
+			$('#rootMenu').html(html);
+		}
+	}
+	var V = new V();
+
+
+	function C (argument) {
+		this.grid = { x : 1, y : 10}
+		this.handleEvent = function(topic){
+			switch (topic){
+				case RootMenu.M.title + '/changeCurrentList':
+					V.render(M.currentList);
+				break;
+				case M.title + '/changeSelectedIndex':
+					V.spotlight(M.getSelectedIndex());
+				break;
+				default:
+					throw  "Observer " + M.title +" was subscribed for this topic, but there is no processing " + topic;
+				break;
+			}
+		}
+	}
+	C.prototype = new NavigateController(M,V,C);
+	var C = new C();
+	PubSub.subscribe(M.title + '/changeCurrentList', C);
+	PubSub.subscribe(M.title + '/changeSelectedIndex', C);
+
+	return {
+		M : M,
+		V : V, 
+		C : C
+	}
+})();
+
+//RootSubMenu
+var ChansCategoryList = (function  () {
+	
+	function M () {
+		this.title = 'ChansCategoryList';
+		this.selectedIndex = 0;
+		this.all = [ 'all', 'selected', 'top' ];
+			//look like in all in root menu
+			// '1': ['bookmarks', 'top', 'tags', 'genres'],
+			// '2': ['language', 'smartCrop', 'sortChannels']
+		
+		this.currentList = [],
+		this.changeCurrentList = function(){
+			this.set('currentList', this.all, function(){
+				PubSub.publish(this.title + '/currentListChanged');
+			this.set('selectedIndex', 0, function(){
+				PubSub.publish(this.title + '/changeSelectedIndex');
+			})
+			console.log('rootSubMenu currentList = ' + this.currentList);
+		})
+		}
+	}
+	M.prototype = new Model('ChansCategoryList');
+	var M = new M();
+
+
+	function V () {
+		this.childElem = '.subcat';
+		this.grid = { x : 1, y : 10 };
+		this.render = function(arr){
+			var html = '';
+			if(arr){
+				arr.forEach(function(cur, ind){
+					html += '<span class="subcat"' + 'tabindex='+ ind +  '>' + cur +'</span>';
+				})
+			}
+				$('#rootSubMenu').html(html);	
+		};
+		this.spotlight = function(ind){
+			$('#rootSubMenu .subcat').removeClass("spotlight");
+			$('.subcat[tabindex=' + ind +']').addClass('spotlight');
+		}
+	}
+	var V = new V();
+	
+	function C () {
+		this.handleEvent = function(topic){
+			switch (topic){
+				// case RootMenu.title + '/changeCurrentList':
+
+				case RootMenu.M.title + '/changeSelectedIndex':
+					this.spotlight();
+				break;
+				default:
+					throw  "Observer " + M.title +" was subscribed for this topic, but there is no processing" + topic;
+				break;
+			}
+		}
+	}
+	C.prototype = new NavigateController(M,V,C);
+	var C = new C();
+	PubSub.subscribe(M.title + '/changeSelectedIndex', C);
+	PubSub.subscribe(RootMenu.M.title + '/changeSelectedIndex', C);
+
+	return {
+		M : M,
+		V : V,
+		C : C
+	}
+})();
+
+var Chans = (function () {
+	function M (){
+		this.title = 'Chans';
+		this.selectedIndex = -1;
+		this.all = [];
+		this.currentList = [];
+		this.rating = [];
+		this.cable = [];
+		this.init = function(){
+			var _this = this;
+			$.getJSON(App.api.main + "list.json", function(res){
+				this.all = res.list.slice();
+				App.api.img = res.img;
+				res.list.forEach(function(cur, indx){
+					_this.cable.push(cur.id);
+				})
+				_this.currentList = _this.all; 
+				PubSub.publish(_this.title + '/init');
+				PubSub.publish(_this.title + '/changed');
+			})
+			$.getJSON(App.api.main + App.api.rating, function(res){
+				_this.rating = res;
+			})
+		};
+
+	/*
+	* Sort channels by rating or by cable. need refactor
+	*/
+	this.sort = function(type){
+ 		var arr;
+ 		if (type === "rating"){
+ 			arr = $channels.rating;
+ 		} else if (type == "cable"){
+ 			arr = $channels.cable;
+ 		}
+ 		this.chans.sort(function( a , b ){
+ 			if ( arr.indexOf(a) && arr.indexOf(b) ) {
+ 				return arr.indexOf(a.id) - arr.indexOf(b.id);
+ 			} else {
+ 				return 0;
+ 			}
+ 		})
+ 	}
+	}
+
+	M.prototype = new Model('Chans');
+	var M = new M();
+ 
+	function V () {
+		var _this = this;
+		this.elem = $("#chans")[0];
+		this.childElem = '.chan';
+
+		this.scrollDown = function(){
+			var step = $(_this.elem).children(":first").width();
+			var cur = $(_this.elem).scrollTop();
+			$(_this.elem).scrollTop( cur + step);	 
+		}
+		this.scrollTop = function(){
+			var step = $(_this.elem).children(":first").width();
+			var cur = $(_this.elem).scrollTop();
+			$(_this.elem).scrollTop( cur - step);	 
+		}
+		// this.handleEvent = function(topic){
+		// 	switch (topic){
+
+		// 		case this._model.title + '/init':
+		// 			this.rebuildList("-1");
+		// 		break;
+		// 		case this._model.title + '/changeCurrentList':
+		// 		case this._model.title + '/changed' :
+		// 		//must be category
+		// 			this.rebuildList();
+		// 		break;
+		// 		default:
+		// 			console.log("Observer was subscribed for this topic, but there is no processing : " + topic);
+		// 		break;
+
+		// 	}
+		// }
+		this.rebuildList = function(_cat){
+			var html = '';
+			this._model.currentList.forEach(function(current, index){
+				// if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
+					html += '<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
+					+ " data-position=\"" + index + "\"" 
+					+ 'style="background-image: url(\'' + App.api.img + 'logo/'+ current.id + '.png\');">' 
+					+ '</div>' ; 
+				})
+			// });d
+			$('#chans').html(html);
+
+		}
+		this.render = function(arr){
+
+
+		}
+	}
+
+	function C () {
+		this.grid = {x : 1, y : this.M.currentList.length},
+
+		this.handleEvent = function(topic){
+			switch (topic){
+				case RootSubMenu.title + '/changeSelectedIndex':
+					//create new current list
+					//render
+				break;
+				default :
+					throw new 'Observer ' + this.M.title + ' subscribed, but there are no handle ev';
+				break;
+			}
+		}
+	}
+	C.prototype = new NavigateController(M, V, C);
+	var C = new C();
+	PubSub.subscribe(ChansCategoryList.M.title + '/changeSelectedIndex', C);
+
+	// PubSub.subscribe(M + '/changeSelectedIndex', chansView);
+	// PubSub.subscribe(M + '/changed', chansView);
+
+	return  {
+		M : M,
+		V : V,
+		C : C
+	}
+})();
+
+
+
+// function RootSubMenuModel (){
+// 	this.title = 'RootSubMenu';
+// 	this.selectedIndex = 0;
+// 	this.all = {
+// 		//look like in all in root menu
+// 		'0': ['all', 'selected', 'top' ],
+// 		'1': ['bookmarks', 'top', 'tags', 'genres'],
+// 		'2': ['language', 'smartCrop', 'sortChannels']
+// 	};
+// 	this.currentList = [],
+// 	this.changeCurrentList = function(){
+// 		this.set('currentList', this.all[RootMenu.getSelectedIndex()], function(){
+// 			PubSub.publish(this.title + '/currentListChanged');
+// 		this.set('selectedIndex', 0, function(){
+// 			PubSub.publish(this.title + '/changeSelectedIndex');
+// 		})
+// 		console.log('rootSubMenu currentList = ' + this.currentList);
+// 	})
+// 	}
+// 	this.handleEvent = function(topic){
+// 		switch (topic){
+// 			case RootMenu.title + '/changeCurrentList':
+// 			case RootMenu.title + '/changeSelectedIndex':
+// 				this.changeCurrentList();
+// 			break;
+// 			default:
+// 				throw new "Observer " + this.title +" was subscribed for this topic, but there is no processing";
+// 			break;
+// 		}
+// 	}
+// }
+
+// RootSubMenuModel.prototype = new Model();
+// var RootSubMenu = new RootSubMenuModel();
+
+// PubSub.subscribe(RootMenu.title + '/changeSelectedIndex', RootSubMenu);
+// PubSub.subscribe(RootMenu.title + '/changeCurrentList', RootSubMenu);
+
+
+var Genres = new Model('Genres');
+	Genres.selectedIndex = -1;
+	Genres.all = [];
+	Genres.init = function(){
+		var _this = this;
+		$.getJSON(App.api.main + "categories.json", function(res){
+			Genres.set('all', res, function(){
+				PubSub.publish(_this.title + '/init');
+			})
+		})
+	};
+	Genres.render = function(){
+		var html = '';
+		Genres.all.forEach(function(cur, ind){
+			html += '<span class="genre cat">' + cur[0] +'</span>';
+		})
+		// $("#browseLane").html(html);
+	}
+
+
+
 
 var Epg = (function (argument) {
+					/*Model*/
 	function M (title) {
 		this.title = title;
 		this.epgNowAll = {};
@@ -470,6 +567,7 @@ var Epg = (function (argument) {
 	M.prototype = new Model('Epg');
 	var M = new M('Epg');
 	
+		/*View*/
 	function V () {
 		this.spotlight = function(ind){
 			$('#fullepg .epgentity').removeClass("spotlight");
@@ -485,6 +583,8 @@ var Epg = (function (argument) {
 	}
 	var V = new V();
 
+
+	/*Controller*/
 	function C () {
 		this.grid = { x : 1, y : 10 },
 		this.title = 'EpgController';
@@ -506,13 +606,12 @@ var Epg = (function (argument) {
 					this.spotlight(M.getSelectedIndex());
 				break;
 				default:
-					console.log('Observer ' + this.title + ' was subscribed, but there are no realization');
+					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
 			}
 		}	
 	}
 
-	// EpgController.prototype = bwController;
 	C.prototype = new NavigateController(M, V, C);
 	var C = new C();
 	PubSub.subscribe(Chans.title + '/changeSelectedIndex', C);
@@ -550,7 +649,7 @@ function ProgramInfoController () {
 				programInfoView.render(Epg.M.now.obj)
 			break;
 			default:
-				console.log('Observer ' + this.title + ' was subscribed, but there are no realization');
+				throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
 			break;
 		}
 	}
@@ -564,130 +663,11 @@ function Observer(){
 	// this.grid = { x : 1, y : this._model.all.length }
 }
 
-function RootMenuView(){
-	this._model = RootMenu;
-	this.childElem = '.cat';
-	this.grid = { x : 1, y : this._model.all.length }
 
-	this.rebuildList = function(){
-		var html = '';
-		this._model.currentList.forEach(function(cur, ind){
-			html += '<span class="cat"' + 'tabindex='+ ind +  '>' + cur +'</span>';
-		})
-		$('#rootMenu').html(html);
-	}
-	this.handleEvent = function(topic){
-		switch (topic){
-			case RootMenu.title + '/changeSelectedIndex':
-				this.rebuildList();
-			break;
-			default:
-				console.log("Observer " +this.title +" was subscribed for this topic, but there is no processing " + topic);
-			break;
-		}
-	}
-}
-RootMenuView.prototype = new Observer();
-var rootMenuView = new RootMenuView();
-PubSub.subscribe(RootMenu.title + '/changeSelectedIndex', rootMenuView);
-
-function RootSubMenuView(){
-	this._model = RootSubMenu;
-	this.childElem = '.subcat';
-	this.grid = { x : 1, y : this._model.all.length }
-	this.rebuildList = function(){
-		var html = '';
-		if(this._model.currentList){
-			this._model.currentList.forEach(function(cur, ind){
-				html += '<span class="subcat"' + 'tabindex='+ ind +  '>' + cur +'</span>';
-			})
-		}
-			$('#rootSubMenu').html(html);	
-	}
-	this.handleEvent = function(topic){
-		switch (topic){
-			case RootSubMenu.title + '/changeCurrentList':
-			case RootSubMenu.title + '/changeSelectedIndex':
-				this.rebuildList();
-			break;
-			default:
-				console.log("Observer " +this.title +" was subscribed for this topic, but there is no processing " + topic);
-			break;
-		}
-	}
-}
-RootSubMenu.prototype = new Observer();
-var rootSubMenuView = new RootSubMenuView();
-PubSub.subscribe(RootSubMenu.title + '/changeSelectedIndex', rootSubMenuView);
-
-function ChansView (argument) {
-	var _this = this;
-	this.elem = $("#chans")[0];
-	this.childElem = '.chan';
-
-	this._model = Chans,
-	this.grid = {x : 1, y : this._model.currentList.length},
-	
-	this.scrollDown = function(){
-		var step = $(_this.elem).children(":first").width();
-		var cur = $(_this.elem).scrollTop();
-		$(_this.elem).scrollTop( cur + step);	 
-	}
-	this.scrollTop = function(){
-		var step = $(_this.elem).children(":first").width();
-		var cur = $(_this.elem).scrollTop();
-		$(_this.elem).scrollTop( cur - step);	 
-	}
-	this.handleEvent = function(topic){
-		switch (topic){
-			// case this._model.title + '/changeSelectedIndex' :
-			// 	$('.chan').removeClass("spotlight");
-			// 	$('.chan[tabindex=' + this._model.getSelectedIndex() + ']').addClass("spotlight");
-			// break;
-			case this._model.title + '/init':
-				this.rebuildList("-1");
-			break;
-			case this._model.title + '/changeCurrentList':
-			case this._model.title + '/changed' :
-			//must be category
-				this.rebuildList();
-			break;
-			default:
-				console.log("Observer was subscribed for this topic, but there is no processing : " + topic);
-			break;
-
-		}
-	}
-	this.rebuildList = function(_cat){
-		var html = '';
-		this._model.currentList.forEach(function(current, index){
-			// if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
-				html += '<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
-				+ " data-position=\"" + index + "\"" 
-				+ 'style="background-image: url(\'' + App.api.img + 'logo/'+ current.id + '.png\');">' 
-				+ '</div>' ; 
-			})
-		// });
-		$('#chans').html(html);
-
-	}
-}
-
-var chansView = new ChansView();
-// var browseLaneView = new BrowseLaneView();
-
-
-PubSub.subscribe(Chans.title + '/changeSelectedIndex', chansView);
-PubSub.subscribe(Chans.title + '/changed', chansView);
-// PubSub.subscribe(Genres.title + '/init', BrowseLane);
-// PubSub.subscribe(BrowseLane.title + '/changed', browseLaneView);
-// PubSub.subscribe(BrowseLane.title + '/changeSelectedIndex', browseLaneView);
-
-chansView.leftNeighbor = rootSubMenuView;
-// browseLaneView.rightNeighbor = chansView;
-rootSubMenuView.rightNeighbor = chansView;
-rootSubMenuView.leftNeighbor = rootMenuView;
-rootMenuView.rightNeighbor = rootSubMenuView;
+// chansView.leftNeighbor = rootSubMenuView;
+// rootSubMenuView.rightNeighbor = chansView;
+// rootSubMenuView.leftNeighbor = rootMenuView;
+// rootMenuView.rightNeighbor = rootSubMenuView;
 	/*Controllers*/
 function Controller (argument) {
 	// body...
@@ -699,8 +679,8 @@ function LoadingController(){
 	}
 	this.init = function(){
 		$('#loading').show();
-		RootMenu.init();
-		Chans.init();
+		RootMenu.M.init();
+		Chans.M.init();
 		Genres.init();
 	}
 	this.isReady = function(){
@@ -715,7 +695,7 @@ function LoadingController(){
 				this.loaded.genres = true;
 			break;
 			default:
-				console.log("Observer was subscribed for this topic, but there is no processing" + topic + ' blabl');
+				throw new "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
 			break;
 		}
 		if( this.isReady ){
@@ -734,15 +714,6 @@ PubSub.subscribe(Genres.title + '/init', loadingController);
 
 
 
-
-
-
-
-
-
-
-
-
 function BrowseViewController (argument) {
 	this.focusedView = {},
 	this._model = {};
@@ -750,7 +721,7 @@ function BrowseViewController (argument) {
 
 	this.init = function(){
 		// kostil
-		Chans.setSelectedIndex(Chans.getSelectedIndex() === -1 ? 0 : Chans.getSelectedIndex());
+		// Chans.setSelectedIndex(Chans.getSelectedIndex() === -1 ? 0 : Chans.getSelectedIndex());
 
 		// this.focusedView = chansView;
 		// this._model = this.focusedView._model;
