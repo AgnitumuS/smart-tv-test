@@ -157,6 +157,7 @@ App.components.Menu = {
 	title : 'Menu' ,
 	all : ['catalog', 'tags', 'genres', 'search', 'settings', 'help']
 }
+// App.components.Catalog
 	/**
 	 *	@module Chans
 	 */
@@ -231,6 +232,9 @@ App.components.Programs = (function  () {
 				_this.curDay = res;
 				_this.currentList= _this.curDay;
 			})
+		},
+		this.getSelectedEl = function (){
+			return this.curDay[this.getSelectedIndex ()];
 		}
 		this.findNow = function(){
 			var now = Math.floor(new Date().getTime() / 1000);
@@ -252,7 +256,19 @@ App.components.Programs = (function  () {
 	return programs;
 })();
 
+App.components.ProgramDetailInfo = (function  () {
+	function ProgramDetailInfoModel () {
+			// body...
+			this.title = 'ProgramDetailInfo',
+			// this.content = {}
+			this.get = function () {
+				return App.components.Programs.getSelectedEl();
+			}
+		}
 
+	var programDetailInfo = new ProgramDetailInfoModel();
+	return programDetailInfo;	
+})();
 
 	/**
 	 *   WIDGETS
@@ -292,7 +308,7 @@ App.widgets.ChansList = {
 	spotlighted : false,
 	grid : {x : 1, y : 1},
 	neighbors : {
-		// right : App.widgets.ProgramsList,
+		right : function () { return  App.widgets.ProgramsList } ,
 		left  : App.widgets.Catalog
 	},
 	right : App.widgets.ProgramsList,
@@ -341,8 +357,8 @@ App.widgets.ProgramsList = {
 	model : App.components.Programs,
 	grid : {x : 1, y : 1},
 	neighbors : {
-		right : App.widgets.ProgramDetailInfo,
-		left : App.widgets.ChansList,
+		// right : function () { return App.widgets.ProgramDetailInfo } ,
+		left : function () {return  App.widgets.ChansList },
 	},
 	init : function() {},
 	render : function(arr){
@@ -387,7 +403,39 @@ App.widgets.ProgramsList = {
 		PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
 		PubSub.subscribe(App.components.Programs.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
 
-App.widgets.ChansList.neighbors.right = App.widgets.ProgramsList;
+
+
+App.widgets.ProgramDetailInfo = {
+	model : App.components.ProgramDetailInfo,
+	grid : {x : 1, y : 1},
+	neighbors : {
+		left : function () {return  App.widgets.ProgramsList },
+	},
+	render : function  (obj) {
+		var html = '';
+		html += '<span  class="programinfotext" tabindex=' + '0' + '>' + obj.text  + '</span>';
+		$('#programinfo').html(html);
+	}
+}
+App.widgets.ProgramDetailInfo.controller = (function  () {
+		function controller (widget) {
+			this.widget = widget;
+		}
+		var controller = new controller (App.widgets.ProgramDetailInfo);
+		return controller;
+	})();
+App.widgets.ProgramDetailInfo.controller.handleEvent = function  (topic) {
+	var self = this;
+	switch (topic){
+		case  App.components.Programs.title + '/changeSelectedIndex':
+			self.widget.render (self.widget.model.get());
+		break;
+		default :
+			throw 'Illegal using controller handleEvent'
+		break;
+	}
+}
+PubSub.subscribe (App.components.Programs.title + '/changeSelectedIndex', App.widgets.ProgramDetailInfo.controller);
 
 
 
@@ -513,7 +561,7 @@ function BrowseViewController (argument) {
 				break;
 			}
 			if (witch) {
-				this.activeWidget = witch;
+				this.activeWidget = witch();
 				console.log('changeWidgetByDirection to : ');
 				console.log(witch);
 				// this.spotlight();
