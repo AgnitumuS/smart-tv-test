@@ -14,8 +14,9 @@ var PubSub = {
 			cur.handleEvent(topic, args);
 			}) 
 			}
-		}
-}
+	}
+};
+
 /* Routing between controllers*/
 var Router = {
 	changeHash : function(hash){
@@ -81,6 +82,18 @@ var App = {
 }
 App.start();
 
+	/**
+	* Persistent storage
+	*/
+App.db = {
+	prefix : '_db_',
+	get : function  (key) {
+		return localStorage['' +  this.prefix + key];
+	},
+	set : function  (key, val) {
+		localStorage.setItem(this.prefix + key, val);
+	}
+}
 	/** 
 	 * @module Loading Controller
 	 * 
@@ -125,14 +138,13 @@ function LoadingController(){
 
 /* Models contructor*/
 function Model(title) {
-	this.title = title;
 	this.set = function(key, val, callback){
 		this[key] = val;
 		if(callback){
 			callback.call(this);
 		}
 	};
-	this.selectedIndex = -1;
+	// this.selectedIndex = -1;
 	this.getSelectedIndex = function(){
 		return this.selectedIndex;
 	};
@@ -149,15 +161,27 @@ function Model(title) {
 
 
 
-
-
 //App.components // Chans, Progs, Menu, ChansCats, ProgCats,  
 App.components = {};
 App.components.Menu = {
 	title : 'Menu' ,
 	all : ['catalog', 'tags', 'genres', 'search', 'settings', 'help']
 }
-// App.components.Catalog
+
+App.components.Catalog = (function () {
+	
+	function CatalogModel () {
+		this.selectedIndex = -1;
+		this.title = 'Catalog';
+		this.all = ['all', 'favorites', 'rating'];
+		this.currentList = this.all;
+	}
+
+	CatalogModel.prototype = new Model ();
+	var catalog = new CatalogModel();
+	return catalog;
+})();
+
 	/**
 	 *	@module Chans
 	 */
@@ -166,6 +190,30 @@ App.components.Chans = (function () {
 		this.title = 'Chans';
 		this.selectedIndex = -1;
 		this.all = [];
+		this.favorites = [{
+      "id": 9001,
+      "title": "Первый национальный",
+      "ratio": "4:3",
+      "rec": 0
+    },
+    {
+      "id": 9002,
+      "title": "1+1",
+      "ratio": "4:3",
+      "rec": 1
+    }];
+		this.recommended = [{
+      "id": 9003,
+      "title": "Киев",
+      "ratio": "4:3",
+      "rec": 0
+    },
+    {
+      "id": 9004,
+      "title": "ICTV",
+      "ratio": "16:9",
+      "rec": 1
+    },];
 		this.currentList = [];
 		this.rating = [];
 		this.cable = [];
@@ -184,11 +232,13 @@ App.components.Chans = (function () {
 				self.rating = res;
 			})
 		};
-
+	}
+	
+	ChansModel.prototype = new Model();
 	/*
 	* Sort channels by rating or by cable. need refactor
 	*/
-	this.sort = function(type){
+	ChansModel.prototype.sort = function(type){
  		var arr;
  		if (type === "rating"){
  			arr = $channels.rating;
@@ -203,12 +253,33 @@ App.components.Chans = (function () {
  			}
  		})
  	}
- 	this.getCur = function  () {
+ 	ChansModel.prototype.getCurItem = function  () {
  		return this.currentList[this.getSelectedIndex()];
- 		// body...
- 	}
+ 		}
+ 	ChansModel.prototype.getCurList = function  () {
+ 		return this.currentList;
+    	}
+	
+	ChansModel.prototype.changeCurList = function (ind) {
+		// body...
+		//get current list
+		switch ( ind ){
+			case 0: 
+				this.currentList = this.all;
+			break;
+			case 1:
+				this.currentList = this.favorites;
+			break;
+			case 2:
+				this.currentList = this.recommended;
+			break;
+			default :
+				console.log('current list changed to all');
+				this.currentList = this.all; 
+			break;
+		}
+		this.setSelectedIndex(0);
 	}
-	ChansModel.prototype = new Model();
 	var chans = new ChansModel();
 	return chans;
 })();
@@ -228,7 +299,7 @@ App.components.Programs = (function  () {
 		this.now = {},
 		this.getCurDay = function(){
 			var _this = this;
-			return $.getJSON(App.api.main + 'epg/' + App.components.Chans.getCur().id + '/day', function(res){
+			return $.getJSON(App.api.main + 'epg/' + App.components.Chans.getCurItem().id + '/day', function(res){
 				_this.curDay = res;
 				_this.currentList= _this.curDay;
 			})
@@ -267,7 +338,7 @@ App.components.ProgramDetailInfo = (function  () {
 		}
 
 	var programDetailInfo = new ProgramDetailInfoModel();
-	return programDetailInfo;	
+	return programDetailInfo;		
 })();
 
 	/**
@@ -293,14 +364,44 @@ App.widgets.Menu = {
 App.widgets.Catalog = {
 	model : App.components.Catalog,
 	grid : {x : 1, y : 1},
-	widgets : {
-		right : App.widgets.ChansList,
-		left : App.widgets.Menu,
+	neighbors : {
+		right : function () {return App.widgets.ChansList },
+		// left : function () {return App.widgets.Menu },
 	},
 	init : function() {},
-	render : function(){}
-}	
-	App.widgets.Catalog.controller ={};
+	render : function(arr){
+		var html = '';
+		arr.forEach(function  (cur, ind) {
+			html += '<span class=catalogentity tabindex=' +ind+ '>' + cur  + '</span>';
+		})
+		$('#catalog').html(html);
+		},
+	highlight : function  () {
+		$('#catalog .catalogentity').removeClass("highlight");
+		$('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+		// alert ('highlight');
+	},
+	}	
+	App.widgets.Catalog.controller = (function  () {
+		function controller (widget) {
+			this.widget = widget;
+		}
+		var controller = new controller (App.widgets.Catalog);
+		return controller;
+	})();
+	App.widgets.Catalog.controller.handleEvent = function(topic){
+		var self = this;
+			switch (topic){
+				case App.components.Catalog.title + '/changeSelectedIndex' :
+					self.widget.render( App.components.Catalog.all);
+					self.widget.highlight();
+				break;
+				default:
+					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+				break;
+			}
+		}
+		PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 	
 
 App.widgets.ChansList = {
@@ -309,7 +410,7 @@ App.widgets.ChansList = {
 	grid : {x : 1, y : 1},
 	neighbors : {
 		right : function () { return  App.widgets.ProgramsList } ,
-		left  : App.widgets.Catalog
+		left  : function () { return App.widgets.Catalog } 
 	},
 	right : App.widgets.ProgramsList,
 	left : App.widgets.Catalog,
@@ -327,6 +428,11 @@ App.widgets.ChansList = {
 			var cur = $('#chans').scrollTop();
 			$('#chans').scrollTop( cur - step);	 
 	},
+	highlight : function  () {
+		$('#chans .chan').removeClass("highlight");
+		$('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+		// alert ('highlight');
+	},
 	render : function(arr){
 			var html = '';
 			arr.forEach(function(current, index){
@@ -336,15 +442,27 @@ App.widgets.ChansList = {
 					+ 'style="background-image: url(\'' + App.api.img + 'logo/'+ current.id + '.png\');">' 
 					+ '</div>' ; 
 				})
-			$('#chans').html(html);}
+			$('#chans').html(html);
+			this.highlight();
+			}
 }
-	App.widgets.ChansList.controller = {};
+	App.widgets.ChansList.controller = (function  () {
+		function controller (widget) {
+			this.widget = widget;
+		}
+		var controller = new controller (App.widgets.ChansList);
+		return controller;
+	})();
 	App.widgets.ChansList.controller.handleEvent  = function  (	topic ) {
+		var self = this;
+		var model = self.widget.model;
 		switch (topic){
 			case App.components.Chans.title + '/changeSelectedIndex':
-				//switch to selected index
-				$('#chans .chan').removeClass("spotlight");
-				$('.chan[tabindex=' + App.components.Chans.getSelectedIndex() +']').addClass('spotlight');
+				self.widget.highlight();
+			break;
+			case App.components.Catalog.title + '/changeSelectedIndex':
+				model.changeCurList( App.components.Catalog.getSelectedIndex() );
+				self.widget.render( model.getCurList() );
 			break;
 			default: 
 				throw 'Observer was subscribed but there are no realization : ' + this;
@@ -352,6 +470,7 @@ App.widgets.ChansList = {
 		}
 	}
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
+	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 
 App.widgets.ProgramsList = {
 	model : App.components.Programs,
@@ -497,11 +616,11 @@ function BrowseViewController (argument) {
 	this.activeWidget = {},
 
 	this.init = function(){
-		// kostil
-		//show all widgets (foreach)
+		//if there are no saved state, use first menu first catalog	
+		App.components.Catalog.setSelectedIndex(0);			
 		this.activeWidget = App.widgets.ChansList;
 		this.activeWidget.show();
-		this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() === -1 ? 0 : this.activeWidget.model.getSelectedIndex());
+		// this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() === -1 ? 0 : this.activeWidget.model.getSelectedIndex());
 
 	}
 	// this.spotlight = function(){
@@ -531,7 +650,6 @@ function BrowseViewController (argument) {
 					throw new 'change widget without appropriate orient';
 				break;
 			}
-			console.log('blablalba');
 			return witch ? true :false;
 		}
 		else {
@@ -563,7 +681,7 @@ function BrowseViewController (argument) {
 			if (witch) {
 				this.activeWidget = witch();
 				console.log('changeWidgetByDirection to : ');
-				console.log(witch);
+				console.log(witch());
 				// this.spotlight();
 			} 
 		}

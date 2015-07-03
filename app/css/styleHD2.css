@@ -36,19 +36,29 @@ body{
 	width:100%;
 }
 
-#rootMenu{
+#menu{
 	width:100px;
 	height: 100%;
 	float:left;
-	background-color: blue;
+	background-color: #2196F3;
 
 }
-#rootSubMenu{
+#catalog{
 	float:left;
 	width:100px;
 	height:100%;
-	background-color: green;
+	background-color: #FF80AB;
+;
 }
+	.catalogentity{
+		display: block;
+		height: 50px;
+		color:white;
+		box-shadow: 2px 2px 0px 0px #5D4037;
+	}
+	span.catalogentity{
+		line-height: 50px;
+	} 
 
 #chans{
 	width:100px;
@@ -56,7 +66,7 @@ body{
 	overflow: auto;
 	display: block;
 	float:left;
-	background-color: black;
+	background-color: lightblue;
 }
 .chan {
 		width: 100%;
