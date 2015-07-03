@@ -163,10 +163,17 @@ function Model(title) {
 
 //App.components // Chans, Progs, Menu, ChansCats, ProgCats,  
 App.components = {};
-App.components.Menu = {
-	title : 'Menu' ,
-	all : ['catalog', 'tags', 'genres', 'search', 'settings', 'help']
-}
+App.components.Menu = (function (){
+	function MenuModel () {
+			this.title = 'Menu',
+			this.selectedIndex = -1;
+			this.all = ['catalog', 'genres'];
+			this.currentList = this.all
+		}
+	MenuModel.prototype = new Model();
+	return new MenuModel();
+	})();
+	
 
 App.components.Catalog = (function () {
 	
@@ -351,14 +358,45 @@ App.widgets = {}
 App.widgets.Menu = {
 		model : App.components.Menu,
 		grid : {x : 1, y : 1},
-		right : App.widgets.Catalog,
+		neighbors : {
+			right : function () { return App.widgets.Catalog } 
+		},
+		show : function  () {
+			this.render(this.model.currentList);
+			this.highlight();
+		},
 		init : function() {},
-		render : function(){},
+		render : function(arr){
+			var html = '';
+			arr.forEach(function  (cur, ind) {
+				html += '<span class=menuentity tabindex=' +ind+ '>' + cur  + '</span>';
+			})
+			$('#menu').html(html);
+		},
+		highlight : function  () {
+			$('#menu .menuentity').removeClass("highlight");
+			$('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+		}
 	}
-	App.widgets.Menu.controller = {};
-	$.extend(App.widgets.Menu.controller, {
-
-	})
+	App.widgets.Menu.controller = (function  () {
+		function controller (widget) {
+			this.widget = widget;
+		}
+		return new controller (App.widgets.Menu);
+	})();
+	App.widgets.Menu.controller.handleEvent = function  (topic) {
+			var self = this;
+			switch (topic){
+				case App.components.Menu.title + '/changeSelectedIndex' :
+					// self.widget.render( App.components.Catalog.all);
+					self.widget.highlight();
+				break;
+				default:
+					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+				break;
+			}
+		}
+	PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Menu.controller);
 
 
 App.widgets.Catalog = {
@@ -366,7 +404,7 @@ App.widgets.Catalog = {
 	grid : {x : 1, y : 1},
 	neighbors : {
 		right : function () {return App.widgets.ChansList },
-		// left : function () {return App.widgets.Menu },
+		left : function () {return App.widgets.Menu },
 	},
 	init : function() {},
 	render : function(arr){
@@ -396,12 +434,17 @@ App.widgets.Catalog = {
 					self.widget.render( App.components.Catalog.all);
 					self.widget.highlight();
 				break;
+				case App.components.Menu.title + '/changeSelectedIndex':
+					self.widget.model.setSelectedIndex(0);
+				break;
 				default:
 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
 			}
 		}
 		PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+		PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+
 	
 
 App.widgets.ChansList = {
@@ -617,11 +660,9 @@ function BrowseViewController (argument) {
 
 	this.init = function(){
 		//if there are no saved state, use first menu first catalog	
-		App.components.Catalog.setSelectedIndex(0);			
-		this.activeWidget = App.widgets.ChansList;
+		App.components.Menu.setSelectedIndex(0);			
+		this.activeWidget = App.widgets.Menu;
 		this.activeWidget.show();
-		// this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() === -1 ? 0 : this.activeWidget.model.getSelectedIndex());
-
 	}
 	// this.spotlight = function(){
 	// 	//get current model, get selected index and add spotlight class

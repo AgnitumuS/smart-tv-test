@@ -50,7 +50,7 @@ body{
 	background-color: #FF80AB;
 ;
 }
-	.catalogentity{
+	.catalogentity, .menuentity{
 		display: block;
 		height: 50px;
 		color:white;
