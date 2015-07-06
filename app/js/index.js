@@ -108,15 +108,7 @@ App.start();
 		* Player
  		*
 		*/
-App.player = {
-	player : $('#iPlayer'),
-	list : [],
-	init : function  () {
-	},
-	load : function  (id) {
-		this.player.attr('src', App.api.edge + id  + '.m3u8');
-	}
-}
+
 
 	/**
 	* Persistent storage
@@ -278,6 +270,17 @@ App.components.Chans = (function () {
 				self.rating = res;
 			})
 		};
+					//Increment \ decrement selected index
+		this.incSelectedIndex = function  () {
+			if( this.getSelectedIndex()+1 < this.currentList.length ) {
+				this.setSelectedIndex ( this.getSelectedIndex() + 1);
+			} 
+		};
+		this.decSelectedIndex = function  () {
+			if(this.getSelectedIndex() -1 > -1) {
+				this.setSelectedIndex ( this.getSelectedIndex() - 1);
+			}
+		}
 	}
 	
 	ChansModel.prototype = new Model();
@@ -324,6 +327,8 @@ App.components.Chans = (function () {
 				this.currentList = this.all; 
 			break;
 		}
+		// !!!!! Change current list for Player
+		App.player.list = this.currentList;
 		this.setSelectedIndex(0);
 	}
 	var chans = new ChansModel();
@@ -687,6 +692,30 @@ PubSub.subscribe (App.components.Programs.title + '/changeSelectedIndex', App.wi
 
 
 
+
+App.player = {
+	chans : App.components.Chans,
+	player : $('#iPlayer'),
+	list : [],
+	init : function  () {
+	},
+	load : function  (id) {
+		this.player.attr('src', App.api.edge + id  + '.m3u8');
+	},
+	next : function  () {
+		this.chans.incSelectedIndex();
+		this.load( this.chans.getCurChan().id );
+	},
+	prev : function  () {
+		this.chans.decSelectedIndex();
+		this.load( this.chans.getCurChan().id);
+	}
+}
+
+
+
+
+
 var navigateController =  {
 	/**
 	* Return true if returned elements from current widget, or false if switch widget 
@@ -870,15 +899,21 @@ function BrowseViewController (argument) {
 			//switch to left element in matrix
 		}
 		
-	}
+	},
 	this.ENTER = function  () {
 		if (this.activeWidget.enter){
 			this.activeWidget.enter();
 		}
+	},
+	//testted only . must be moved to FSController
+	this.PAGE_UP = function  () {
+		App.player.next();
+	}
+	this.PAGE_DOWN = function  () {
+		App.player.prev();
 	}
 }
 var bwController = new BrowseViewController();
-
 
 
 
@@ -894,8 +929,12 @@ App.device = {
 	keys : {
 			'13': 'ENTER',
             '461': 'BACK', 
-            '33': 'PAGE_UP',
+        	'33': 'PAGE_UP',
             '34': 'PAGE_DOWN',
+            '107': 'PAGE_UP',
+            '109': 'PAGE_DOWN',
+
+
 
             '37': 'LEFT',
             '38': 'UP',
