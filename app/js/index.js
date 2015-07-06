@@ -24,6 +24,26 @@ var Router = {
 		PubSub.publish("location.hash/changed");
 	}
 }
+
+/**
+* 	Debug
+*/
+	var debug = function  () {
+		var dTimeout;
+		function debug (text) {
+			$('#debug').show();
+			$('#debug').html(text);
+			clearTimeout(dTimeout);
+			dTimeout = setTimeout(
+				function  (){
+					$('#debug').hide();
+				},	10000 );
+		}
+		return debug;
+	}();
+
+/**/
+
 var App = {
 	api : {
 		main : "http://api.lanet.tv/",
@@ -40,6 +60,7 @@ var App = {
 	initializeEvents: function(){
 		$(window).on("keydown", function(event){
 			event.preventDefault();
+			debug('keyCode : ' + event.keyCode);
 			if( App.currentController[App.device.getKeyFunction(event)]) 
 				App.currentController[App.device.getKeyFunction(event)]();
 			
@@ -81,6 +102,21 @@ var App = {
 	}
 }
 App.start();
+
+
+		/**
+		* Player
+ 		*
+		*/
+App.player = {
+	player : $('#iPlayer'),
+	list : [],
+	init : function  () {
+	},
+	load : function  (id) {
+		this.player.attr('src', App.api.edge + id  + '.m3u8');
+	}
+}
 
 	/**
 	* Persistent storage
@@ -228,7 +264,10 @@ App.components.Chans = (function () {
 			var self = this;
 			$.getJSON(App.api.main + "list.json", function(res){
 				self.all = res.list.slice();
+				//Init api refs
 				App.api.img = res.img;
+				App.api.edge = res.edge;
+
 				res.list.forEach(function(cur, indx){
 					self.cable.push(cur.id);
 				})
@@ -260,7 +299,7 @@ App.components.Chans = (function () {
  			}
  		})
  	}
- 	ChansModel.prototype.getCurItem = function  () {
+ 	ChansModel.prototype.getCurChan = function  () {
  		return this.currentList[this.getSelectedIndex()];
  		}
  	ChansModel.prototype.getCurList = function  () {
@@ -306,7 +345,7 @@ App.components.Programs = (function  () {
 		this.now = {},
 		this.getCurDay = function(){
 			var _this = this;
-			return $.getJSON(App.api.main + 'epg/' + App.components.Chans.getCurItem().id + '/day', function(res){
+			return $.getJSON(App.api.main + 'epg/' + App.components.Chans.getCurChan().id + '/day', function(res){
 				_this.curDay = res;
 				_this.currentList= _this.curDay;
 			})
@@ -355,12 +394,19 @@ App.components.ProgramDetailInfo = (function  () {
 
 //App.widgets //Menu, ChansCats, Chans, Progs, ExtendProgs
 App.widgets = {}
+
+	/**
+	* 	Widgets.Menu
+	*/
+
 App.widgets.Menu = {
 		model : App.components.Menu,
 		grid : {x : 1, y : 1},
 		neighbors : {
 			right : function () { return App.widgets.Catalog } 
 		},
+		//spotlight
+		active : false,
 		show : function  () {
 			this.render(this.model.currentList);
 			this.highlight();
@@ -374,9 +420,13 @@ App.widgets.Menu = {
 			$('#menu').html(html);
 		},
 		highlight : function  () {
-			$('#menu .menuentity').removeClass("highlight");
-			$('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+			var all = 'spotlight highlight';
+			$('#menu .menuentity').removeClass(all);
+			this.active 
+				? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+				: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 		}
+		
 	}
 	App.widgets.Menu.controller = (function  () {
 		function controller (widget) {
@@ -388,7 +438,6 @@ App.widgets.Menu = {
 			var self = this;
 			switch (topic){
 				case App.components.Menu.title + '/changeSelectedIndex' :
-					// self.widget.render( App.components.Catalog.all);
 					self.widget.highlight();
 				break;
 				default:
@@ -399,6 +448,11 @@ App.widgets.Menu = {
 	PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Menu.controller);
 
 
+	/**
+	* 	Widgets.Catalog
+	*/
+
+
 App.widgets.Catalog = {
 	model : App.components.Catalog,
 	grid : {x : 1, y : 1},
@@ -406,6 +460,8 @@ App.widgets.Catalog = {
 		right : function () {return App.widgets.ChansList },
 		left : function () {return App.widgets.Menu },
 	},
+	//spotlight
+	active : false,
 	init : function() {},
 	render : function(arr){
 		var html = '';
@@ -415,9 +471,12 @@ App.widgets.Catalog = {
 		$('#catalog').html(html);
 		},
 	highlight : function  () {
-		$('#catalog .catalogentity').removeClass("highlight");
-		$('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
-		// alert ('highlight');
+		var all = 'spotlight highlight';
+		$('#catalog .catalogentity').removeClass(all);
+		this.active 
+			? $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+			: $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+
 	},
 	}	
 	App.widgets.Catalog.controller = (function  () {
@@ -445,7 +504,11 @@ App.widgets.Catalog = {
 		PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 		PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 
-	
+
+	/**
+	* 	Widgets.ChansList
+	*/
+
 
 App.widgets.ChansList = {
 	model : App.components.Chans,
@@ -455,8 +518,8 @@ App.widgets.ChansList = {
 		right : function () { return  App.widgets.ProgramsList } ,
 		left  : function () { return App.widgets.Catalog } 
 	},
-	right : App.widgets.ProgramsList,
-	left : App.widgets.Catalog,
+	//spotlight
+	active : false,
 	init : function() {},
 	show : function(){
 		this.render(this.model.currentList);
@@ -472,9 +535,12 @@ App.widgets.ChansList = {
 			$('#chans').scrollTop( cur - step);	 
 	},
 	highlight : function  () {
-		$('#chans .chan').removeClass("highlight");
-		$('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
-		// alert ('highlight');
+		var all = 'spotlight highlight';
+		$('#chans .chan').removeClass(all);
+		this.active 
+			? $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+			: $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+
 	},
 	render : function(arr){
 			var html = '';
@@ -487,7 +553,10 @@ App.widgets.ChansList = {
 				})
 			$('#chans').html(html);
 			this.highlight();
-			}
+			},
+	enter : function  () {
+		App.player.load( this.model.getCurChan().id); 
+	}
 }
 	App.widgets.ChansList.controller = (function  () {
 		function controller (widget) {
@@ -515,6 +584,12 @@ App.widgets.ChansList = {
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 
+
+
+	/**
+	* 	Widgets.ProgramsList
+	*/
+
 App.widgets.ProgramsList = {
 	model : App.components.Programs,
 	grid : {x : 1, y : 1},
@@ -522,6 +597,8 @@ App.widgets.ProgramsList = {
 		// right : function () { return App.widgets.ProgramDetailInfo } ,
 		left : function () {return  App.widgets.ChansList },
 	},
+	//spotlight
+	active: false,
 	init : function() {},
 	render : function(arr){
 		var html = '';
@@ -531,8 +608,12 @@ App.widgets.ProgramsList = {
 			$('#fullepg').html(html);
 	},
 	highlight : function  () {
-		$('#fullepg .epgentity').removeClass("highlight");
-		$('.epgentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+		var all = 'spotlight highlight';
+		$('#fullepg .epgentity').removeClass(all);
+		this.active 
+			? $('.epgentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+			: $('.epgentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+
 	}
 }
 	App.widgets.ProgramsList.controller = (function  () {
@@ -566,6 +647,9 @@ App.widgets.ProgramsList = {
 		PubSub.subscribe(App.components.Programs.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
 
 
+	/**
+	* 	Widgets.ProgramDetailInfo
+	*/
 
 App.widgets.ProgramDetailInfo = {
 	model : App.components.ProgramDetailInfo,
@@ -573,6 +657,8 @@ App.widgets.ProgramDetailInfo = {
 	neighbors : {
 		left : function () {return  App.widgets.ProgramsList },
 	},
+	//spotlight
+	active: false,
 	render : function  (obj) {
 		var html = '';
 		html += '<span  class="programinfotext" tabindex=' + '0' + '>' + obj.text  + '</span>';
@@ -660,16 +746,22 @@ function BrowseViewController (argument) {
 
 	this.init = function(){
 		//if there are no saved state, use first menu first catalog	
-		App.components.Menu.setSelectedIndex(0);			
-		this.activeWidget = App.widgets.Menu;
+		this.setActiveWidget (App.widgets.Menu);
 		this.activeWidget.show();
+		App.components.Menu.setSelectedIndex(0);			
 	}
-	// this.spotlight = function(){
-	// 	//get current model, get selected index and add spotlight class
-	// 	this.activeWidget.removeClass('spotlight');
-	// 	var sel =  this.focusedView.childElem +  '[tabindex=' + this._model.getSelectedIndex() + ']' ;
-	// 	$( sel ).addClass("spotlight");
-	// }
+	this.setActiveWidget = function  (widget) {
+		if (this.activeWidget){
+			this.activeWidget.active = false;
+			if( this.activeWidget.highlight ) {
+				this.activeWidget.highlight();
+			}
+		}
+		this.activeWidget = widget;
+		this.activeWidget.active = true;
+		this.activeWidget.highlight();
+	}
+
 	this.hasNeighbor = function  (orient) {
 		var witch = {};
 		if (orient) {
@@ -720,7 +812,7 @@ function BrowseViewController (argument) {
 				break;
 			}
 			if (witch) {
-				this.activeWidget = witch();
+				this.setActiveWidget (witch() );
 				console.log('changeWidgetByDirection to : ');
 				console.log(witch());
 				// this.spotlight();
@@ -779,6 +871,11 @@ function BrowseViewController (argument) {
 		}
 		
 	}
+	this.ENTER = function  () {
+		if (this.activeWidget.enter){
+			this.activeWidget.enter();
+		}
+	}
 }
 var bwController = new BrowseViewController();
 
@@ -796,8 +893,7 @@ var bwController = new BrowseViewController();
 App.device = {
 	keys : {
 			'13': 'ENTER',
-            '35': 'TOP_MENU', // favorites
-            '46': 'BACK', // delete
+            '461': 'BACK', 
             '33': 'PAGE_UP',
             '34': 'PAGE_DOWN',
 
@@ -805,13 +901,7 @@ App.device = {
             '38': 'UP',
             '39': 'RIGHT',
             '40': 'DOWN',
-            '78': 'KEY_NEXT', //n
-            '80': 'KEY_PREV', //p
-            '189': 'VOLUME_DOWN', //minus
-            '1187': 'VOLUME_UP', //plus
 
-            '36': 'EXIT', // home
-            '8': 'BACKSPACE',
 
             '48': 'NUM0',
             '49': 'NUM1',
@@ -824,10 +914,10 @@ App.device = {
             '56': 'NUM8',
             '57': 'NUM9',
 
-            '112': 'RED',
-            '71': 'GREEN', //g
-            '89': 'YELLOW', //y
-            '66': 'BLUE',
+            '403': 'RED',
+            '404': 'GREEN', //g
+            '405': 'YELLOW', //y
+            '406': 'BLUE',
 	}, 
 	getKeyFunction: function(event){
 		return App.device.keys[event.keyCode]

@@ -120,7 +120,7 @@ body{
 		/*border:2px solid blue;*/
 		color:white;
 		height: 40px;
-		border : 1px solid grey;
+		/*border : 1px solid grey;*/
 
 	}
 
@@ -134,3 +134,19 @@ body{
 	.programinfotext {
 		color: white;
 	}
+
+
+
+
+
+
+
+#debug {
+	position: absolute;
+	bottom:0px;
+	right: 0px;
+	height: 100px;
+	width:200px;
+	background-color: black;
+	color:white;
+}
