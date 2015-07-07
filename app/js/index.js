@@ -79,14 +79,16 @@ var App = {
 				
 				case '#fsplayer':
 					App.currentController = App.controllers.FSPlayerController;
+					// App.currentController.init();
 					break;
 				
 				case '#browse':
 					App.currentController = bwController;
-					// $("#browseView").show();
 					App.currentController.init();
-					//update epgAllNow
-					//render current list
+					break;
+				case '#quickMenu':
+					App.currentController = App.controllers.QuickMenuController;
+					App.currentController.init();
 					break;
 				
 				default:
@@ -146,6 +148,11 @@ function LoadingController(){
 		switch (topic){
 			case App.components.Chans.title + '/init':
 				this.loaded.chans = true;
+				//drawback - init current list of chans here
+				App.player.list = App.components.Chans.currentList;
+				App.components.Menu.setSelectedIndex(0);
+				App.player.loadCur();
+				
 			break;
 			case App.components.Genres.title + '/init':
 				this.loaded.genres = true;
@@ -156,7 +163,7 @@ function LoadingController(){
 		}
 		if( this.isReady ){
 			$('#loading').hide();
-			Router.changeHash('browse');
+			Router.changeHash('fsplayer');
 		}
 	}
 }
@@ -530,14 +537,19 @@ App.widgets.ChansList = {
 		this.render(this.model.currentList);
 	},
 	scrollDown : function(){
-			var step = $('#chans').children(":first").width();
-			var cur = $('#chans').scrollTop();
-			$('#chans').scrollTop( cur + step);	 
+		var step = $('#chans').children(":first").width();
+		var cur = $('#chans').scrollTop();
+		$('#chans').scrollTop( cur + step);	 
 	},
 	scrollTop : function(){
-			var step = $('#chans').children(":first").width();
-			var cur = $('#chans').scrollTop();
-			$('#chans').scrollTop( cur - step);	 
+		var step = $('#chans').children(":first").width();
+		var cur = $('#chans').scrollTop();
+		$('#chans').scrollTop( cur - step);	 
+	},
+	scrollToCur : function  () {
+		var step = $('#chans').children(":first").width();
+		var items = this.model.getSelectedIndex();
+		$('#chans').scrollTop(step * items);		
 	},
 	highlight : function  () {
 		var all = 'spotlight highlight';
@@ -560,7 +572,9 @@ App.widgets.ChansList = {
 			this.highlight();
 			},
 	enter : function  () {
-		App.player.load( this.model.getCurChan().id); 
+		App.player.loadCur();
+		$('#browseView').hide();
+		Router.changeHash('fsplayer');
 	}
 }
 	App.widgets.ChansList.controller = (function  () {
@@ -698,6 +712,7 @@ App.player = {
 	player : $('#iPlayer'),
 	list : [],
 	init : function  () {
+
 	},
 	load : function  (id) {
 		this.player.attr('src', App.api.edge + id  + '.m3u8');
@@ -709,6 +724,70 @@ App.player = {
 	prev : function  () {
 		this.chans.decSelectedIndex();
 		this.load( this.chans.getCurChan().id);
+	},
+	loadCur : function  () {
+		this.load( this.chans.getCurChan().id );
+	}
+}
+
+
+App.controllers.FSPlayerController = {
+	init : function  () {
+	},
+	PAGE_UP : function  () {
+		App.player.next();
+	},
+	PAGE_DOWN : function  () {
+		App.player.prev();
+	},
+	ENTER : function  () {
+		//show quick menu
+		Router.changeHash('quickMenu');
+	},
+	LEFT : function  () {
+		
+	},
+	UP : function  () {
+		
+	},
+	RIGHT : function  () {
+		
+	},
+	DOWN : function  () {
+		// body...
+	}
+
+}
+
+App.controllers.QuickMenuController = {
+	visible : false,
+	init : function  () {
+		//show quickMenu widget
+		$('#quickMenuView').show();	
+		this.visible = true;	
+	},
+	ENTER : function  () {
+		if (this.visible)  {
+			$('#quickMenuView').hide(); 
+			this.visible = false;
+			Router.changeHash('fsplayer');
+		} else { 
+			$('#quickMenuView').show(); 
+			this.visible = true;
+		}
+	},
+	LEFT : function  () {
+		$('#quickMenuView').hide();
+		Router.changeHash('browse');		
+	},
+	UP : function  () {
+		
+	},
+	RIGHT : function  () {
+		
+	},
+	DOWN : function  () {
+		// body...
 	}
 }
 
@@ -774,10 +853,13 @@ function BrowseViewController (argument) {
 	this.activeWidget = {},
 
 	this.init = function(){
-		//if there are no saved state, use first menu first catalog	
-		this.setActiveWidget (App.widgets.Menu);
-		this.activeWidget.show();
-		App.components.Menu.setSelectedIndex(0);			
+		//if there are no saved state, use first menu first catalog	s
+		$('#browseView').show();
+		this.setActiveWidget (App.widgets.ChansList);
+		App.widgets.Menu.show();
+		this.activeWidget.scrollToCur();
+		// this.activeWidget.show();
+		// App.components.Menu.setSelectedIndex(0);			
 	}
 	this.setActiveWidget = function  (widget) {
 		if (this.activeWidget){
