@@ -49,8 +49,10 @@ var App = {
 		main : "http://api.lanet.tv/",
 		epg   : "http://api.lanet.tv/epg/",
 		rating : "list/rating/all",
-		img : ''
+		img : '',
+		ws : 'wss://data.lanet.tv/'
 	},
+	socket : {},
 	controllers: {},
 	currentController: null,
 	initialize : function(){
@@ -65,6 +67,16 @@ var App = {
 				App.currentController[App.device.getKeyFunction(event)]();
 			
 		});
+		
+		//WS
+		App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
+		App.socket.on('connect', function(data){
+			App.components.Chans.init(data);
+		})
+		App.socket.on('upd_epg', function  (data) {
+			// App.components.Chans.updEpg(data);	
+		})
+		
 		window.onhashchange =  function(event){
 			switch(location.hash){
 
@@ -111,7 +123,6 @@ App.start();
  		*
 		*/
 
-
 	/**
 	* Persistent storage
 	*/
@@ -139,7 +150,9 @@ function LoadingController(){
 		// RootMenu.M.init();
 		// Chans.M.init();
 		// Genres.init();
-		App.components.Chans.init();
+		// App.components.Chans.init();
+		//testing only
+		
 	}
 	this.isReady = function(){
 		return (this.loaded.chans && this.loaded.genres);
@@ -255,24 +268,25 @@ App.components.Chans = (function () {
       "title": "ICTV",
       "ratio": "16:9",
       "rec": 1
-    },];
+    }];
 		this.currentList = [];
 		this.rating = [];
 		this.cable = [];
-		this.init = function(){
+		this.init = function(res){
 			var self = this;
-			$.getJSON(App.api.main + "list.json", function(res){
-				self.all = res.list.slice();
+			// $.getJSON(App.api.main + "list.json", function(res){
+				self.all = res.list;
 				//Init api refs
-				App.api.img = res.img;
-				App.api.edge = res.edge;
+				App.api.img = 'http://static.lanet.ua/tv/';
+				App.api.edge = 'http://kirito.la.net.ua/tv/';
 
-				res.list.forEach(function(cur, indx){
-					self.cable.push(cur.id);
-				})
-				self.currentList = self.all; 
+				// res.list.forEach(function(cur, indx){
+				// 	self.cable.push(cur.id);
+				// })
+				self.currentList = res.sort.order.slice();
+				self.setSelectedIndex(0);
 				PubSub.publish(self.title + '/init');
-			})
+			// })
 			$.getJSON(App.api.main + App.api.rating, function(res){
 				self.rating = res;
 			})
@@ -348,6 +362,7 @@ PubSub.subscribe(App.components.Chans.title + '/init', loadingController);
 	/**
 	 *	@module Programs
 	 */
+/*
 App.components.Programs = (function  () {
 	function ProgramsModel (argument) {
 		// this.
@@ -384,7 +399,8 @@ App.components.Programs = (function  () {
 	var programs = new ProgramsModel();
 	return programs;
 })();
-
+*/
+/*
 App.components.ProgramDetailInfo = (function  () {
 	function ProgramDetailInfoModel () {
 			// body...
@@ -398,7 +414,7 @@ App.components.ProgramDetailInfo = (function  () {
 	var programDetailInfo = new ProgramDetailInfoModel();
 	return programDetailInfo;		
 })();
-
+*/
 	/**
 	 *   WIDGETS
 	 */
@@ -527,7 +543,7 @@ App.widgets.ChansList = {
 	spotlighted : false,
 	grid : {x : 1, y : 1},
 	neighbors : {
-		right : function () { return  App.widgets.ProgramsList } ,
+		// right : function () { return  App.widgets.ProgramsList } ,
 		left  : function () { return App.widgets.Catalog } 
 	},
 	//spotlight
@@ -561,11 +577,12 @@ App.widgets.ChansList = {
 	},
 	render : function(arr){
 			var html = '';
+			// App.components.Chans.all[9002]
 			arr.forEach(function(current, index){
 				// if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
-					html += '<div class="chan" tabindex='+ index + " data-id=\"" + current.id  + '\"'  
+					html += '<div class="chan" tabindex='+ index + " data-id=\"" + current  + '\"'  
 					+ " data-position=\"" + index + "\"" 
-					+ 'style="background-image: url(\'' + App.api.img + 'logo/'+ current.id + '.png\');">' 
+					+ 'style="background-image: url(\'' + App.api.img + 'logo/'+ current + '.png\');">' 
 					+ '</div>' ; 
 				})
 			$('#chans').html(html);
@@ -592,7 +609,7 @@ App.widgets.ChansList = {
 				self.widget.highlight();
 			break;
 			case App.components.Catalog.title + '/changeSelectedIndex':
-				model.changeCurList( App.components.Catalog.getSelectedIndex() );
+				// model.changeCurList( App.components.Catalog.getSelectedIndex() );
 				self.widget.render( model.getCurList() );
 			break;
 			default: 
@@ -608,7 +625,7 @@ App.widgets.ChansList = {
 	/**
 	* 	Widgets.ProgramsList
 	*/
-
+/*
 App.widgets.ProgramsList = {
 	model : App.components.Programs,
 	grid : {x : 1, y : 1},
@@ -664,12 +681,12 @@ App.widgets.ProgramsList = {
 		}
 		PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
 		PubSub.subscribe(App.components.Programs.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
-
+*/
 
 	/**
 	* 	Widgets.ProgramDetailInfo
 	*/
-
+/*
 App.widgets.ProgramDetailInfo = {
 	model : App.components.ProgramDetailInfo,
 	grid : {x : 1, y : 1},
@@ -703,7 +720,7 @@ App.widgets.ProgramDetailInfo.controller.handleEvent = function  (topic) {
 	}
 }
 PubSub.subscribe (App.components.Programs.title + '/changeSelectedIndex', App.widgets.ProgramDetailInfo.controller);
-
+*/
 
 
 
@@ -719,14 +736,14 @@ App.player = {
 	},
 	next : function  () {
 		this.chans.incSelectedIndex();
-		this.load( this.chans.getCurChan().id );
+		this.load( this.chans.getCurChan() );
 	},
 	prev : function  () {
 		this.chans.decSelectedIndex();
-		this.load( this.chans.getCurChan().id);
+		this.load( this.chans.getCurChan());
 	},
 	loadCur : function  () {
-		this.load( this.chans.getCurChan().id );
+		this.load( this.chans.getCurChan() );
 	}
 }
 
