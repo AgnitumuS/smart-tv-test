@@ -13,7 +13,7 @@ var PubSub = {
 			this.topics[topic].forEach(function(cur, ind){
 			cur.handleEvent(topic, args);
 			}) 
-			}
+		}
 	}
 };
 
@@ -54,10 +54,10 @@ var App = {
 	},
 	socket : {},
 	controllers: {},
+	widgets: {},
 	currentController: null,
 	initialize : function(){
 		Router.changeHash("loading");
-
 	}, 
 	initializeEvents: function(){
 		$(window).on("keydown", function(event){
@@ -68,20 +68,12 @@ var App = {
 			
 		});
 		
-		//WS
-		App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
-		App.socket.on('connect', function(data){
-			App.components.Chans.init(data);
-		})
-		App.socket.on('upd_epg', function  (data) {
-			// App.components.Chans.updEpg(data);	
-		})
 		
 		window.onhashchange =  function(event){
 			switch(location.hash){
 
 				case '#loading':
-					App.currentController = loadingController;
+					App.currentController = App.controllers.LoadingController;
 					App.currentController.init();
 				break;
 
@@ -118,69 +110,93 @@ var App = {
 App.start();
 
 
-		/**
-		* Player
- 		*
-		*/
-
 	/**
 	* Persistent storage
 	*/
 App.db = {
+	//must save 
+	//last chan
+	//favorite chans
 	prefix : '_db_',
 	get : function  (key) {
-		return localStorage['' +  this.prefix + key];
+		return localStorage['' +  this.prefix + key] 
+		? JSON.parse(localStorage['' +  this.prefix + key])
+		: undefined;
 	},
 	set : function  (key, val) {
-		localStorage.setItem(this.prefix + key, val);
+		localStorage.setItem(this.prefix + key, JSON.stringify(val));
+	},
+	toggleFavChan : function  (id) {
+		var fav = this.get('favChans') || [];
+		var position = fav.indexOf(id);
+		if( position === -1) {
+			fav.push(id);
+			console.log('added to favChans:' + id);	
+		} else {
+			fav.splice(position, 1);
+			console.log('remove from facChans' + id);
+		}
+		this.set('favChans', fav);
+		
 	}
 }
 	/** 
 	 * @module Loading Controller
 	 * 
 	 */
-function LoadingController(){
-	this.loaded = {
-		chans : false,
-		//костыль для теста
-		genres : true,
-	}
-	this.init = function(){
-		$('#loading').show();
-		// RootMenu.M.init();
-		// Chans.M.init();
-		// Genres.init();
-		// App.components.Chans.init();
-		//testing only
-		
-	}
-	this.isReady = function(){
-		return (this.loaded.chans && this.loaded.genres);
-	}
-	this.handleEvent = function(topic){
-		switch (topic){
-			case App.components.Chans.title + '/init':
-				this.loaded.chans = true;
-				//drawback - init current list of chans here
-				App.player.list = App.components.Chans.currentList;
-				App.components.Menu.setSelectedIndex(0);
-				App.player.loadCur();
-				
-			break;
-			case App.components.Genres.title + '/init':
-				this.loaded.genres = true;
-			break;
-			default:
-				throw new "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
-			break;
-		}
-		if( this.isReady ){
-			$('#loading').hide();
-			Router.changeHash('fsplayer');
-		}
-	}
-}
+App.controllers.LoadingController =  (function  () {
+	function LoadingController(){
+		this.loaded = {
 
+			chans : false,
+			//костыль для теста
+			genres : true,
+		}
+		this.init = function(){
+			$('#loading').show();
+
+			//WS
+			App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
+			App.socket.on('connect', function(data){
+				App.components.Chans.init(data);
+			})
+			App.socket.on('upd_epg', function  (data) {
+				App.components.Chans.updEpg(data);
+			})
+			App.socket.on('rating', function  (data) {
+				App.components.Chans.changeRating(data);
+			})
+			App.widgets.Menu.render();
+			App.widgets.Catalog.render();
+		}
+		this.isReady = function(){
+			return (this.loaded.chans && this.loaded.genres );
+		}
+		this.handleEvent = function(topic){
+			switch (topic){
+				case App.components.Chans.title + '/init':
+					this.loaded.chans = true;
+					//drawback - init current list of chans here
+					App.player.list = App.components.Chans.currentList;
+					// App.components.Menu.setSelectedIndex(0);
+					App.player.loadCur();
+				break;
+				case App.components.Genres.title + '/init':
+					this.loaded.genres = true;
+				break;
+				default:
+					throw new "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
+				break;
+			}
+			if( this.isReady ){
+				$('#loading').hide();
+				Router.changeHash('fsplayer');
+			}
+		}
+	}
+	var controller  = new LoadingController();
+	return controller;
+})();
 
 
 
@@ -214,7 +230,7 @@ App.components = {};
 App.components.Menu = (function (){
 	function MenuModel () {
 			this.title = 'Menu',
-			this.selectedIndex = -1;
+			this.selectedIndex = 0;
 			this.all = ['catalog', 'genres'];
 			this.currentList = this.all
 		}
@@ -226,7 +242,7 @@ App.components.Menu = (function (){
 App.components.Catalog = (function () {
 	
 	function CatalogModel () {
-		this.selectedIndex = -1;
+		this.selectedIndex = 0;
 		this.title = 'Catalog';
 		this.all = ['all', 'favorites', 'rating'];
 		this.currentList = this.all;
@@ -245,51 +261,25 @@ App.components.Chans = (function () {
 		this.title = 'Chans';
 		this.selectedIndex = -1;
 		this.all = [];
-		this.favorites = [{
-      "id": 9001,
-      "title": "Первый национальный",
-      "ratio": "4:3",
-      "rec": 0
-    },
-    {
-      "id": 9002,
-      "title": "1+1",
-      "ratio": "4:3",
-      "rec": 1
-    }];
-		this.recommended = [{
-      "id": 9003,
-      "title": "Киев",
-      "ratio": "4:3",
-      "rec": 0
-    },
-    {
-      "id": 9004,
-      "title": "ICTV",
-      "ratio": "16:9",
-      "rec": 1
-    }];
+		this.favorites = [];
 		this.currentList = [];
 		this.rating = [];
-		this.cable = [];
+		this.order = [];
 		this.init = function(res){
 			var self = this;
 			// $.getJSON(App.api.main + "list.json", function(res){
-				self.all = res.list;
-				//Init api refs
-				App.api.img = 'http://static.lanet.ua/tv/';
-				App.api.edge = 'http://kirito.la.net.ua/tv/';
+			self.all = res.list;
+			//Init api refs
+			App.api.img = 'http://static.lanet.ua/tv/';
+			App.api.edge = 'http://kirito.la.net.ua/tv/';
 
-				// res.list.forEach(function(cur, indx){
-				// 	self.cable.push(cur.id);
-				// })
-				self.currentList = res.sort.order.slice();
-				self.setSelectedIndex(0);
-				PubSub.publish(self.title + '/init');
-			// })
-			$.getJSON(App.api.main + App.api.rating, function(res){
-				self.rating = res;
-			})
+			self.order = res.sort.order.slice();
+			self.rating = res.sort.rating.slice();
+			self.favorites = App.db.get('favChans');
+			console.log(self.order.length, "order", self.rating.length, " rating");
+			self.currentList = self.order;
+			self.setSelectedIndex(0);
+			PubSub.publish(self.title + '/init');
 		};
 					//Increment \ decrement selected index
 		this.incSelectedIndex = function  () {
@@ -335,13 +325,13 @@ App.components.Chans = (function () {
 		//get current list
 		switch ( ind ){
 			case 0: 
-				this.currentList = this.all;
+				this.currentList = this.order;
 			break;
 			case 1:
-				this.currentList = this.favorites;
+				this.currentList = App.db.get('favChans') || [];
 			break;
 			case 2:
-				this.currentList = this.recommended;
+				this.currentList = this.rating;
 			break;
 			default :
 				console.log('current list changed to all');
@@ -352,69 +342,26 @@ App.components.Chans = (function () {
 		App.player.list = this.currentList;
 		this.setSelectedIndex(0);
 	}
+	//Event from ws
+	ChansModel.prototype.updEpg = function  (data) {
+		this.all[data.id].epg = data.epg;
+		console.log('upd_epg event ws');
+	}
+	ChansModel.prototype.changeRating = function  (data) {
+		this.rating = data;
+	}
+	//
+	ChansModel.prototype.switchFav = function  (id) {
+		App.db.toggleFavChan(id);
+	}
 	var chans = new ChansModel();
 	return chans;
 })();
 
-var loadingController = new LoadingController();
-PubSub.subscribe(App.components.Chans.title + '/init', loadingController);
-// PubSub.subscribe(Genres.title + '/init', loadingController);
-	/**
-	 *	@module Programs
-	 */
-/*
-App.components.Programs = (function  () {
-	function ProgramsModel (argument) {
-		// this.
-		this.title = 'Programs';
-		this.selectedIndex = -1;
-		this.curDay = [];
-		this.now = {},
-		this.getCurDay = function(){
-			var _this = this;
-			return $.getJSON(App.api.main + 'epg/' + App.components.Chans.getCurChan().id + '/day', function(res){
-				_this.curDay = res;
-				_this.currentList= _this.curDay;
-			})
-		},
-		this.getSelectedEl = function (){
-			return this.curDay[this.getSelectedIndex ()];
-		}
-		this.findNow = function(){
-			var now = Math.floor(new Date().getTime() / 1000);
-			for (var entity = 0; this.curDay.length ; entity ++ ){
-				if( this.curDay[entity].stop > now ){
-					this.now.obj = this.curDay[entity];
-					this.now.ind = entity;
-					this.set('selectedIndex', entity, function(){
-						PubSub.publish(this.title + '/changeSelectedIndex');
-					})
-					break;
-				}
-			}
-			return this.now.ind;
-		}
-	}
-	ProgramsModel.prototype = new Model();
-	var programs = new ProgramsModel();
-	return programs;
-})();
-*/
-/*
-App.components.ProgramDetailInfo = (function  () {
-	function ProgramDetailInfoModel () {
-			// body...
-			this.title = 'ProgramDetailInfo',
-			// this.content = {}
-			this.get = function () {
-				return App.components.Programs.getSelectedEl();
-			}
-		}
 
-	var programDetailInfo = new ProgramDetailInfoModel();
-	return programDetailInfo;		
-})();
-*/
+PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingController);
+// PubSub.subscribe(Genres.title + '/init', loadingController);
+	
 	/**
 	 *   WIDGETS
 	 */
@@ -435,14 +382,14 @@ App.widgets.Menu = {
 		},
 		//spotlight
 		active : false,
-		show : function  () {
-			this.render(this.model.currentList);
-			this.highlight();
-		},
+		// show : function  () {
+		// 	this.render(this.model.currentList);
+		// 	this.highlight();
+		// },
 		init : function() {},
-		render : function(arr){
+		render : function(){
 			var html = '';
-			arr.forEach(function  (cur, ind) {
+			this.model.all.forEach(function  (cur, ind) {
 				html += '<span class=menuentity tabindex=' +ind+ '>' + cur  + '</span>';
 			})
 			$('#menu').html(html);
@@ -491,9 +438,9 @@ App.widgets.Catalog = {
 	//spotlight
 	active : false,
 	init : function() {},
-	render : function(arr){
+	render : function(){
 		var html = '';
-		arr.forEach(function  (cur, ind) {
+		this.model.currentList.forEach(function  (cur, ind) {
 			html += '<span class=catalogentity tabindex=' +ind+ '>' + cur  + '</span>';
 		})
 		$('#catalog').html(html);
@@ -553,17 +500,17 @@ App.widgets.ChansList = {
 		this.render(this.model.currentList);
 	},
 	scrollDown : function(){
-		var step = $('#chans').children(":first").width();
+		var step = $('#chans').children(":first").height();
 		var cur = $('#chans').scrollTop();
 		$('#chans').scrollTop( cur + step);	 
 	},
 	scrollTop : function(){
-		var step = $('#chans').children(":first").width();
+		var step = $('#chans').children(":first").height();
 		var cur = $('#chans').scrollTop();
 		$('#chans').scrollTop( cur - step);	 
 	},
 	scrollToCur : function  () {
-		var step = $('#chans').children(":first").width();
+		var step = $('#chans').children(":first").height();
 		var items = this.model.getSelectedIndex();
 		$('#chans').scrollTop(step * items);		
 	},
@@ -575,23 +522,30 @@ App.widgets.ChansList = {
 			: $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
 	},
-	render : function(arr){
-			var html = '';
-			// App.components.Chans.all[9002]
-			arr.forEach(function(current, index){
-				// if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
-					html += '<div class="chan" tabindex='+ index + " data-id=\"" + current  + '\"'  
-					+ " data-position=\"" + index + "\"" 
-					+ 'style="background-image: url(\'' + App.api.img + 'logo/'+ current + '.png\');">' 
-					+ '</div>' ; 
-				})
-			$('#chans').html(html);
-			this.highlight();
-			},
+
+	render : function(){
+		var html = '';
+		var self = this;
+		this.model.currentList.forEach(function(current, index){
+			// if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
+				html += '<div class="chan" tabindex='+ index + " data-id= "+ current  + '>' 
+					+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ current + '.png\');"></div>';
+					if (self.model.all[current].epg[0]){
+						html += '<span class="epgnow">' + self.model.all[current].epg[0].title +'</span>'
+					}; 
+					html+= ' </div>';
+			})
+		$('#chans').html(html);
+		this.highlight();
+	},
+
 	enter : function  () {
 		App.player.loadCur();
 		$('#browseView').hide();
 		Router.changeHash('fsplayer');
+	},
+	yellow : function  () {
+		this.model.switchFav(this.model.getCurChan());
 	}
 }
 	App.widgets.ChansList.controller = (function  () {
@@ -608,9 +562,12 @@ App.widgets.ChansList = {
 			case App.components.Chans.title + '/changeSelectedIndex':
 				self.widget.highlight();
 			break;
+			case App.components.Chans.title + '/init':
+				self.widget.render();
+			break;
 			case App.components.Catalog.title + '/changeSelectedIndex':
-				// model.changeCurList( App.components.Catalog.getSelectedIndex() );
-				self.widget.render( model.getCurList() );
+				model.changeCurList( App.components.Catalog.getSelectedIndex() );
+				self.widget.render();
 			break;
 			default: 
 				throw 'Observer was subscribed but there are no realization : ' + this;
@@ -618,111 +575,15 @@ App.widgets.ChansList = {
 		}
 	}
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
+	PubSub.subscribe(App.components.Chans.title + '/init', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 
 
 
-	/**
-	* 	Widgets.ProgramsList
-	*/
-/*
-App.widgets.ProgramsList = {
-	model : App.components.Programs,
-	grid : {x : 1, y : 1},
-	neighbors : {
-		// right : function () { return App.widgets.ProgramDetailInfo } ,
-		left : function () {return  App.widgets.ChansList },
-	},
-	//spotlight
-	active: false,
-	init : function() {},
-	render : function(arr){
-		var html = '';
-			arr.forEach(function(cur, ind){
-				html += '<span class=epgentity tabindex=' +ind+ '>' + cur.title  + '</span>';
-			})
-			$('#fullepg').html(html);
-	},
-	highlight : function  () {
-		var all = 'spotlight highlight';
-		$('#fullepg .epgentity').removeClass(all);
-		this.active 
-			? $('.epgentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-			: $('.epgentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
-	}
-}
-	App.widgets.ProgramsList.controller = (function  () {
-		function controller (widget) {
-			this.widget = widget;
-		}
-		var controller = new controller (App.widgets.ProgramsList);
-		return controller;
-	})();
-	App.widgets.ProgramsList.controller.handleEvent = function(topic){
-		var self = this;
-			switch (topic){
-				case App.components.Chans.title + '/changeSelectedIndex':
-
-				self.widget.model.getCurDay()
-					.done(function(){
-						self.widget.model.findNow();
-						self.widget.render(self.widget.model.curDay);
-						self.widget.highlight();
-					})
-				break;
-				case self.widget.model.title + '/changeSelectedIndex':
-					self.widget.highlight();
-				break;
-				default:
-					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
-				break;
-			}
-		}
-		PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
-		PubSub.subscribe(App.components.Programs.title + '/changeSelectedIndex',App.widgets.ProgramsList.controller );
-*/
-
-	/**
-	* 	Widgets.ProgramDetailInfo
-	*/
-/*
-App.widgets.ProgramDetailInfo = {
-	model : App.components.ProgramDetailInfo,
-	grid : {x : 1, y : 1},
-	neighbors : {
-		left : function () {return  App.widgets.ProgramsList },
-	},
-	//spotlight
-	active: false,
-	render : function  (obj) {
-		var html = '';
-		html += '<span  class="programinfotext" tabindex=' + '0' + '>' + obj.text  + '</span>';
-		$('#programinfo').html(html);
-	}
-}
-App.widgets.ProgramDetailInfo.controller = (function  () {
-		function controller (widget) {
-			this.widget = widget;
-		}
-		var controller = new controller (App.widgets.ProgramDetailInfo);
-		return controller;
-	})();
-App.widgets.ProgramDetailInfo.controller.handleEvent = function  (topic) {
-	var self = this;
-	switch (topic){
-		case  App.components.Programs.title + '/changeSelectedIndex':
-			self.widget.render (self.widget.model.get());
-		break;
-		default :
-			throw 'Illegal using controller handleEvent'
-		break;
-	}
-}
-PubSub.subscribe (App.components.Programs.title + '/changeSelectedIndex', App.widgets.ProgramDetailInfo.controller);
-*/
-
-
+		/**
+		* Player component
+		*/
 
 App.player = {
 	chans : App.components.Chans,
@@ -873,10 +734,8 @@ function BrowseViewController (argument) {
 		//if there are no saved state, use first menu first catalog	s
 		$('#browseView').show();
 		this.setActiveWidget (App.widgets.ChansList);
-		App.widgets.Menu.show();
+		// App.widgets.Menu.show();
 		this.activeWidget.scrollToCur();
-		// this.activeWidget.show();
-		// App.components.Menu.setSelectedIndex(0);			
 	}
 	this.setActiveWidget = function  (widget) {
 		if (this.activeWidget){
@@ -911,7 +770,7 @@ function BrowseViewController (argument) {
 					throw new 'change widget without appropriate orient';
 				break;
 			}
-			return witch ? true :false;
+			return witch && witch().model.currentList.length ? true :false;
 		}
 		else {
 			throw new 'Illegal changeWidgetByDirection usage (without orient)';
@@ -1011,6 +870,12 @@ function BrowseViewController (argument) {
 	this.PAGE_DOWN = function  () {
 		App.player.prev();
 	}
+	this.YELLOW = function  () {
+		if(this.activeWidget.yellow){
+			this.activeWidget.yellow();
+		}
+	}
+	
 }
 var bwController = new BrowseViewController();
 
@@ -1055,6 +920,7 @@ App.device = {
             '403': 'RED',
             '404': 'GREEN', //g
             '405': 'YELLOW', //y
+            '67': 'YELLOW', //"C" testing
             '406': 'BLUE',
 	}, 
 	getKeyFunction: function(event){

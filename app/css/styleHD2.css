@@ -62,7 +62,7 @@ body{
 	} 
 
 #chans{
-	width:100px;
+	width:500px;
 	height: 100%;
 	overflow: auto;
 	display: block;
@@ -73,10 +73,21 @@ body{
 		width: 100%;
 		height: 80px;
 		margin-bottom:8px;
-		opacity: 0.54;
+		/*opacity: 0.54;*/
 	    background-repeat: no-repeat;
 	    background-size: 80%;
 	    background-position: center;
+	}
+	.logochan{
+		width:100px;
+		height: 100%;
+		float:left;
+	}
+	.epgnow{
+		display: block;
+		color:white;
+		float:left;
+
 	}
 	.chan:hover{
 		opacity: 0.87;
@@ -98,6 +109,8 @@ body{
 /*Основной центр внимания*/
 .spotlight {
 	border: 3px solid yellow ;
+/*	transform:scale(1.1,1.1);
+	transition:all 300ms;*/
 	background-color: black;
 }
 
