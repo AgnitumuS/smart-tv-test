@@ -28,7 +28,7 @@ var Router = {
 /**
 * 	Debug
 */
-	var debug = function  () {
+	var debug = (function  () {
 		var dTimeout;
 		function debug (text) {
 			$('#debug').show();
@@ -40,7 +40,7 @@ var Router = {
 				},	10000 );
 		}
 		return debug;
-	}();
+	})();
 
 /**/
 
@@ -349,6 +349,7 @@ App.components.Chans = (function () {
 	}
 	ChansModel.prototype.changeRating = function  (data) {
 		this.rating = data;
+		console.log("ws rating changed");
 	}
 	//
 	ChansModel.prototype.switchFav = function  (id) {
@@ -609,14 +610,45 @@ App.player = {
 }
 
 
+App.widgets.FSSmallEpg = {
+	model : App.components.Chans
+}
+App.widgets.FSSmallEpg.render = (function  () {
+	var self = App.widgets.FSSmallEpg;
+	var dTimeout;
+	function show () {
+		$("#smallepg").show();
+		//add text
+		var id = self.model.getCurChan();
+		var html =  '<div class="logochan" style="background-image: url(\'' 
+			+ App.api.img + 'logo/'+ id + '.png\');"></div>';
+		if (self.model.all[id].epg[0]){
+			html += '<span class="epgnow">' + self.model.all[id].epg[0].title +'</span>'
+		}; 
+		//
+		//<div class="logochan"></div>
+		//<div class="now"></div>
+		$("#smallepg").html(html);
+		clearTimeout(dTimeout);
+		dTimeout = setTimeout(
+			function  (){
+				$('#smallepg').hide();
+			},	3000 );
+	}
+	return show; 
+})();
+
 App.controllers.FSPlayerController = {
 	init : function  () {
 	},
 	PAGE_UP : function  () {
 		App.player.next();
+		App.widgets.FSSmallEpg.render();
 	},
 	PAGE_DOWN : function  () {
 		App.player.prev();
+		App.widgets.FSSmallEpg.render();
+
 	},
 	ENTER : function  () {
 		//show quick menu

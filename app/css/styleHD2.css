@@ -119,9 +119,17 @@ body{
 	background-color:  black;
 }
 
+#smallepg{
+	display: none;
+	position: absolute;
+	top:0;
+	left:400px;
+	width:400px;
+	height: 100px;
+	background-color: green;
+}
 
-
-#fullepg{
+/*#fullepg{
 	width:300px;
 	height: 100%;
 	overflow: auto;
@@ -131,10 +139,8 @@ body{
 }
 	.epgentity{
 		display: block;
-		/*border:2px solid blue;*/
 		color:white;
 		height: 40px;
-		/*border : 1px solid grey;*/
 
 	}
 
@@ -147,7 +153,7 @@ body{
 }
 	.programinfotext {
 		color: white;
-	}
+	}*/
 
 
 #quickMenuView {
