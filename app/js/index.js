@@ -137,7 +137,18 @@ App.db = {
 			console.log('remove from facChans' + id);
 		}
 		this.set('favChans', fav);
-		
+	},
+	/**
+     * @param {Object} chan - новое значение для chan. Не обязателен. 
+     *     Если указан, то lastChan(...) действует, как setter. 
+     *     Если не указан, то lastChan() действует, как getter.
+     */
+	lastChan : function  (chan) {
+		if (typeof chan != "undefined") {
+			this.set('lastChan', chan);
+		} else {
+			return this.get('lastChan') || {};
+		}
 	}
 }
 	/** 
@@ -291,8 +302,11 @@ App.components.Chans = (function () {
 				} else {
 					this.setSelectedIndex (0);
 				}	
+				return this.getCurChan();
+			} else {
+				//show last runned chan if currentList is empty
+				return App.db.lastChan();
 			}
-			return this.getCurChan();
 		}
 		this.switchPrev = function  () {
 			if(this.currentList.length){
@@ -301,20 +315,12 @@ App.components.Chans = (function () {
 				} else {
 					this.setSelectedIndex (this.currentList.length - 1);
 				}
-			}	
 			return this.getCurChan();		
+			} else {
+				//show last runned chan if currentList is empty
+				return App.db.lastChan();
+			}
 		}
-
-		// this.incSelectedIndex = function  () {
-		// 	if( this.getSelectedIndex()+1 < this.currentList.length ) {
-		// 		this.setSelectedIndex ( this.getSelectedIndex() + 1);
-		// 	} 
-		// };
-		// this.decSelectedIndex = function  () {
-		// 	if(this.getSelectedIndex() -1 > -1) {
-		// 		this.setSelectedIndex ( this.getSelectedIndex() - 1);
-		// 	}
-		// }
 	}
 	
 	ChansModel.prototype = new Model();
@@ -330,25 +336,29 @@ App.components.Chans = (function () {
     	}
 	
 	ChansModel.prototype.changeCurList = function (ind) {
+		var list = [];
 		switch ( ind ){
 			case 0: 
-				this.currentList = this.order || [];
+				list = this.order || [];
 			break;
 			case 1:
-				this.currentList = App.db.get('favChans') || [];
+				list = App.db.get('favChans') || [];
 			break;
 			case 2:
-				this.currentList = this.rating || [];
+				list = this.rating || [];
 			break;
 			default :
-				console.err('current list changed to all');
-				this.currentList = this.all; 
+				throw 'Wrong list ind in changeCurList'
 			break;
 		}
-		console.log('current list changed to ', this.currentList);
-		// !!!!! Change current list for Player
-		App.player.list = this.currentList;
-		this.setSelectedIndex(0);
+		// if(list.length){
+			console.log('current list changed to ', this.currentList);
+			this.currentList = list;
+			this.setSelectedIndex(0);
+		// } else {
+			// this.currentList = list;
+			// this.setSelectedIndex(0);
+		// }
 	}
 	//Event from ws
 	ChansModel.prototype.updEpg = function  (data) {
@@ -597,19 +607,18 @@ App.widgets.ChansList = {
 App.player = {
 	chans : App.components.Chans,
 	player : $('#iPlayer'),
-	list : [],
+	// list : [],
 	init : function  () {
 
 	},
 	load : function  (chan) {
 		this.player.attr('src', chan.url);
+		App.db.lastChan(chan);
 	},
 	next : function  () {
-		// this.chans.incSelectedIndex();
 		this.load( this.chans.switchNext() );
 	},
 	prev : function  () {
-		// this.chans.decSelectedIndex();
 		this.load( this.chans.switchPrev());
 	},
 	loadCur : function  () {
