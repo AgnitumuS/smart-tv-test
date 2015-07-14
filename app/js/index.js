@@ -83,7 +83,7 @@ var App = {
 				
 				case '#fsplayer':
 					App.currentController = App.controllers.FSPlayerController;
-					// App.currentController.init();
+					App.currentController.init();
 					break;
 				
 				case '#browse':
@@ -155,6 +155,8 @@ App.controllers.LoadingController =  (function  () {
 		this.init = function(){
 			$('#loading').show();
 
+			App.api.img = 'http://static.lanet.ua/tv/';
+			App.api.edge = 'http://kirito.la.net.ua/tv/';
 			//WS
 			App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
 			App.socket.on('connect', function(data){
@@ -262,82 +264,88 @@ App.components.Chans = (function () {
 		this.selectedIndex = -1;
 		this.all = [];
 		this.favorites = [];
+		//array with id's only
 		this.currentList = [];
+		//rating order
 		this.rating = [];
+		//cable order
 		this.order = [];
+
 		this.init = function(res){
 			var self = this;
-			// $.getJSON(App.api.main + "list.json", function(res){
 			self.all = res.list;
 			//Init api refs
-			App.api.img = 'http://static.lanet.ua/tv/';
-			App.api.edge = 'http://kirito.la.net.ua/tv/';
-
 			self.order = res.sort.order.slice();
 			self.rating = res.sort.rating.slice();
 			self.favorites = App.db.get('favChans');
-			console.log(self.order.length, "order", self.rating.length, " rating");
 			self.currentList = self.order;
+
 			self.setSelectedIndex(0);
 			PubSub.publish(self.title + '/init');
 		};
-					//Increment \ decrement selected index
-		this.incSelectedIndex = function  () {
-			if( this.getSelectedIndex()+1 < this.currentList.length ) {
-				this.setSelectedIndex ( this.getSelectedIndex() + 1);
-			} 
-		};
-		this.decSelectedIndex = function  () {
-			if(this.getSelectedIndex() -1 > -1) {
-				this.setSelectedIndex ( this.getSelectedIndex() - 1);
+
+		this.switchNext = function  () {
+			if (this.currentList.length){
+				if (this.getSelectedIndex() + 1 < this.currentList.length) {
+					this.setSelectedIndex ( this.getSelectedIndex() + 1);
+				} else {
+					this.setSelectedIndex (0);
+				}	
 			}
+			return this.getCurChan();
 		}
+		this.switchPrev = function  () {
+			if(this.currentList.length){
+				if (this.getSelectedIndex() -1 > -1){
+					this.setSelectedIndex ( this.getSelectedIndex() - 1);
+				} else {
+					this.setSelectedIndex (this.currentList.length - 1);
+				}
+			}	
+			return this.getCurChan();		
+		}
+
+		// this.incSelectedIndex = function  () {
+		// 	if( this.getSelectedIndex()+1 < this.currentList.length ) {
+		// 		this.setSelectedIndex ( this.getSelectedIndex() + 1);
+		// 	} 
+		// };
+		// this.decSelectedIndex = function  () {
+		// 	if(this.getSelectedIndex() -1 > -1) {
+		// 		this.setSelectedIndex ( this.getSelectedIndex() - 1);
+		// 	}
+		// }
 	}
 	
 	ChansModel.prototype = new Model();
-	/*
-	* Sort channels by rating or by cable. need refactor
-	*/
-	ChansModel.prototype.sort = function(type){
- 		var arr;
- 		if (type === "rating"){
- 			arr = $channels.rating;
- 		} else if (type == "cable"){
- 			arr = $channels.cable;
- 		}
- 		this.chans.sort(function( a , b ){
- 			if ( arr.indexOf(a) && arr.indexOf(b) ) {
- 				return arr.indexOf(a.id) - arr.indexOf(b.id);
- 			} else {
- 				return 0;
- 			}
- 		})
- 	}
- 	ChansModel.prototype.getCurChan = function  () {
+
+ 	ChansModel.prototype.getCurChanId = function  () {
  		return this.currentList[this.getSelectedIndex()];
  		}
+ 	ChansModel.prototype.getCurChan = function  () {
+ 		return this.all[this.getCurChanId()];
+ 	}
  	ChansModel.prototype.getCurList = function  () {
  		return this.currentList;
     	}
 	
 	ChansModel.prototype.changeCurList = function (ind) {
-		// body...
-		//get current list
 		switch ( ind ){
 			case 0: 
-				this.currentList = this.order;
+				this.currentList = this.order || [];
 			break;
 			case 1:
 				this.currentList = App.db.get('favChans') || [];
 			break;
 			case 2:
-				this.currentList = this.rating;
+				this.currentList = this.rating || [];
 			break;
 			default :
-				console.log('current list changed to all');
+				console.err('current list changed to all');
 				this.currentList = this.all; 
 			break;
 		}
+		console.log('current list changed to ', this.currentList);
 		// !!!!! Change current list for Player
 		App.player.list = this.currentList;
 		this.setSelectedIndex(0);
@@ -546,7 +554,7 @@ App.widgets.ChansList = {
 		Router.changeHash('fsplayer');
 	},
 	yellow : function  () {
-		this.model.switchFav(this.model.getCurChan());
+		this.model.switchFav(this.model.getCurChanId());
 	}
 }
 	App.widgets.ChansList.controller = (function  () {
@@ -593,16 +601,16 @@ App.player = {
 	init : function  () {
 
 	},
-	load : function  (id) {
-		this.player.attr('src', App.api.edge + id  + '.m3u8');
+	load : function  (chan) {
+		this.player.attr('src', chan.url);
 	},
 	next : function  () {
-		this.chans.incSelectedIndex();
-		this.load( this.chans.getCurChan() );
+		// this.chans.incSelectedIndex();
+		this.load( this.chans.switchNext() );
 	},
 	prev : function  () {
-		this.chans.decSelectedIndex();
-		this.load( this.chans.getCurChan());
+		// this.chans.decSelectedIndex();
+		this.load( this.chans.switchPrev());
 	},
 	loadCur : function  () {
 		this.load( this.chans.getCurChan() );
@@ -619,7 +627,7 @@ App.widgets.FSSmallEpg.render = (function  () {
 	function show () {
 		$("#smallepg").show();
 		//add text
-		var id = self.model.getCurChan();
+		var id = self.model.getCurChanId();
 		var html =  '<div class="logochan" style="background-image: url(\'' 
 			+ App.api.img + 'logo/'+ id + '.png\');"></div>';
 		if (self.model.all[id].epg[0]){
@@ -640,6 +648,7 @@ App.widgets.FSSmallEpg.render = (function  () {
 
 App.controllers.FSPlayerController = {
 	init : function  () {
+		App.widgets.FSSmallEpg.render();
 	},
 	PAGE_UP : function  () {
 		App.player.next();
