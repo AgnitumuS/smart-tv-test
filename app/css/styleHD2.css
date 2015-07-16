@@ -8,8 +8,8 @@ body{
 }
 
 #loading{
-	height: 100%;
-	width: 100%;
+	height: 700px;
+	width: 700px;
 	background-color: white;
 	position: absolute;
 	top:0;
@@ -39,7 +39,7 @@ body{
 
 #menu{
 	width:100px;
-	height: 100%;
+	height: 670px;
 	float:left;
 	background-color: #2196F3;
 
@@ -47,7 +47,7 @@ body{
 #catalog{
 	float:left;
 	width:100px;
-	height:100%;
+	height:670px;
 	background-color: #FF80AB;
 ;
 }
@@ -63,7 +63,7 @@ body{
 
 #chans{
 	width:500px;
-	height: 100%;
+	height: 670px;
 	overflow: auto;
 	display: block;
 	float:left;
@@ -118,6 +118,22 @@ body{
 .highlight {
 	background-color:  black;
 }
+
+#hint{
+	position: absolute;
+	bottom: 0;
+	height: 50px;
+	width: 100%;
+	background: rgba(0,0,0,0.56);
+}
+	.hintbut{
+		position: relative;
+		left:300px;
+		width: 100px;
+		height: 100%;
+		background-color: yellow;
+	}
+
 
 #smallepg{
 	display: none;
@@ -223,8 +239,10 @@ body{
 	position: absolute;
 	bottom:0px;
 	right: 0px;
-	height: 100px;
+	height: 500px;
 	width:200px;
 	background-color: black;
 	color:white;
+	z-index: 500;
+	overflow: auto;
 }

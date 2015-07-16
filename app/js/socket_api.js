@@ -47,7 +47,6 @@ function SocketAPI(addr, params) {
 			try {
 				data = JSON.parse(msg.data)
 			} catch(e) {};
-
 			if (data.type && data.data) {
 				if (data.type in Router) {
 					Router[ data.type ] ( data.data )

@@ -6,14 +6,14 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="description" content="LanetTV for WebOS"/>
 	<meta charset="UTF-8"/>
-	<link rel="stylesheet" type="text/css" href="css/styleHD2.css">
-	<script type="text/javascript" src="js/socket_api.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/styleHD2.css">
+	<script type="text/javascript" src="./js/socket_api.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300italic,300,100italic,100,400italic,500,500italic,700,700italic,900italic,900' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
-	 <video id="iPlayer" autoplay muted>
+	 <video id="iPlayer" autoplay >
 	</video> 
 	
 	<div id="loading">
@@ -26,7 +26,12 @@
 	 <div id="chans"></div>
 <!-- 	 <div id="fullepg"></div>
 	 <div id="programinfo"></div> -->
+	 <div id="hint">
+		<div class="hintbut yellow"></div>
+		<div class="hintbut"></div>
+	</div>
 </div>
+
 
 <div id="smallepg">
 </div>
@@ -41,7 +46,9 @@
 	  </div>
 </div>
 
-<div id="debug"></div>
+<div id="debug">
+	<!-- -->
+</div>
 </body>
 	<!--  // <script type="text/javascript" src="js/fn.js"></script> -->
 	<script type="text/javascript" src="js/index.js"></script>

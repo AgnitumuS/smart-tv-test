@@ -32,7 +32,7 @@ var Router = {
 		var dTimeout;
 		function debug (text) {
 			$('#debug').show();
-			$('#debug').html(text);
+			$('#debug').append(text , '<br>');
 			clearTimeout(dTimeout);
 			dTimeout = setTimeout(
 				function  (){
@@ -41,7 +41,24 @@ var Router = {
 		}
 		return debug;
 	})();
-
+	$("#testBut").on('click', function  (event) {
+		var Sockeeeeet = new WebSocket('wss://data.lanet.tv');
+			Sockeeeeet.onopen = function  (event) {
+				debug('CONGRAT');
+			}
+			Sockeeeeet.onerror = function(error) {
+				  	debug("Ошибка ");
+				  	debug(error);
+			};
+		var Sockeeeeet2 = new WebSocket('ws://data.lanet.tv');
+			Sockeeeeet2.onopen = function  (event) {
+				debug('CONGRAT');
+			}
+			Sockeeeeet2.onerror = function(error) {
+				  	debug("Ошибка ");
+				  	debug(error);
+			};
+	})
 /**/
 
 var App = {
@@ -50,7 +67,8 @@ var App = {
 		epg   : "http://api.lanet.tv/epg/",
 		rating : "list/rating/all",
 		img : '',
-		ws : 'wss://data.lanet.tv/'
+		ws : 'ws://data.lanet.tv',
+		data : "https://data.lanet.tv/"
 	},
 	socket : {},
 	controllers: {},
@@ -168,17 +186,31 @@ App.controllers.LoadingController =  (function  () {
 
 			App.api.img = 'http://static.lanet.ua/tv/';
 			App.api.edge = 'http://kirito.la.net.ua/tv/';
-			//WS
-			App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
-			App.socket.on('connect', function(data){
+			
+			$.getJSON(App.api.data, function  (data) {
 				App.components.Chans.init(data);
-			})
-			App.socket.on('upd_epg', function  (data) {
-				App.components.Chans.updEpg(data);
-			})
-			App.socket.on('rating', function  (data) {
-				App.components.Chans.changeRating(data);
-			})
+			});
+
+			/*		WebSocket's 	*/
+				/*
+				App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
+				debug('created socket');
+
+				App.socket.on('connect', function(data){
+					App.components.Chans.init(data);
+					debug('ws connected');
+				})
+				
+				App.socket.on('upd_epg', function  (data) {
+					App.components.Chans.updEpg(data);
+					debug('ws upd_epg')
+				})
+
+				App.socket.on('rating', function  (data) {
+					App.components.Chans.changeRating(data);
+				})
+				*/
+			/*		WebSocket's 	*/
 			App.widgets.Menu.render();
 			App.widgets.Catalog.render();
 		}
@@ -472,7 +504,12 @@ App.widgets.Catalog = {
 			: $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
 	},
-	}	
+	enter : function  () {
+		if( bwController.hasNeighbor('RIGHT')){
+				bwController.changeWidgetByDirection ('RIGHT');
+		}
+	}
+}	
 	App.widgets.Catalog.controller = (function  () {
 		function controller (widget) {
 			this.widget = widget;
