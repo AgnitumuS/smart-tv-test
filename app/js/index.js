@@ -211,6 +211,7 @@ App.controllers.LoadingController =  (function  () {
 				})
 				*/
 			/*		WebSocket's 	*/
+						
 			App.widgets.Menu.render();
 			App.widgets.Catalog.render();
 		}
