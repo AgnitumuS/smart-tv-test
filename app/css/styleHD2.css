@@ -103,6 +103,15 @@ body{
 		background-repeat: no-repeat;
 		background-position: center; 
 	}
+		.favstar{
+			/*display: none;*/
+			position: relative;
+			left:105px;
+			top: 10px;
+			height: 24px;
+			width:	24px;
+			background-image: url('../assets/star.png');
+		}
 	span.epgnow{
 		display: block;
 		color:white;

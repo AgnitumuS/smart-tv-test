@@ -135,18 +135,18 @@ App.db = {
 	set : function  (key, val) {
 		localStorage.setItem(this.prefix + key, JSON.stringify(val));
 	},
-	toggleFavChan : function  (id) {
-		var fav = this.get('favChans') || [];
-		var position = fav.indexOf(id);
-		if( position === -1) {
-			fav.push(id);
-			console.log('added to favChans:' + id);	
-		} else {
-			fav.splice(position, 1);
-			console.log('remove from facChans' + id);
-		}
-		this.set('favChans', fav);
-	},
+	// toggleFavChan : function  (id) {
+	// 	var fav = this.get('favChans') || [];
+	// 	var position = fav.indexOf(id);
+	// 	if( position === -1) {
+	// 		fav.push(id);
+	// 		console.log('added to favChans:' + id);	
+	// 	} else {
+	// 		fav.splice(position, 1);
+	// 		console.log('remove from facChans' + id);
+	// 	}
+	// 	this.set('favChans', fav);
+	// },
 	/**
      * @param {Object} chan - новое значение для chan. Не обязателен. 
      * @description   Если указан, то lastChan(...) действует, как setter. 
@@ -401,8 +401,25 @@ App.components.Chans = (function () {
 		console.log("ws rating changed");
 	}
 	//
-	ChansModel.prototype.switchFav = function  (id) {
-		App.db.toggleFavChan(id);
+	ChansModel.prototype.toggleFavChan = function  (id) {
+		var fav = this.favorites;
+		var db = App.db;
+		var position = fav.indexOf(id);
+		if( position === -1) {
+			fav.push(id);
+			this.favorites = fav;
+			console.log('added to favChans:' + id);
+			PubSub.publish(this.title + '/addFavChan', {'id':id , 'position':this.getSelectedIndex()});	
+		} else {
+			fav.splice(position, 1);
+			this.favorites = fav;
+			console.log('remove from facChans' + id);
+			PubSub.publish(this.title + '/rmFavChan', {'id':id , 'position':this.getSelectedIndex()});	
+		}
+		db.set('favChans', fav);
+	};
+	ChansModel.prototype.isFav = function  (id) {
+		return (this.favorites.indexOf(id) !== -1) ? true: false;
 	}
 	var chans = new ChansModel();
 	return chans;
@@ -586,6 +603,42 @@ App.widgets.ChansList = {
 			: $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
 	},
+	/** { id:id, 'position': id in array }*/
+	renderChan : function  (obj) {
+		/** @type {App.components.Chans.all[0]} */
+			console.log('rendered chan with id = ', obj.id); 
+			var chan = App.components.Chans.getChanById(obj.id);
+			/** @type {"start":1437040800,
+				"stop":1437042000,
+				"title":"Новости (с сурдопереводом).",
+				"text":"Новости (с сурдопереводом).",
+				"cat":"2:2","likes":0} */
+			var epg = chan.epg[0] || { 
+				stop : '',
+				title : 'Нет программы телепередач',
+				text : ''
+			};
+			if (epg.stop){
+				epg.stop = App.components.Epg.convertTime(epg.stop);
+			} 
+			//tabindex - ??
+			var html =
+			 // '<div class="chan" tabindex='+ obj.position + " data-id="+ obj.id  + '>' 
+				'<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ obj.id + '.png\');">';
+				// for favorites
+				if( this.model.isFav(obj.id) ){
+					html+= '<div class="favstar"></div>'
+				}
+				/** */
+				html += '</div>'
+				+ '<div class="timeend">'+ epg.stop +'</div>'
+				+ '<div class="titleprog">'+epg.title +'</div>'
+				+ '<div class="textprog">'+epg.text +'</div>'
+				;
+				// html+= ' </div>';
+				console.log(html);
+		$('.chan[tabindex=' + obj.position +']').html(html);
+	},
 
 	/**
 	* @description - Change view of chans list 
@@ -595,7 +648,7 @@ App.widgets.ChansList = {
 		var self = this;
 		this.model.currentList.forEach(function(curId, index){
 			// if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
-				
+				// this.renderChan('id':curId, 'position':index);
 				/** @type {App.components.Chans.all[0]} */
 				var chan = App.components.Chans.getChanById(curId);
 				/** @type {"start":1437040800,
@@ -608,12 +661,20 @@ App.widgets.ChansList = {
 					title : 'Нет программы телепередач',
 					text : ''
 				};
+				var stoptime='';
 				if (epg.stop){
-					epg.stop = App.components.Epg.convertTime(epg.stop);
+					stoptime = App.components.Epg.convertTime(epg.stop);
 				} 
 				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
-					+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');"></div>'
-					+ '<div class="timeend">'+ epg.stop +'</div>'
+					+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');">';
+					// for favorites
+					/** */
+					// + '<div class="favstar"></div>'
+					if( self.model.isFav(curId) ){
+						html+= '<div class="favstar"></div>'
+					};
+					html += '</div>'
+					+ '<div class="timeend">'+ stoptime +'</div>'
 					+ '<div class="titleprog">'+epg.title +'</div>'
 					+ '<div class="textprog">'+epg.text +'</div>'
 					;
@@ -629,7 +690,7 @@ App.widgets.ChansList = {
 		Router.changeHash('fsplayer');
 	},
 	yellow : function  () {
-		this.model.switchFav(this.model.getCurChanId());
+		this.model.toggleFavChan(this.model.getCurChanId());
 	}
 }
 	App.widgets.ChansList.controller = (function  () {
@@ -639,7 +700,7 @@ App.widgets.ChansList = {
 		var controller = new controller (App.widgets.ChansList);
 		return controller;
 	})();
-	App.widgets.ChansList.controller.handleEvent  = function  (	topic ) {
+	App.widgets.ChansList.controller.handleEvent  = function  (	topic , args) {
 		var self = this;
 		var model = self.widget.model;
 		switch (topic){
@@ -653,6 +714,12 @@ App.widgets.ChansList = {
 				model.changeCurList( App.components.Catalog.getSelectedIndex() );
 				self.widget.render();
 			break;
+			
+			case App.components.Chans.title + '/addFavChan':
+			case App.components.Chans.title + '/rmFavChan':
+				self.widget.renderChan(args);
+			break;
+			
 			default: 
 				throw 'Observer was subscribed but there are no realization : ' + this;
 			break;
@@ -661,6 +728,8 @@ App.widgets.ChansList = {
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/init', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
+	PubSub.subscribe(App.components.Chans.title + '/addFavChan', App.widgets.ChansList.controller);
+	PubSub.subscribe(App.components.Chans.title + '/rmFavChan', App.widgets.ChansList.controller);
 
 
 	/**
