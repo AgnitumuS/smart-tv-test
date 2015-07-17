@@ -17,7 +17,10 @@ var PubSub = {
 	}
 };
 
-/* Routing between controllers*/
+/* 
+* dsssss
+* @description Routing between controllers
+*/
 var Router = {
 	changeHash : function(hash){
 		window.location.hash = '#' + hash;
@@ -25,8 +28,10 @@ var Router = {
 	}
 }
 
+
 /**
-* 	Debug
+* @param {String} text - Text to output
+* @description	Debug into <div id="debug"></div>
 */
 	var debug = (function  () {
 		var dTimeout;
@@ -41,25 +46,11 @@ var Router = {
 		}
 		return debug;
 	})();
-	$("#testBut").on('click', function  (event) {
-		var Sockeeeeet = new WebSocket('wss://data.lanet.tv');
-			Sockeeeeet.onopen = function  (event) {
-				debug('CONGRAT');
-			}
-			Sockeeeeet.onerror = function(error) {
-				  	debug("Ошибка ");
-				  	debug(error);
-			};
-		var Sockeeeeet2 = new WebSocket('ws://data.lanet.tv');
-			Sockeeeeet2.onopen = function  (event) {
-				debug('CONGRAT');
-			}
-			Sockeeeeet2.onerror = function(error) {
-				  	debug("Ошибка ");
-				  	debug(error);
-			};
-	})
 /**/
+
+/**
+* @namespace
+*/
 
 var App = {
 	api : {
@@ -158,8 +149,8 @@ App.db = {
 	},
 	/**
      * @param {Object} chan - новое значение для chan. Не обязателен. 
-     *     Если указан, то lastChan(...) действует, как setter. 
-     *     Если не указан, то lastChan() действует, как getter.
+     * @description   Если указан, то lastChan(...) действует, как setter. 
+     *    			  Если не указан, то lastChan() действует, как getter.
      */
 	lastChan : function  (chan) {
 		if (typeof chan != "undefined") {
@@ -224,7 +215,6 @@ App.controllers.LoadingController =  (function  () {
 					this.loaded.chans = true;
 					//drawback - init current list of chans here
 					App.player.list = App.components.Chans.currentList;
-					// App.components.Menu.setSelectedIndex(0);
 					App.player.loadCur();
 				break;
 				case App.components.Genres.title + '/init':
@@ -246,8 +236,11 @@ App.controllers.LoadingController =  (function  () {
 
 
 
-/* Models contructor*/
-function Model(title) {
+/**
+* @constructor
+* @description - Prototype for components
+*/
+function Model() {
 	this.set = function(key, val, callback){
 		this[key] = val;
 		if(callback){
@@ -270,9 +263,15 @@ function Model(title) {
 }
 
 
-
-//App.components // Chans, Progs, Menu, ChansCats, ProgCats,  
+/**
+* @namespace Components
+* 
+*/
 App.components = {};
+
+/**
+* 
+*/
 App.components.Menu = (function (){
 	function MenuModel () {
 			this.title = 'Menu',
@@ -300,7 +299,8 @@ App.components.Catalog = (function () {
 })();
 
 	/**
-	 *	@module Chans
+	 *	@class Chans
+	 *	@extends Model
 	 */
 App.components.Chans = (function () {
 	function ChansModel (){
@@ -367,6 +367,9 @@ App.components.Chans = (function () {
  	ChansModel.prototype.getCurList = function  () {
  		return this.currentList;
     	}
+    ChansModel.prototype.getChanById = function  (id) {
+    	return this.all[id] || undefined;
+    }
 	
 	ChansModel.prototype.changeCurList = function (ind) {
 		var list = [];
@@ -384,14 +387,9 @@ App.components.Chans = (function () {
 				throw 'Wrong list ind in changeCurList'
 			break;
 		}
-		// if(list.length){
 			console.log('current list changed to ', this.currentList);
 			this.currentList = list;
 			this.setSelectedIndex(0);
-		// } else {
-			// this.currentList = list;
-			// this.setSelectedIndex(0);
-		// }
 	}
 	//Event from ws
 	ChansModel.prototype.updEpg = function  (data) {
@@ -413,9 +411,22 @@ App.components.Chans = (function () {
 
 PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingController);
 // PubSub.subscribe(Genres.title + '/init', loadingController);
-	
+
+App.components.Epg = {
 	/**
-	 *   WIDGETS
+	*	@param {Number} - UTC time
+	*	@describe Convert UTC time to redable {String} format hh:mm
+	*/
+	convertTime : function  (utcTime) {
+		var date = new Date( utcTime * 1000 );
+		return date.getHours() + ":" 
+		+ (	(date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()	) ;
+	}
+}
+
+
+	/**
+	 *   @module WIDGETS
 	 */
 
 
@@ -423,7 +434,7 @@ PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingCo
 App.widgets = {}
 
 	/**
-	* 	Widgets.Menu
+	* 	@class widgets.Menu
 	*/
 
 App.widgets.Menu = {
@@ -434,10 +445,6 @@ App.widgets.Menu = {
 		},
 		//spotlight
 		active : false,
-		// show : function  () {
-		// 	this.render(this.model.currentList);
-		// 	this.highlight();
-		// },
 		init : function() {},
 		render : function(){
 			var html = '';
@@ -476,7 +483,7 @@ App.widgets.Menu = {
 
 
 	/**
-	* 	Widgets.Catalog
+	*	@class	widgets.Catalog
 	*/
 
 
@@ -580,16 +587,36 @@ App.widgets.ChansList = {
 
 	},
 
+	/**
+	* @description - Change view of chans list 
+	*/
 	render : function(){
 		var html = '';
 		var self = this;
-		this.model.currentList.forEach(function(current, index){
+		this.model.currentList.forEach(function(curId, index){
 			// if ( ($epgNowAll[ current.id ] && $epgNowAll[ current.id ].cat.slice(0,1)  == _cat) || _cat === "-1" ){
-				html += '<div class="chan" tabindex='+ index + " data-id= "+ current  + '>' 
-					+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ current + '.png\');"></div>';
-					if (self.model.all[current].epg[0]){
-						html += '<span class="epgnow">' + self.model.all[current].epg[0].title +'</span>'
-					}; 
+				
+				/** @type {App.components.Chans.all[0]} */
+				var chan = App.components.Chans.getChanById(curId);
+				/** @type {"start":1437040800,
+					"stop":1437042000,
+					"title":"Новости (с сурдопереводом).",
+					"text":"Новости (с сурдопереводом).",
+					"cat":"2:2","likes":0} */
+				var epg = chan.epg[0] || { 
+					stop : '',
+					title : 'Нет программы телепередач',
+					text : ''
+				};
+				if (epg.stop){
+					epg.stop = App.components.Epg.convertTime(epg.stop);
+				} 
+				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
+					+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');"></div>'
+					+ '<div class="timeend">'+ epg.stop +'</div>'
+					+ '<div class="titleprog">'+epg.title +'</div>'
+					+ '<div class="textprog">'+epg.text +'</div>'
+					;
 					html+= ' </div>';
 			})
 		$('#chans').html(html);
@@ -636,11 +663,9 @@ App.widgets.ChansList = {
 	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 
 
-
-
-		/**
-		* Player component
-		*/
+	/**
+	* @class
+	*/
 
 App.player = {
 	chans : App.components.Chans,
@@ -680,9 +705,6 @@ App.widgets.FSSmallEpg.render = (function  () {
 		if (self.model.all[id].epg[0]){
 			html += '<span class="epgnow">' + self.model.all[id].epg[0].title +'</span>'
 		}; 
-		//
-		//<div class="logochan"></div>
-		//<div class="now"></div>
 		$("#smallepg").html(html);
 		clearTimeout(dTimeout);
 		dTimeout = setTimeout(
