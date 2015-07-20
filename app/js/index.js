@@ -116,7 +116,7 @@ var App = {
 		this.initialize();
 	}
 }
-App.start();
+
 
 
 	/**
@@ -415,12 +415,13 @@ App.components.Chans = (function () {
 	var chans = new ChansModel();
 	return chans;
 })();
-PubSub.subscribe(App.components.Chans.title, + '/init', App.components.Epg);
+
 
 PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingController);
 // PubSub.subscribe(Genres.title + '/init', loadingController);
 
 App.components.Epg = {
+	title : 'Epg',
 	/**
 	*	@param {Number} - UTC time
 	*	@describe Convert UTC time to redable {String} format hh:mm
@@ -437,18 +438,50 @@ App.components.Epg = {
 	initUpdEpg : function  () {
 		//for each chan witch has epg, set timout to upd epg next time 
 		//to interval  == 
-		console.log('initUpdEpg');
+		var self = this;
+		console.log(self);
 		var order = App.components.Chans.order;
 		var all = App.components.Chans.all;
+		var timeNow = Math.floor( new Date().getTime() / 1000) ;
+
 		if(order && all){
 			order.forEach(function  (cur, ind) {
-				console.log(all[cur]);
+				if( all[cur].epg.length ){
+					if( all[cur].epg[0].stop > timeNow){
+						console.log('timeout = ', Math.floor( (all[cur].epg[0].stop - timeNow + 5) /60) , 'min, chan=', cur)
+						setTimeout(
+							function  () {
+								self.nextUpdEpg.apply(App.components.Epg, [cur]);
+							}
+							// self.nextUpdEpg, (all[cur].epg[0].stop - timeNow + 5)*1000
+							,  (all[cur].epg[0].stop - timeNow + 5)*1000 );
+					}
+				};
 			})
 		}
 
 	},
-	setNextEpgUpd : function (chanId) {
-		// body...
+	nextUpdEpg : function (chanId) {
+		var self = this;
+		var all = App.components.Chans.all;
+		var timeNow = Math.floor( new Date().getTime() / 1000) ;
+
+		$.getJSON(App.api.epg + chanId + '/now?next=1', function  (res) {
+			if(res.length){
+				console.log('nextUpd for chan=', chanId, res[0].start !== all[chanId].epg[0].start);
+				if( res[0].start !== all[chanId].epg[0].start ){
+					all[chanId].epg = res;
+					PubSub.publish(self.title + '/upd_epg', chanId);
+					setTimeout(
+						function  () {
+							self.nextUpdEpg.apply(App.components.Epg, [chanId])
+						}
+						// self.nextUpdEpg
+						// 5 - magic number
+						, (all[chanId].epg[0].stop - timeNow + 5) * 1000);
+				}
+			}
+		})
 	},
 	handleEvent : function  (topic) {
 		switch(topic){
@@ -460,9 +493,9 @@ App.components.Epg = {
 			break;
 		}
 	}
-
 }
 
+PubSub.subscribe(App.components.Chans.title + '/init', App.components.Epg);
 
 	/**
 	 *   @module WIDGETS
@@ -742,6 +775,9 @@ App.widgets.ChansList = {
 			case App.components.Chans.title + '/rmFavChan':
 				self.widget.renderChan(args);
 			break;
+			case App.components.Epg.title + '/upd_epg':
+				self.widget.renderChan(args);
+			break;
 			
 			default: 
 				throw 'Observer was subscribed but there are no realization : ' + this;
@@ -753,6 +789,7 @@ App.widgets.ChansList = {
 	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/addFavChan', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/rmFavChan', App.widgets.ChansList.controller);
+	PubSub.subscribe(App.components.Epg.title + '/upd_epg', App.widgets.ChansList.controller);
 
 
 	/**
@@ -1129,3 +1166,6 @@ App.device = {
 		return App.device.keys[event.keyCode]
 	}
 }
+
+
+App.start();
