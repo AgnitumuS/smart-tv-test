@@ -8,7 +8,7 @@ var PubSub = {
 		this.topics[topic].push(observer);
 	},
 	publish : function(topic, args){
-		console.log("published topic : " + topic);
+		console.log("published topic : " + topic, 'with args:' , args || '[empty]');
 		if(this.topics[topic]) {
 			this.topics[topic].forEach(function(cur, ind){
 			cur.handleEvent(topic, args);
@@ -135,18 +135,7 @@ App.db = {
 	set : function  (key, val) {
 		localStorage.setItem(this.prefix + key, JSON.stringify(val));
 	},
-	// toggleFavChan : function  (id) {
-	// 	var fav = this.get('favChans') || [];
-	// 	var position = fav.indexOf(id);
-	// 	if( position === -1) {
-	// 		fav.push(id);
-	// 		console.log('added to favChans:' + id);	
-	// 	} else {
-	// 		fav.splice(position, 1);
-	// 		console.log('remove from facChans' + id);
-	// 	}
-	// 	this.set('favChans', fav);
-	// },
+
 	/**
      * @param {Object} chan - новое значение для chan. Не обязателен. 
      * @description   Если указан, то lastChan(...) действует, как setter. 
@@ -396,25 +385,27 @@ App.components.Chans = (function () {
 		this.all[data.id].epg = data.epg;
 		console.log('upd_epg event ws');
 	}
+	// 
 	ChansModel.prototype.changeRating = function  (data) {
 		this.rating = data;
 		console.log("ws rating changed");
 	}
 	//
 	ChansModel.prototype.toggleFavChan = function  (id) {
+		if 	(!id)	{
+			throw 'Toggle without id Exception'
+		}
 		var fav = this.favorites;
 		var db = App.db;
 		var position = fav.indexOf(id);
 		if( position === -1) {
 			fav.push(id);
 			this.favorites = fav;
-			console.log('added to favChans:' + id);
-			PubSub.publish(this.title + '/addFavChan', {'id':id , 'position':this.getSelectedIndex()});	
+			PubSub.publish(this.title + '/addFavChan', id);	
 		} else {
 			fav.splice(position, 1);
 			this.favorites = fav;
-			console.log('remove from facChans' + id);
-			PubSub.publish(this.title + '/rmFavChan', {'id':id , 'position':this.getSelectedIndex()});	
+			PubSub.publish(this.title + '/rmFavChan', id);	
 		}
 		db.set('favChans', fav);
 	};
@@ -424,7 +415,7 @@ App.components.Chans = (function () {
 	var chans = new ChansModel();
 	return chans;
 })();
-
+PubSub.subscribe(App.components.Chans.title, + '/init', App.components.Epg);
 
 PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingController);
 // PubSub.subscribe(Genres.title + '/init', loadingController);
@@ -435,10 +426,41 @@ App.components.Epg = {
 	*	@describe Convert UTC time to redable {String} format hh:mm
 	*/
 	convertTime : function  (utcTime) {
-		var date = new Date( utcTime * 1000 );
-		return date.getHours() + ":" 
-		+ (	(date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()	) ;
+		if( utcTime ){
+			var date = new Date( utcTime * 1000 );
+			return date.getHours() + ":" 
+			+ (	(date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()	) ;
+		} else {
+			return ''
+		}
+	},
+	initUpdEpg : function  () {
+		//for each chan witch has epg, set timout to upd epg next time 
+		//to interval  == 
+		console.log('initUpdEpg');
+		var order = App.components.Chans.order;
+		var all = App.components.Chans.all;
+		if(order && all){
+			order.forEach(function  (cur, ind) {
+				console.log(all[cur]);
+			})
+		}
+
+	},
+	setNextEpgUpd : function (chanId) {
+		// body...
+	},
+	handleEvent : function  (topic) {
+		switch(topic){
+			case  App.components.Chans.title + '/init':
+				this.initUpdEpg();
+			break;
+			default:
+				throw  new 'Observer was subscribed but hasn\'t handling' 
+			break;
+		}
 	}
+
 }
 
 
@@ -604,10 +626,10 @@ App.widgets.ChansList = {
 
 	},
 	/** { id:id, 'position': id in array }*/
-	renderChan : function  (obj) {
+	renderChan : function  (id) {
 		/** @type {App.components.Chans.all[0]} */
-			console.log('rendered chan with id = ', obj.id); 
-			var chan = App.components.Chans.getChanById(obj.id);
+			console.log('rendered chan with id = ', id); 
+			var chan = App.components.Chans.getChanById(id);
 			/** @type {"start":1437040800,
 				"stop":1437042000,
 				"title":"Новости (с сурдопереводом).",
@@ -618,26 +640,27 @@ App.widgets.ChansList = {
 				title : 'Нет программы телепередач',
 				text : ''
 			};
+			var stoptime='';
 			if (epg.stop){
-				epg.stop = App.components.Epg.convertTime(epg.stop);
+				stoptime = App.components.Epg.convertTime(epg.stop);
 			} 
 			//tabindex - ??
 			var html =
-			 // '<div class="chan" tabindex='+ obj.position + " data-id="+ obj.id  + '>' 
-				'<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ obj.id + '.png\');">';
+			 // '<div class="chan" tabindex='+ .position + " data-id="+ id  + '>' 
+				'<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ id + '.png\');">';
 				// for favorites
-				if( this.model.isFav(obj.id) ){
+				if( this.model.isFav(id) ){
 					html+= '<div class="favstar"></div>'
 				}
 				/** */
 				html += '</div>'
-				+ '<div class="timeend">'+ epg.stop +'</div>'
+				+ '<div class="timeend">'+ stoptime +'</div>'
 				+ '<div class="titleprog">'+epg.title +'</div>'
 				+ '<div class="textprog">'+epg.text +'</div>'
 				;
 				// html+= ' </div>';
 				console.log(html);
-		$('.chan[tabindex=' + obj.position +']').html(html);
+		$('.chan[data-id=' + id +']').html(html);
 	},
 
 	/**
