@@ -68,10 +68,11 @@ body{
 	width:100px;
 	height:592px;
 	background-color: #FF80AB;
-	/*display: none;*/
 	visibility: hidden;
-	transition : left 300ms ease-out 0s ;
-	/*transition : visibility 400ms ease-out 0s ;*/
+	/*transition : left 300ms ease-out 0s ;*/
+	transition-property : left;
+	transition-duration:300ms;
+	transition-timing-function:ease-out;
 }
 	.catalogentity, .menuentity{
 		display: block;
@@ -91,12 +92,12 @@ body{
 #chans{
 	position: relative;
 	left:-100px;
-	width:525px;
+	width:624px;
 	height: 592px;
-	overflow: auto;
+	overflow: hidden;
 	display: block;
 	float:left;
-	background-color: rgba(41,182,246,1);
+	background-color: #EEEEEE;
 	transition : all 300ms ease-out 0s ;
 }
 	#chans.withCatalog{
@@ -104,31 +105,46 @@ body{
 	}
 .chan {
 		width: 100%;
-		height: 120px;
-		/*margin-bottom:8px;*/
+		height: 96px;
+		margin-bottom:8px;
+		padding-top: 8px;
+		padding-bottom:8px;
 		/*opacity: 0.54;*/
-		color:white;
+		color:black;
 	    background-repeat: no-repeat;
 	    background-size: 80%;
 	    background-position: center;
 	}
 	.logochan{
-		width:110px;
-		margin:0px 16px 0px 16px;
-		height: 100%;
+		position: relative;
+		width:144px;
+		margin:0px 8px 0px 24px;
+		height: 96px;
+		/*position:;*/
 		float:left;
 		background-repeat: no-repeat;
 		background-position: center; 
+		background-size:100% 100%;
+	}
+	.chanPic{
+		height: 100%;
+		width: 100%;
+		background-repeat: no-repeat;
+		background-position: center;
+		/*background-size: 100% 100%;*/
 	}
 		.favstar{
 			/*display: none;*/
-			position: relative;
-			left:105px;
-			top: 10px;
+			position: absolute;
+			right:8px;
+			top: 8px;
 			height: 24px;
 			width:	24px;
 			background-image: url('../assets/star.png');
 		}
+	.programcontent{
+		/*height: 112px;*/
+	}
 	span.epgnow{
 		display: block;
 		color:white;
@@ -143,7 +159,7 @@ body{
 		 font-size: 14px;
 	}
 	.titleprog{
-		color: rgba(255,255,255,.77); 
+		/*color: rgba(255,255,255,.77); */
 		font-size: 20px; 
 		line-height: 29px; 
 		margin-bottom: 5px; 
@@ -153,7 +169,7 @@ body{
 	}
 	.textprog{
 		height: 50px;
-		color: rgba(255,255,255,.32); 
+		/*color: rgba(255,255,255,.32); */
  		overflow: hidden;
 	}
 	.chan:hover{
@@ -175,15 +191,17 @@ body{
 	}
 /*Основной центр внимания*/
 .spotlight {
-	border: 3px solid yellow ;
+	/*border: 3px solid yellow ;*/
 /*	transform:scale(1.1,1.1);
 	transition:all 300ms;*/
-	background-color: black;
+	background-color: rgb(130,164,203);
 }
 
 /*Подсветка выбраного индекса*/
-.highlight {
-	background-color:  black;
+.chan.highlight {
+	/*background-color:  black;*/
+	background-color: rgb(130,164,203);
+	color:white;
 }
 
 #hint{

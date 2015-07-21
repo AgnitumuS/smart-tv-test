@@ -653,12 +653,13 @@ App.widgets.ChansList = {
 	scrollDown : function(){
 		var step = $('#chans').children(":first").height();
 		var cur = $('#chans').scrollTop();
-		$('#chans').scrollTop( cur + step);	 
+		//margin + paddings
+		$('#chans').scrollTop( cur + step + 24);	 
 	},
 	scrollTop : function(){
 		var step = $('#chans').children(":first").height();
 		var cur = $('#chans').scrollTop();
-		$('#chans').scrollTop( cur - step);	 
+		$('#chans').scrollTop( cur - step - 24);	 
 	},
 	scrollToCur : function  () {
 		var step = $('#chans').children(":first").height();
@@ -702,13 +703,16 @@ App.widgets.ChansList = {
 			//tabindex - ??
 			var html =
 			 // '<div class="chan" tabindex='+ .position + " data-id="+ id  + '>' 
-				'<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ id + '.png\');">';
+				// '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ id + '.png\');">';
+				'<div class="logochan" style="background-image: url(http://kirito.la.net.ua/tv/_'+ id + '.jpg); ">'
+						+ '<div style="width:100%; height:100%; background:rgba(0,0,0,0.56)">'
+						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ id + ".png" +')"></div></div>'
 				// for favorites
 				if( this.model.isFav(id) ){
 					html+= '<div class="favstar"></div>'
 				}
 				/** */
-				html += '</div>'
+				html += '</div></div>'
 				+ '<div class="timeend">'+ stoptime +'</div>'
 				+ '<div class="titleprog">'+epg.title +'</div>'
 				+ '<div class="textprog">'+epg.text +'</div>'
@@ -744,19 +748,24 @@ App.widgets.ChansList = {
 					stoptime = App.components.Epg.convertTime(epg.stop);
 				} 
 				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
-					+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');">';
+					//+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');">';
+					// + '<div style="width:100%; height:100%; background:rgba(0,0,0,0.24)">'
+					+ '<div class="logochan" style="background-image: url(http://kirito.la.net.ua/tv/_'+ curId + '.jpg); ">'
+						+ '<div style="width:100%; height:100%; background:rgba(0,0,0,0.56)">'
+						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ curId + ".png" +')"></div></div>'
+						// + '<img src="' + App.api.img + 'logo/'+ curId + '.png" style="background-position:center; display:block;"/></div>';
 					// for favorites
 					/** */
 					// + '<div class="favstar"></div>'
 					if( self.model.isFav(curId) ){
 						html+= '<div class="favstar"></div>'
 					};
-					html += '</div>'
+					html += '</div><div class="programcontent">'
 					+ '<div class="timeend">'+ stoptime +'</div>'
 					+ '<div class="titleprog">'+epg.title +'</div>'
 					+ '<div class="textprog">'+epg.text +'</div>'
 					;
-					html+= ' </div>';
+					html+= ' </div></div>';
 			})
 		$('#chans').html(html);
 		this.highlight();
