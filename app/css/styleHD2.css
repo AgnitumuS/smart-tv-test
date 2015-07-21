@@ -60,12 +60,18 @@ body{
 	background-color: #2196F3;
 
 }
+
 #catalog{
+	position: relative;
+	left:-100px;
 	float:left;
 	width:100px;
 	height:592px;
 	background-color: #FF80AB;
-;
+	/*display: none;*/
+	visibility: hidden;
+	transition : left 300ms ease-out 0s ;
+	/*transition : visibility 400ms ease-out 0s ;*/
 }
 	.catalogentity, .menuentity{
 		display: block;
@@ -75,16 +81,27 @@ body{
 	}
 	span.catalogentity{
 		line-height: 50px;
-	} 
+	}
+	#catalog.open{
+		/*display: block;*/
+		left: 0px;
+		visibility: visible;
+	}
 
 #chans{
+	position: relative;
+	left:-100px;
 	width:525px;
 	height: 592px;
 	overflow: auto;
 	display: block;
 	float:left;
 	background-color: rgba(41,182,246,1);
+	transition : all 300ms ease-out 0s ;
 }
+	#chans.withCatalog{
+		left:0px;
+	}
 .chan {
 		width: 100%;
 		height: 120px;

@@ -310,7 +310,7 @@ App.components.Chans = (function () {
 			//Init api refs
 			self.order = res.sort.order.slice();
 			self.rating = res.sort.rating.slice();
-			self.favorites = App.db.get('favChans');
+			self.favorites = App.db.get('favChans') || [];
 			self.currentList = self.order;
 
 			self.setSelectedIndex(0);
@@ -525,6 +525,13 @@ App.widgets.Menu = {
 			})
 			$('#menu').html(html);
 		},
+		toggleActive : function  () {
+			if(this.active){
+				$('#catalog').addClass('open');
+			} else {
+				$('#catalog').removeClass('open');
+			}
+		},
 		highlight : function  () {
 			var all = 'spotlight highlight';
 			$('#menu .menuentity').removeClass(all);
@@ -584,6 +591,13 @@ App.widgets.Catalog = {
 			: $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
 	},
+	toggleActive : function  () {
+		if(this.active){
+			$('#catalog').addClass('open');
+		} else {
+			$('#catalog').removeClass('open');
+		}
+	},
 	enter : function  () {
 		if( bwController.hasNeighbor('RIGHT')){
 				bwController.changeWidgetByDirection ('RIGHT');
@@ -605,6 +619,7 @@ App.widgets.Catalog = {
 					self.widget.highlight();
 				break;
 				case App.components.Menu.title + '/changeSelectedIndex':
+					//proccesing according to menu entity
 					self.widget.model.setSelectedIndex(0);
 				break;
 				default:
@@ -657,6 +672,13 @@ App.widgets.ChansList = {
 			? $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
+	},
+	toggleActive : function  () {
+		if(this.active){
+			$('#chans').removeClass('withCatalog');
+		} else {
+			$('#chans').addClass('withCatalog');
+		}
 	},
 	/** { id:id, 'position': id in array }*/
 	renderChan : function  (id) {
@@ -982,12 +1004,24 @@ function BrowseViewController (argument) {
 			if( this.activeWidget.highlight ) {
 				this.activeWidget.highlight();
 			}
+			if(this.activeWidget.toggleActive){
+				this.activeWidget.toggleActive();
+			}
+
 		}
 		this.activeWidget = widget;
 		this.activeWidget.active = true;
 		this.activeWidget.highlight();
+		if(this.activeWidget.toggleActive){
+			this.activeWidget.toggleActive();
+		}
 	}
 
+	/**
+	*	@description Return true if activeWidget has neighbors in direction and neighbor has active elements
+	*	@param {String} ['UP','DOWN','LEFT','RIGHT']
+	*
+	*/
 	this.hasNeighbor = function  (orient) {
 		var witch = {};
 		if (orient) {
@@ -1015,8 +1049,8 @@ function BrowseViewController (argument) {
 			throw new 'Illegal changeWidgetByDirection usage (without orient)';
 		}
 	}
+	
 	this.changeWidgetByDirection = function(orient){
-		// $( this.focusedView.childElem +  '[tabindex=' + this._model.getSelectedIndex() + ']').removeClass("spotlight");
 		var witch = {};
 		if (orient) {
 
@@ -1039,9 +1073,7 @@ function BrowseViewController (argument) {
 			}
 			if (witch) {
 				this.setActiveWidget (witch() );
-				console.log('changeWidgetByDirection to : ');
-				console.log(witch());
-				// this.spotlight();
+				console.log('changeWidgetByDirection to : ', witch());
 			} 
 		}
 		else {
