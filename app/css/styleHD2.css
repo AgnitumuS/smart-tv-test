@@ -88,7 +88,7 @@ body{
 .chan {
 		width: 100%;
 		height: 120px;
-		margin-bottom:8px;
+		/*margin-bottom:8px;*/
 		/*opacity: 0.54;*/
 		color:white;
 	    background-repeat: no-repeat;
