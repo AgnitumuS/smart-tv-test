@@ -693,7 +693,7 @@ App.widgets.ChansList = {
 				"text":"Новости (с сурдопереводом).",
 				"cat":"2:2","likes":0} */
 			var epg = chan.epg[0] || { 
-				stop : '',
+				start : '',
 				title : 'Нет программы телепередач',
 				text : ''
 			};
@@ -713,10 +713,10 @@ App.widgets.ChansList = {
 					html+= '<div class="favstar"></div>'
 				}
 				/** */
-				html += '</div></div>'
+				html += '</div></div><div class="programcontent">'
 				+ '<div class="timestart">'+ starttime +'</div>'
 				+ '<div class="titleprog">'+epg.title +'</div>'
-				+ '<div class="textprog">'+epg.text +'</div>'
+				+ '<div class="textprog">'+epg.text +'</div></div>'
 				;
 				// html+= ' </div>';
 				console.log(html);
@@ -740,7 +740,7 @@ App.widgets.ChansList = {
 					"text":"Новости (с сурдопереводом).",
 					"cat":"2:2","likes":0} */
 				var epg = chan.epg[0] || { 
-					stop : '',
+					start : '',
 					title : 'Нет программы телепередач',
 					text : ''
 				};
