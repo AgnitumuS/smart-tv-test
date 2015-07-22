@@ -521,7 +521,8 @@ App.widgets.Menu = {
 		render : function(){
 			var html = '';
 			this.model.all.forEach(function  (cur, ind) {
-				html += '<span class=menuentity tabindex=' +ind+ '>' + cur  + '</span>';
+				html += '<div class=menuentity data-id='+ cur+' tabindex=' +ind
+				+ ' style="background-image: url(./assets/icons/'+ cur +'.png);""></div>';
 			})
 			$('#menu').html(html);
 		},
@@ -696,9 +697,9 @@ App.widgets.ChansList = {
 				title : 'Нет программы телепередач',
 				text : ''
 			};
-			var stoptime='';
-			if (epg.stop){
-				stoptime = App.components.Epg.convertTime(epg.stop);
+			var starttime='';
+			if (epg.start){
+				starttime = App.components.Epg.convertTime(epg.start);
 			} 
 			//tabindex - ??
 			var html =
@@ -713,7 +714,7 @@ App.widgets.ChansList = {
 				}
 				/** */
 				html += '</div></div>'
-				+ '<div class="timeend">'+ stoptime +'</div>'
+				+ '<div class="timestart">'+ starttime +'</div>'
 				+ '<div class="titleprog">'+epg.title +'</div>'
 				+ '<div class="textprog">'+epg.text +'</div>'
 				;
@@ -743,9 +744,9 @@ App.widgets.ChansList = {
 					title : 'Нет программы телепередач',
 					text : ''
 				};
-				var stoptime='';
-				if (epg.stop){
-					stoptime = App.components.Epg.convertTime(epg.stop);
+				var starttime='';
+				if (epg.start){
+					starttime = App.components.Epg.convertTime(epg.start);
 				} 
 				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
 					//+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');">';
@@ -761,7 +762,7 @@ App.widgets.ChansList = {
 						html+= '<div class="favstar"></div>'
 					};
 					html += '</div><div class="programcontent">'
-					+ '<div class="timeend">'+ stoptime +'</div>'
+					+ '<div class="timestart">'+ starttime +'</div>'
 					+ '<div class="titleprog">'+epg.title +'</div>'
 					+ '<div class="textprog">'+epg.text +'</div>'
 					;
