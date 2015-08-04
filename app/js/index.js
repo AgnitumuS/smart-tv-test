@@ -158,8 +158,6 @@ App.controllers.LoadingController =  (function  () {
 		this.loaded = {
 
 			chans : false,
-			//костыль для теста
-			genres : true,
 		}
 		this.init = function(){
 			$('#loading').show();
@@ -205,9 +203,6 @@ App.controllers.LoadingController =  (function  () {
 					//drawback - init current list of chans here
 					App.player.list = App.components.Chans.currentList;
 					App.player.loadCur();
-				break;
-				case App.components.Genres.title + '/init':
-					this.loaded.genres = true;
 				break;
 				default:
 					throw new "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
@@ -287,6 +282,24 @@ App.components.Catalog = (function () {
 	return catalog;
 })();
 
+App.components.Genres = (function() {
+	function genres () {
+		this.selectedIndex = 0;
+		this.title = "Genres";
+		this.all = [];
+		this.currentList = [];
+		this.changeList = function(arr) {
+			this.set('all', arr, function  () {
+				this.currentList = this.all;
+				console.log('Changed list in genres. This in callback = ', this);
+
+			});
+		};
+	}
+	genres.prototype = new Model();
+	return new genres();
+})();
+
 	/**
 	 *	@class Chans
 	 *	@extends Model
@@ -312,8 +325,9 @@ App.components.Chans = (function () {
 			self.rating = res.sort.rating.slice();
 			self.favorites = App.db.get('favChans') || [];
 			self.currentList = self.order;
-
 			self.setSelectedIndex(0);
+			//init genres
+			App.components.Genres.changeList(res.classList);
 			PubSub.publish(self.title + '/init');
 		};
 
@@ -418,7 +432,6 @@ App.components.Chans = (function () {
 
 
 PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingController);
-// PubSub.subscribe(Genres.title + '/init', loadingController);
 
 App.components.Epg = {
 	title : 'Epg',
@@ -526,7 +539,12 @@ App.widgets.Menu = {
 			})
 			$('#menu').html(html);
 		},
+
+		/**
+		*	@description This method runs when changed active widget. 
+		*/
 		toggleActive : function  () {
+			//	When we on menu, catalog must be visible
 			if(this.active){
 				$('#catalog').addClass('open');
 			} else {
@@ -651,6 +669,8 @@ App.widgets.ChansList = {
 	show : function(){
 		this.render(this.model.currentList);
 	},
+
+	// TODO: make scroll Valera - style
 	scrollDown : function(){
 		var step = $('#chans').children(":first").outerHeight();
 		var cur = $('#chans').scrollTop();
@@ -997,7 +1017,6 @@ var navigateController =  {
 		
 	}
 }
-
 //Принимает управление и передает активному виджету комманду
 function BrowseViewController (argument) {
 	this.activeWidget = {},
