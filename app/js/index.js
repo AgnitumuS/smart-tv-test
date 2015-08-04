@@ -652,18 +652,18 @@ App.widgets.ChansList = {
 		this.render(this.model.currentList);
 	},
 	scrollDown : function(){
-		var step = $('#chans').children(":first").height();
+		var step = $('#chans').children(":first").outerHeight();
 		var cur = $('#chans').scrollTop();
-		//margin + paddings
-		$('#chans').scrollTop( cur + step + 24);	 
+		// 1 margin only
+		$('#chans').scrollTop( cur + step );	 
 	},
 	scrollTop : function(){
-		var step = $('#chans').children(":first").height();
+		var step = $('#chans').children(":first").outerHeight();
 		var cur = $('#chans').scrollTop();
-		$('#chans').scrollTop( cur - step - 24);	 
+		$('#chans').scrollTop( cur - step );	 
 	},
 	scrollToCur : function  () {
-		var step = $('#chans').children(":first").height();
+		var step = $('#chans').children(":first").outerHeight();
 		var items = this.model.getSelectedIndex();
 		$('#chans').scrollTop(step * items);		
 	},
@@ -705,8 +705,8 @@ App.widgets.ChansList = {
 			var html =
 			 // '<div class="chan" tabindex='+ .position + " data-id="+ id  + '>' 
 				// '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ id + '.png\');">';
-				'<div class="logochan" style="background-image: url(http://kirito.la.net.ua/tv/_'+ id + '.jpg); ">'
-						+ '<div style="width:100%; height:100%; background:rgba(0,0,0,0.56)">'
+				'<div class="logochan">'
+						+ '<div style="width:100%; height:100%;">'
 						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ id + ".png" +')"></div></div>'
 				// for favorites
 				if( this.model.isFav(id) ){
@@ -751,8 +751,8 @@ App.widgets.ChansList = {
 				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
 					//+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');">';
 					// + '<div style="width:100%; height:100%; background:rgba(0,0,0,0.24)">'
-					+ '<div class="logochan" style="background-image: url(http://kirito.la.net.ua/tv/_'+ curId + '.jpg); ">'
-						+ '<div style="width:100%; height:100%; background:rgba(0,0,0,0.56)">'
+					+ '<div class="logochan">'
+						+ '<div style="width:100%; height:100%;">'
 						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ curId + ".png" +')"></div></div>'
 						// + '<img src="' + App.api.img + 'logo/'+ curId + '.png" style="background-position:center; display:block;"/></div>';
 					// for favorites
@@ -770,6 +770,7 @@ App.widgets.ChansList = {
 			})
 		$('#chans').html(html);
 		this.highlight();
+		this.scrollToCur();
 	},
 
 	enter : function  () {
