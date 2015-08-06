@@ -96,7 +96,7 @@ var App = {
 					break;
 				
 				case '#browse':
-					App.currentController = bwController;
+					App.currentController = App.controllers.PlaylistController;
 					App.currentController.init();
 					break;
 				case '#quickMenu':
@@ -618,8 +618,8 @@ App.widgets.Catalog = {
 		}
 	},
 	enter : function  () {
-		if( bwController.hasNeighbor('RIGHT')){
-				bwController.changeWidgetByDirection ('RIGHT');
+		if( PlaylistController.hasNeighbor('RIGHT')){
+				PlaylistController.changeWidgetByDirection ('RIGHT');
 		}
 	}
 }	
@@ -965,72 +965,195 @@ App.controllers.QuickMenuController = {
 
 
 
-var navigateController =  {
-	/**
-	* Return true if returned elements from current widget, or false if switch widget 
-	*
-	*/
-	up :  function(widget){
-		if ( widget.model.hasElem ( widget.model.getSelectedIndex() - widget.grid.x) )	{
-			widget.model.setSelectedIndex ( widget.model.getSelectedIndex() - widget.grid.x );
-			return true;
+// var navigateController =  {
+// 	/**
+// 	* Return true if returned elements from current widget, or false if switch widget 
+// 	*
+// 	*/
+// 	up :  function(widget){
+// 		if ( widget.model.hasElem ( widget.model.getSelectedIndex() - widget.grid.x) )	{
+// 			widget.model.setSelectedIndex ( widget.model.getSelectedIndex() - widget.grid.x );
+// 			return true;
+// 		} else {
+// 			// switch to upNeighbor
+// 			// PlaylistController.changeWidgetByDirection('UP');
+// 			return false;
+// 		}
+// 	},
+
+// 	right : function(widget){
+// 		if( ( widget.model.getSelectedIndex() +  1)  %  widget.grid.x  === 0){
+// 			// switch to rightNeighbor
+// 				// PlaylistController.changeWidgetByDirection('RIGHT');
+// 				return false;
+// 		} else {
+// 			//goto the right elem
+// 			if( widget.model.hasElem( widget.model.getSelectedIndex() + 1) ){
+// 				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + 1);
+// 			}
+// 			return true;
+// 		}
+// 	},
+
+// 	down : function(widget){
+// 		if ( widget.model.hasElem ( widget.model.getSelectedIndex() + widget.grid.x  ) )	{
+// 				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + widget.grid.x);
+// 				return true;
+// 		} else {
+// 				// PlaylistController.changeWidgetByDirection('DOWN');
+// 				return false;
+// 		}
+
+// 	},
+
+// 	left : function(widget){
+// 		if( (( widget.model.getSelectedIndex() -  1)  % widget.grid.x)  === 0){
+// 			// PlaylistController.changeWidgetByDirection('LEFT');
+// 			return false;
+// 		} else {
+// 			//switch to left element in matrix
+// 			return true;
+// 		}
+		
+// 	}
+// }
+
+
+var DefaultController = (function() {
+	// var activeWidget {};
+	var UP =  function(){
+		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x) )	{
+			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x );
+			// return true;
+			// FIXME: change manual using to mediator in scrollTop
+			if ( this.activeWidget.scrollTop ){
+				this.activeWidget.scrollTop();
+			}
+
 		} else {
 			// switch to upNeighbor
-			// bwController.changeWidgetByDirection('UP');
-			return false;
+			changeWidgetByDirection.call(this, 'UP');
 		}
-	},
 
-	right : function(widget){
-		if( ( widget.model.getSelectedIndex() +  1)  %  widget.grid.x  === 0){
-			// switch to rightNeighbor
-				// bwController.changeWidgetByDirection('RIGHT');
-				return false;
-		} else {
-			//goto the right elem
-			if( widget.model.hasElem( widget.model.getSelectedIndex() + 1) ){
-				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + 1);
+
+		// if ( navigateController.up(this.activeWidget) ) {
+		// 	//make scroll
+		// 	if ( this.activeWidget.scrollTop ){
+		// 		this.activeWidget.scrollTop();
+		// 	}
+		// } else {
+		// 	//move by direction
+		// }
+	}
+
+	var RIGHT = function(){
+		if( ( this.activeWidget.model.getSelectedIndex() +  1)  %  this.activeWidget.grid.x  !== 0){			
+			// selected next model.id
+			if( this.activeWidget.model.hasElem( this.activeWidget.model.getSelectedIndex() + 1) ){
+				this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() + 1);
 			}
-			return true;
-		}
-	},
-
-	down : function(widget){
-		if ( widget.model.hasElem ( widget.model.getSelectedIndex() + widget.grid.x  ) )	{
-				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + widget.grid.x);
-				return true;
 		} else {
-				// bwController.changeWidgetByDirection('DOWN');
-				return false;
+			// if( PlaylistController.hasNeighbor('RIGHT')){
+				changeWidgetByDirection.call(this, 'RIGHT');
+			// }
 		}
+	}
 
-	},
-
-	left : function(widget){
-		if( (( widget.model.getSelectedIndex() -  1)  % widget.grid.x)  === 0){
-			// bwController.changeWidgetByDirection('LEFT');
-			return false;
+	var DOWN = function(){
+		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x  ) )	{
+			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x);
+			// FIXME: change manual using to mediator in scrollTop
+			if ( this.activeWidget.scrollDown ){
+				this.activeWidget.scrollDown();
+			}
 		} else {
-			//switch to left element in matrix
-			return true;
+			changeWidgetByDirection.call(this, 'DOWN');
+		}
+	}
+
+	var LEFT = function(){
+		// if(  navigateController.left(this.activeWidget) ){
+		if( (( this.activeWidget.model.getSelectedIndex() -  1)  % this.activeWidget.grid.x)  !== 0){
+			//select prec model.id in matrix 
+		} else {
+			// if ( PlaylistController.hasNeighbor ('LEFT') ){
+				changeWidgetByDirection.call (this, 'LEFT');
+			// }
 		}
 		
 	}
-}
-//Принимает управление и передает активному виджету комманду
-function BrowseViewController (argument) {
-	this.activeWidget = {},
+	/**
+	*	@description Return true if activeWidget has neighbors in direction and neighbor has active elements
+	*	@param {String} ['UP','DOWN','LEFT','RIGHT']
+	*
+	*/
+	// var hasNeighbor = function  (orient) {
+	// 	var witch = {};
+	// 	if (orient) {
 
-	this.init = function(){
-		//if there are no saved state, use first menu first catalog	s
-		$('#browseView').show();
-		this.setActiveWidget (App.widgets.ChansList);
-		// App.widgets.Menu.show();
-		this.activeWidget.scrollToCur();
-	}
-	this.setActiveWidget = function  (widget) {
+	// 		switch (orient){
+	// 			case 'UP':
+	// 				witch = this.activeWidget.neighbors.up;
+	// 			break;
+	// 			case 'RIGHT':
+	// 				witch = this.activeWidget.neighbors.right;
+	// 			break;
+	// 			case 'DOWN':
+	// 				witch = this.activeWidget.neighbors.down;
+	// 			break;
+	// 			case 'LEFT':
+	// 				witch = this.activeWidget.neighbors.left;
+	// 			break;
+	// 			default:
+	// 				throw new 'change widget without appropriate orient';
+	// 			break;
+	// 		}
+	// 		return witch && witch().model.currentList.length ? true :false;
+	// 	}
+	// 	else {
+	// 		throw new 'Illegal changeWidgetByDirection usage (without orient)';
+	// 	}
+	// }
+	
+
+	// must retrun true or false, must use check hasNeighbor
+	var changeWidgetByDirection = function(orient){
+		var witch = {};
+		if (orient) {
+
+			switch (orient){
+				case 'UP':
+					witch = this.activeWidget.neighbors.up;
+				break;
+				case 'RIGHT':
+					witch = this.activeWidget.neighbors.right;
+				break;
+				case 'DOWN':
+					witch = this.activeWidget.neighbors.down;
+				break;
+				case 'LEFT':
+					witch = this.activeWidget.neighbors.left;
+				break;
+				default:
+					throw new 'change widget without appropriate orient';
+				break;
+			}
+			if (witch && witch().model.currentList.length ) {
+				this.setActiveWidget (witch() );
+				console.log('changeWidgetByDirection to : ', witch());
+				return true;
+			} else {
+				return false;
+			}
+		}
+		else {
+			throw new 'Illegal changeWidgetByDirection usage (without orient)';
+		}
+	};
+	var setActiveWidget = function  (widget) {
 		if (this.activeWidget){
 			this.activeWidget.active = false;
+			//FIXME: change from manual to mediator : highlight (colorize widget elems)
 			if( this.activeWidget.highlight ) {
 				this.activeWidget.highlight();
 			}
@@ -1042,143 +1165,227 @@ function BrowseViewController (argument) {
 		this.activeWidget = widget;
 		this.activeWidget.active = true;
 		this.activeWidget.highlight();
+		//FIXME: change from manual to mediator: toggleActive (move widgets)
 		if(this.activeWidget.toggleActive){
 			this.activeWidget.toggleActive();
 		}
 	}
+	var ENTER = function  () {
+		if (this.activeWidget.enter){
+			this.activeWidget.enter();
+		}
+	};
+	//testted only . must be moved to FSController
+	var PAGE_UP = function  () {
+		App.player.next();
+	};
+	var PAGE_DOWN = function  () {
+		App.player.prev();
+	};
+	var YELLOW = function  () {
+		if(this.activeWidget.yellow){
+			this.activeWidget.yellow();
+		}
+	};
+	
+	//facade
+	return {
+		setActiveWidget: setActiveWidget,
+		UP : UP,
+		DOWN : DOWN,
+		LEFT : LEFT,
+		RIGHT : RIGHT,
+		ENTER: ENTER,
+		PAGE_UP: PAGE_UP,
+		PAGE_DOWN: PAGE_DOWN,
+		YELLOW: YELLOW
+	}
+
+})();
+
+
+// function PlaylistController (argument) {
+// 	this.activeWidget = {},
+
+// 	this.init = function(){
+// 		//if there are no saved state, use first menu first catalog	s
+// 		$('#browseView').show();
+// 		this.setActiveWidget (App.widgets.ChansList);
+// 		// App.widgets.Menu.show();
+// 		this.activeWidget.scrollToCur();
+// 	}
+
+	// this.setActiveWidget = function  (widget) {
+	// 	if (this.activeWidget){
+	// 		this.activeWidget.active = false;
+	// 		if( this.activeWidget.highlight ) {
+	// 			this.activeWidget.highlight();
+	// 		}
+	// 		if(this.activeWidget.toggleActive){
+	// 			this.activeWidget.toggleActive();
+	// 		}
+
+	// 	}
+	// 	this.activeWidget = widget;
+	// 	this.activeWidget.active = true;
+	// 	this.activeWidget.highlight();
+	// 	if(this.activeWidget.toggleActive){
+	// 		this.activeWidget.toggleActive();
+	// 	}
+	// }
 
 	/**
 	*	@description Return true if activeWidget has neighbors in direction and neighbor has active elements
 	*	@param {String} ['UP','DOWN','LEFT','RIGHT']
 	*
 	*/
-	this.hasNeighbor = function  (orient) {
-		var witch = {};
-		if (orient) {
+	// this.hasNeighbor = function  (orient) {
+	// 	var witch = {};
+	// 	if (orient) {
 
-			switch (orient){
-				case 'UP':
-					witch = this.activeWidget.neighbors.up;
-				break;
-				case 'RIGHT':
-					witch = this.activeWidget.neighbors.right;
-				break;
-				case 'DOWN':
-					witch = this.activeWidget.neighbors.down;
-				break;
-				case 'LEFT':
-					witch = this.activeWidget.neighbors.left;
-				break;
-				default:
-					throw new 'change widget without appropriate orient';
-				break;
-			}
-			return witch && witch().model.currentList.length ? true :false;
-		}
-		else {
-			throw new 'Illegal changeWidgetByDirection usage (without orient)';
-		}
-	}
+	// 		switch (orient){
+	// 			case 'UP':
+	// 				witch = this.activeWidget.neighbors.up;
+	// 			break;
+	// 			case 'RIGHT':
+	// 				witch = this.activeWidget.neighbors.right;
+	// 			break;
+	// 			case 'DOWN':
+	// 				witch = this.activeWidget.neighbors.down;
+	// 			break;
+	// 			case 'LEFT':
+	// 				witch = this.activeWidget.neighbors.left;
+	// 			break;
+	// 			default:
+	// 				throw new 'change widget without appropriate orient';
+	// 			break;
+	// 		}
+	// 		return witch && witch().model.currentList.length ? true :false;
+	// 	}
+	// 	else {
+	// 		throw new 'Illegal changeWidgetByDirection usage (without orient)';
+	// 	}
+	// }
 	
-	this.changeWidgetByDirection = function(orient){
-		var witch = {};
-		if (orient) {
+	// this.changeWidgetByDirection = function(orient){
+	// 	var witch = {};
+	// 	if (orient) {
 
-			switch (orient){
-				case 'UP':
-					witch = this.activeWidget.neighbors.up;
-				break;
-				case 'RIGHT':
-					witch = this.activeWidget.neighbors.right;
-				break;
-				case 'DOWN':
-					witch = this.activeWidget.neighbors.down;
-				break;
-				case 'LEFT':
-					witch = this.activeWidget.neighbors.left;
-				break;
-				default:
-					throw new 'change widget without appropriate orient';
-				break;
-			}
-			if (witch) {
-				this.setActiveWidget (witch() );
-				console.log('changeWidgetByDirection to : ', witch());
-			} 
-		}
-		else {
-			throw new 'Illegal changeWidgetByDirection usage (without orient)';
-		}
-	}
+	// 		switch (orient){
+	// 			case 'UP':
+	// 				witch = this.activeWidget.neighbors.up;
+	// 			break;
+	// 			case 'RIGHT':
+	// 				witch = this.activeWidget.neighbors.right;
+	// 			break;
+	// 			case 'DOWN':
+	// 				witch = this.activeWidget.neighbors.down;
+	// 			break;
+	// 			case 'LEFT':
+	// 				witch = this.activeWidget.neighbors.left;
+	// 			break;
+	// 			default:
+	// 				throw new 'change widget without appropriate orient';
+	// 			break;
+	// 		}
+	// 		if (witch) {
+	// 			this.setActiveWidget (witch() );
+	// 			console.log('changeWidgetByDirection to : ', witch());
+	// 		} 
+	// 	}
+	// 	else {
+	// 		throw new 'Illegal changeWidgetByDirection usage (without orient)';
+	// 	}
+	// }
 
-	this.UP =  function(){
-		if ( navigateController.up(this.activeWidget) ) {
-			//make scroll
-			if ( this.activeWidget.scrollTop ){
-				this.activeWidget.scrollTop();
-			}
-		} else {
-			//move by direction
-			this.changeWidgetByDirection('UP');
-		}
-	},
+	// this.UP =  function(){
+	// 	if ( navigateController.up(this.activeWidget) ) {
+	// 		//make scroll
+	// 		if ( this.activeWidget.scrollTop ){
+	// 			this.activeWidget.scrollTop();
+	// 		}
+	// 	} else {
+	// 		//move by direction
+	// 		this.changeWidgetByDirection('UP');
+	// 	}
+	// },
 
-	this.RIGHT = function(){
-		if ( navigateController.right(this.activeWidget) ){
-			// selected next model.id
-		} else {
-			if( bwController.hasNeighbor('RIGHT')){
-				bwController.changeWidgetByDirection ('RIGHT');
-			}
-		}
-	},
+	// this.RIGHT = function(){
+	// 	if ( navigateController.right(this.activeWidget) ){
+	// 		// selected next model.id
+	// 	} else {
+	// 		if( PlaylistController.hasNeighbor('RIGHT')){
+	// 			PlaylistController.changeWidgetByDirection ('RIGHT');
+	// 		}
+	// 	}
+	// },
 
-	this.DOWN = function(){
-		if( navigateController.down(this.activeWidget) ) {
-			//make scroll
-			if ( this.activeWidget.scrollDown ){
-				this.activeWidget.scrollDown();
-			}
-		} else {
-			//make move by direction
-			this.changeWidgetByDirection('DOWN');
-		}
+	// this.DOWN = function(){
+	// 	if( navigateController.down(this.activeWidget) ) {
+	// 		//make scroll
+	// 		if ( this.activeWidget.scrollDown ){
+	// 			this.activeWidget.scrollDown();
+	// 		}
+	// 	} else {
+	// 		//make move by direction
+	// 		this.changeWidgetByDirection('DOWN');
+	// 	}
 
-		// navigateController.down(this.activeWidget);
-	},
+	// 	// navigateController.down(this.activeWidget);
+	// },
 
-	this.LEFT = function(){
-		if(  navigateController.left(this.activeWidget) ){
-			//scroll or another 
-		} else {
-			if ( bwController.hasNeighbor ('LEFT') ){
-				bwController.changeWidgetByDirection ('LEFT');
-			}
+	// this.LEFT = function(){
+	// 	if(  navigateController.left(this.activeWidget) ){
+	// 		//scroll or another 
+	// 	} else {
+	// 		if ( PlaylistController.hasNeighbor ('LEFT') ){
+	// 			PlaylistController.changeWidgetByDirection ('LEFT');
+	// 		}
 
-			//switch to left element in matrix
-		}
+	// 		//switch to left element in matrix
+	// 	}
 		
-	},
-	this.ENTER = function  () {
-		if (this.activeWidget.enter){
-			this.activeWidget.enter();
-		}
-	},
-	//testted only . must be moved to FSController
-	this.PAGE_UP = function  () {
-		App.player.next();
-	}
-	this.PAGE_DOWN = function  () {
-		App.player.prev();
-	}
-	this.YELLOW = function  () {
-		if(this.activeWidget.yellow){
-			this.activeWidget.yellow();
-		}
-	}
+	// },
+	// this.ENTER = function  () {
+	// 	if (this.activeWidget.enter){
+	// 		this.activeWidget.enter();
+	// 	}
+	// },
+	// //testted only . must be moved to FSController
+	// this.PAGE_UP = function  () {
+	// 	App.player.next();
+	// }
+	// this.PAGE_DOWN = function  () {
+	// 	App.player.prev();
+	// }
+	// this.YELLOW = function  () {
+	// 	if(this.activeWidget.yellow){
+	// 		this.activeWidget.yellow();
+	// 	}
+	// }
 	
-}
-var bwController = new BrowseViewController();
+// }
+App.controllers.PlaylistController = (function(window, document, undefined) {
+	
+	function PlaylistController () {
+		this.activeWidget = {};
+		
+	}
+
+	PlaylistController.prototype = DefaultController;
+	PlaylistController.prototype.init = function  () {
+			$('#browseView').show();
+			this.setActiveWidget.call (this, App.widgets.ChansList);
+			// App.widgets.Menu.show();
+			//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
+			this.activeWidget.scrollToCur();
+	};
+	
+	return new PlaylistController();
+
+})(window, document);
+
+
 
 
 
