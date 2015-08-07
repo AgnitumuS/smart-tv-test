@@ -17,16 +17,6 @@ var PubSub = {
 	}
 };
 
-/* 
-* dsssss
-* @description Routing between controllers
-*/
-var Router = {
-	changeHash : function(hash){
-		window.location.hash = '#' + hash;
-		PubSub.publish("location.hash/changed");
-	}
-}
 
 
 /**
@@ -66,7 +56,7 @@ var App = {
 	widgets: {},
 	currentController: null,
 	initialize : function(){
-		Router.changeHash("loading");
+		App.go("loading");
 	}, 
 	initializeEvents: function(){
 		$(window).on("keydown", function(event){
@@ -79,6 +69,10 @@ var App = {
 		
 		
 		window.onhashchange =  function(event){
+			//FIXME: make destroy fn for current controller
+			if (App.currentController) {
+				App.currentController.destroy();
+			};
 			switch(location.hash){
 
 				case '#loading':
@@ -95,7 +89,7 @@ var App = {
 					App.currentController.init();
 					break;
 				
-				case '#browse':
+				case '#playlist':
 					App.currentController = App.controllers.PlaylistController;
 					App.currentController.init();
 					break;
@@ -103,7 +97,10 @@ var App = {
 					App.currentController = App.controllers.QuickMenuController;
 					App.currentController.init();
 					break;
-				
+				case '#genres':
+					App.currentController = App.controllers.GenresController;
+					App.currentController.init();
+					break;
 				default:
 					console.log("default case controller");
 					break;
@@ -114,6 +111,14 @@ var App = {
 	start : function(){
 		this.initializeEvents();
 		this.initialize();
+	},
+
+	/* 
+	* @description Routing between controllers
+	*/
+	go : function(hash) {
+		window.location.hash = '#' + hash;
+		PubSub.publish("location.hash/changed");
 	}
 }
 
@@ -192,6 +197,8 @@ App.controllers.LoadingController =  (function  () {
 						
 			App.widgets.Menu.render();
 			App.widgets.Catalog.render();
+		};
+		this.destroy = function () {
 		}
 		this.isReady = function(){
 			return (this.loaded.chans && this.loaded.genres );
@@ -210,7 +217,7 @@ App.controllers.LoadingController =  (function  () {
 			}
 			if( this.isReady ){
 				$('#loading').hide();
-				Router.changeHash('fsplayer');
+				App.go('fsplayer');
 			}
 		}
 	}
@@ -531,6 +538,13 @@ App.widgets.Menu = {
 		//spotlight
 		active : false,
 		init : function() {},
+		/**
+		*	@description notify observer widgets about change active state
+		*/
+		notify : function  () {
+			App.widgets.Catalog.toggleActive(this.active);
+			App.widgets.ChansList.toggleActive(this.active);
+		},
 		render : function(){
 			var html = '';
 			this.model.all.forEach(function  (cur, ind) {
@@ -542,15 +556,16 @@ App.widgets.Menu = {
 
 		/**
 		*	@description This method runs when changed active widget. 
+		* 	@mustfix
 		*/
-		toggleActive : function  () {
-			//	When we on menu, catalog must be visible
-			if(this.active){
-				$('#catalog').addClass('open');
-			} else {
-				$('#catalog').removeClass('open');
-			}
-		},
+		// toggleActive : function  () {
+		// 	//	When we on menu, catalog must be visible
+		// 	if(this.active){
+		// 		$('#catalog').addClass('open');
+		// 	} else {
+		// 		$('#catalog').removeClass('open');
+		// 	}
+		// },
 		highlight : function  () {
 			var all = 'spotlight highlight';
 			$('#menu .menuentity').removeClass(all);
@@ -568,10 +583,27 @@ App.widgets.Menu = {
 	})();
 	App.widgets.Menu.controller.handleEvent = function  (topic) {
 			var self = this;
+			var model = self.widget.model;
 			switch (topic){
 				case App.components.Menu.title + '/changeSelectedIndex' :
-					self.widget.highlight();
+					// self.widget.highlight();
+					// NOTE: widget must take a role of observer to change location.hash
+					switch ( model.getSelectedIndex() ){
+						
+						case 0:
+							App.go('playlist');	
+						break;
+						
+						case 1:
+							App.go('genres');
+						break;
+						
+						default:
+							throw 'Err'
+						break; 
+					}					
 				break;
+				
 				default:
 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
@@ -595,6 +627,10 @@ App.widgets.Catalog = {
 	//spotlight
 	active : false,
 	init : function() {},
+	notify : function  () {
+		this.toggleActive(this.active);
+		App.widgets.ChansList.toggleActive(this.active);
+	},
 	render : function(){
 		var html = '';
 		this.model.currentList.forEach(function  (cur, ind) {
@@ -610,8 +646,8 @@ App.widgets.Catalog = {
 			: $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
 	},
-	toggleActive : function  () {
-		if(this.active){
+	toggleActive : function  (open) {
+		if(open){
 			$('#catalog').addClass('open');
 		} else {
 			$('#catalog').removeClass('open');
@@ -695,11 +731,11 @@ App.widgets.ChansList = {
 			: $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
 	},
-	toggleActive : function  () {
-		if(this.active){
-			$('#chans').removeClass('withCatalog');
-		} else {
+	toggleActive : function  (open) {
+		if(open){
 			$('#chans').addClass('withCatalog');
+		} else {
+			$('#chans').removeClass('withCatalog');
 		}
 	},
 	/** { id:id, 'position': id in array }*/
@@ -796,7 +832,7 @@ App.widgets.ChansList = {
 	enter : function  () {
 		App.player.loadCur();
 		$('#browseView').hide();
-		Router.changeHash('fsplayer');
+		App.go('fsplayer');
 	},
 	yellow : function  () {
 		this.model.toggleFavChan(this.model.getCurChanId());
@@ -901,6 +937,8 @@ App.controllers.FSPlayerController = {
 	init : function  () {
 		App.widgets.FSSmallEpg.render();
 	},
+	destroy : function () {
+	},
 	PAGE_UP : function  () {
 		App.player.next();
 		App.widgets.FSSmallEpg.render();
@@ -912,7 +950,7 @@ App.controllers.FSPlayerController = {
 	},
 	ENTER : function  () {
 		//show quick menu
-		Router.changeHash('quickMenu');
+		App.go('quickMenu');
 	},
 	LEFT : function  () {
 		
@@ -936,11 +974,13 @@ App.controllers.QuickMenuController = {
 		$('#quickMenuView').show();	
 		this.visible = true;	
 	},
+	destroy : function () {
+	},
 	ENTER : function  () {
 		if (this.visible)  {
 			$('#quickMenuView').hide(); 
 			this.visible = false;
-			Router.changeHash('fsplayer');
+			App.go('fsplayer');
 		} else { 
 			$('#quickMenuView').show(); 
 			this.visible = true;
@@ -948,7 +988,7 @@ App.controllers.QuickMenuController = {
 	},
 	LEFT : function  () {
 		$('#quickMenuView').hide();
-		Router.changeHash('browse');		
+		App.go('playlist');		
 	},
 	UP : function  () {
 		
@@ -1019,7 +1059,7 @@ App.controllers.QuickMenuController = {
 // }
 
 
-var DefaultController = (function() {
+ function DefaultController() {
 	// var activeWidget {};
 	var UP =  function(){
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x) )	{
@@ -1153,23 +1193,22 @@ var DefaultController = (function() {
 	var setActiveWidget = function  (widget) {
 		if (this.activeWidget){
 			this.activeWidget.active = false;
-			//FIXME: change from manual to mediator : highlight (colorize widget elems)
+			//FIXME: notify must present in all widgets
+			if(this.activeWidget.notify){
+				this.activeWidget.notify();
+			} 
 			if( this.activeWidget.highlight ) {
 				this.activeWidget.highlight();
 			}
-			if(this.activeWidget.toggleActive){
-				this.activeWidget.toggleActive();
-			}
-
 		}
 		this.activeWidget = widget;
 		this.activeWidget.active = true;
+		if(this.activeWidget.notify){
+				this.activeWidget.notify();
+		} 
 		this.activeWidget.highlight();
-		//FIXME: change from manual to mediator: toggleActive (move widgets)
-		if(this.activeWidget.toggleActive){
-			this.activeWidget.toggleActive();
-		}
-	}
+		
+	};
 	var ENTER = function  () {
 		if (this.activeWidget.enter){
 			this.activeWidget.enter();
@@ -1201,7 +1240,7 @@ var DefaultController = (function() {
 		YELLOW: YELLOW
 	}
 
-})();
+};
 
 
 // function PlaylistController (argument) {
@@ -1371,21 +1410,41 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		this.activeWidget = {};
 		
 	}
-
-	PlaylistController.prototype = DefaultController;
+	//create observer list 
+	PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
-			$('#browseView').show();
-			this.setActiveWidget.call (this, App.widgets.ChansList);
-			// App.widgets.Menu.show();
-			//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
-			this.activeWidget.scrollToCur();
+		//TODO: reuse widget's
+		$('#browseView').show();
+		this.setActiveWidget.call (this, App.widgets.Menu);
+		// App.widgets.Menu.show();
+		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
+		// this.activeWidget.scrollToCur();
+	};
+	PlaylistController.prototype.destroy = function () {
+		$('#browseView').hide();
 	};
 	
 	return new PlaylistController();
 
 })(window, document);
 
+App.controllers.GenresController = (function(window, document, undefined) {
+	function GenresController () {
+		this.activeWidget = {};
+	}
+	GenresController.prototype = new  DefaultController();
+	GenresController.prototype.init = function () {
+		console.log('genrescontroller');
+		this.setActiveWidget.call(this, App.widgets.Menu);
+		//TODO: reuse widget's
+		$('#browseView').show();
+	}
+	GenresController.prototype.destroy = function () {
+		$('#browseView').hide();
+	}
+	return new GenresController();
 
+})(window, document);
 
 
 

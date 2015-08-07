@@ -1,0 +1,40 @@
+#block1{
+	position: relative;
+	left:20%;
+	margin:auto;
+	float:left;
+	/*height: 200px;*/
+	width:400px;
+	background: #E91E63;
+	border: 1px solid #727272;
+	border-radius: 2px;
+}
+#playlist, #genres, #settings, #tags{
+	display: block;
+	width:100%;
+	color:white;
+	text-align: center;
+	font-size:40px;
+}
+.accItems{
+	display: none;
+	background-color: #FFFFFF;
+	color:black;
+	font-size:36px;
+}
+
+:focus{
+	border:blue 4px solid;
+	box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); 
+	/*transform: scale(1.1,1.2);*/
+}
+
+#block2{
+	position: relative;
+	left:22%;
+	width:200px;
+	height: 300px;
+	float:left;
+	/*margin: auto;*/
+	border:1px solid #727272;
+}
