@@ -23,7 +23,11 @@ $("#playlist, #genres, #tags, #settings").on('keydown',function (event) {
 
 	} else if (event.keyCode === 40) {
 		//down
-		$(target).next().focus();
+		if( $(target).find('div.accItems:visible').length !== 0){
+			$(target).find('*:first-child').focus();
+		} else {
+			$(target).next().focus();
+		}
 	} else if (event.keyCode === 38) {
 		//up
 		// console.log($(target).prev().find('div.accItems:visible'))
