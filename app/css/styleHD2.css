@@ -71,8 +71,7 @@ body{
 	float:left;
 	width:100px;
 	height:592px;
-	background-color: rgb(38, 50, 56);
-	box-shadow: 0px 0px 6.09px 0.91px rgba(0, 35, 25, 0.44);
+	background-color: rgb(84,110,122);
 	visibility: hidden;
 	/*transition : left 300ms ease-out 0s ;*/
 	transition-property : left;
