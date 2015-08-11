@@ -21,6 +21,7 @@ $("#playlist, #genres, #tags, #settings").on('keydown',function (event) {
 			$(target).find('*').hide();
 		}
 
+
 	} else if (event.keyCode === 40) {
 		//down
 		if( $(target).find('div.accItems:visible').length !== 0){

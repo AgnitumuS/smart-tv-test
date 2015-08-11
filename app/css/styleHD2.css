@@ -69,7 +69,7 @@ body{
 	float:left;
 	width:100px;
 	height:592px;
-	background-color: #FF80AB;
+	background-color: rgb(84,110,122);
 	visibility: hidden;
 	/*transition : left 300ms ease-out 0s ;*/
 	transition-property : left;

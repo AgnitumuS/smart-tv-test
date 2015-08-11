@@ -93,6 +93,14 @@ var App = {
 					App.currentController = App.controllers.PlaylistController;
 					App.currentController.init();
 					break;
+					/**
+					*	@description make ChansList as active widget
+					*/
+				case '#playlist?chan':
+					App.currentController = App.controllers.PlaylistController;
+					App.currentController.initWithChan();
+					break;
+			
 				case '#quickMenu':
 					App.currentController = App.controllers.QuickMenuController;
 					App.currentController.init();
@@ -279,7 +287,7 @@ App.components.Catalog = (function () {
 	
 	function CatalogModel () {
 		this.selectedIndex = 0;
-		this.title = 'Catalog';
+		this.title = 'Playlists';
 		this.all = ['all', 'favorites', 'rating'];
 		this.currentList = this.all;
 	}
@@ -296,10 +304,9 @@ App.components.Genres = (function() {
 		this.all = [];
 		this.currentList = [];
 		this.changeList = function(arr) {
-			this.set('all', arr, function  () {
+			//without "Без категории"
+			this.set('all', arr.slice(1), function  () {
 				this.currentList = this.all;
-				console.log('Changed list in genres. This in callback = ', this);
-
 			});
 		};
 	}
@@ -315,7 +322,7 @@ App.components.Chans = (function () {
 	function ChansModel (){
 		this.title = 'Chans';
 		this.selectedIndex = -1;
-		this.all = [];
+		this.all = {};
 		this.favorites = [];
 		//array with id's only
 		this.currentList = [];
@@ -380,22 +387,45 @@ App.components.Chans = (function () {
     ChansModel.prototype.getChanById = function  (id) {
     	return this.all[id] || undefined;
     }
+    ChansModel.prototype.getChansByGenre = function  (id) {
+    	var self = this;
+    	return this.rating.filter(function  (el, ind) {
+    		if (this.all[el].epg.length !== 0) {
+    			// +1 avoiding "без жанра"
+    			return this.all[el].epg[0].class === id + 1;
+    		} else {
+    			return false;
+    		}
+    	}, this)
+    }
 	
-	ChansModel.prototype.changeCurList = function (ind) {
+	ChansModel.prototype.changeCurList = function (type, ind) {
 		var list = [];
-		switch ( ind ){
-			case 0: 
-				list = this.order || [];
-			break;
-			case 1:
-				list = App.db.get('favChans') || [];
-			break;
-			case 2:
-				list = this.rating || [];
-			break;
-			default :
-				throw 'Wrong list ind in changeCurList'
-			break;
+		switch (type){
+			case App.components.Catalog.title:
+				switch ( ind ){
+					case 0: 
+						list = this.order || [];
+						break;
+					case 1:
+						list = App.db.get('favChans') || [];
+						break;
+					case 2:
+						list = this.rating || [];
+						break;
+					default :
+						throw 'Wrong list ind in changeCurList'
+						break;
+				}
+				break;
+			
+			case App.components.Genres.title:
+				list = this.getChansByGenre(ind);
+				break;
+			
+			default:
+				throw 'Err'
+				break;
 		}
 			console.log('current list changed to ', this.currentList);
 			this.currentList = list;
@@ -554,18 +584,6 @@ App.widgets.Menu = {
 			$('#menu').html(html);
 		},
 
-		/**
-		*	@description This method runs when changed active widget. 
-		* 	@mustfix
-		*/
-		// toggleActive : function  () {
-		// 	//	When we on menu, catalog must be visible
-		// 	if(this.active){
-		// 		$('#catalog').addClass('open');
-		// 	} else {
-		// 		$('#catalog').removeClass('open');
-		// 	}
-		// },
 		highlight : function  () {
 			var all = 'spotlight highlight';
 			$('#menu .menuentity').removeClass(all);
@@ -669,10 +687,13 @@ App.widgets.Catalog = {
 	App.widgets.Catalog.controller.handleEvent = function(topic){
 		var self = this;
 			switch (topic){
+
+				case App.components.Genres.title + '/changeSelectedIndex' :
 				case App.components.Catalog.title + '/changeSelectedIndex' :
-					self.widget.render( App.components.Catalog.all);
+					self.widget.render();
 					self.widget.highlight();
-				break;
+					break;
+				
 				case App.components.Menu.title + '/changeSelectedIndex':
 					//proccesing according to menu entity
 					self.widget.model.setSelectedIndex(0);
@@ -683,6 +704,7 @@ App.widgets.Catalog = {
 			}
 		}
 		PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 		PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 
 
@@ -851,19 +873,24 @@ App.widgets.ChansList = {
 		switch (topic){
 			case App.components.Chans.title + '/changeSelectedIndex':
 				self.widget.highlight();
-			break;
+				break;
+			
 			case App.components.Chans.title + '/init':
 				self.widget.render();
-			break;
+				break;
+
+			case App.components.Genres.title + '/changeSelectedIndex':
 			case App.components.Catalog.title + '/changeSelectedIndex':
-				model.changeCurList( App.components.Catalog.getSelectedIndex() );
+				//paste current catalog widget model title
+				model.changeCurList(App.widgets.Catalog.model.title,  App.widgets.Catalog.model.getSelectedIndex() );
 				self.widget.render();
-			break;
+				break;
 			
 			case App.components.Chans.title + '/addFavChan':
 			case App.components.Chans.title + '/rmFavChan':
 				self.widget.renderChan(args);
 			break;
+			
 			case App.components.Epg.title + '/upd_epg':
 				self.widget.renderChan(args);
 			break;
@@ -876,6 +903,7 @@ App.widgets.ChansList = {
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/init', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
+	PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/addFavChan', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/rmFavChan', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Epg.title + '/upd_epg', App.widgets.ChansList.controller);
@@ -988,7 +1016,7 @@ App.controllers.QuickMenuController = {
 	},
 	LEFT : function  () {
 		$('#quickMenuView').hide();
-		App.go('playlist');		
+		App.go('playlist?chan');		
 	},
 	UP : function  () {
 		
@@ -1000,64 +1028,6 @@ App.controllers.QuickMenuController = {
 		// body...
 	}
 }
-
-
-
-
-
-// var navigateController =  {
-// 	/**
-// 	* Return true if returned elements from current widget, or false if switch widget 
-// 	*
-// 	*/
-// 	up :  function(widget){
-// 		if ( widget.model.hasElem ( widget.model.getSelectedIndex() - widget.grid.x) )	{
-// 			widget.model.setSelectedIndex ( widget.model.getSelectedIndex() - widget.grid.x );
-// 			return true;
-// 		} else {
-// 			// switch to upNeighbor
-// 			// PlaylistController.changeWidgetByDirection('UP');
-// 			return false;
-// 		}
-// 	},
-
-// 	right : function(widget){
-// 		if( ( widget.model.getSelectedIndex() +  1)  %  widget.grid.x  === 0){
-// 			// switch to rightNeighbor
-// 				// PlaylistController.changeWidgetByDirection('RIGHT');
-// 				return false;
-// 		} else {
-// 			//goto the right elem
-// 			if( widget.model.hasElem( widget.model.getSelectedIndex() + 1) ){
-// 				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + 1);
-// 			}
-// 			return true;
-// 		}
-// 	},
-
-// 	down : function(widget){
-// 		if ( widget.model.hasElem ( widget.model.getSelectedIndex() + widget.grid.x  ) )	{
-// 				widget.model.setSelectedIndex ( widget.model.getSelectedIndex() + widget.grid.x);
-// 				return true;
-// 		} else {
-// 				// PlaylistController.changeWidgetByDirection('DOWN');
-// 				return false;
-// 		}
-
-// 	},
-
-// 	left : function(widget){
-// 		if( (( widget.model.getSelectedIndex() -  1)  % widget.grid.x)  === 0){
-// 			// PlaylistController.changeWidgetByDirection('LEFT');
-// 			return false;
-// 		} else {
-// 			//switch to left element in matrix
-// 			return true;
-// 		}
-		
-// 	}
-// }
-
 
  function DefaultController() {
 	// var activeWidget {};
@@ -1203,6 +1173,7 @@ App.controllers.QuickMenuController = {
 		}
 		this.activeWidget = widget;
 		this.activeWidget.active = true;
+		//FIXME: notify must present in all widgets
 		if(this.activeWidget.notify){
 				this.activeWidget.notify();
 		} 
@@ -1414,11 +1385,17 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
 		//TODO: reuse widget's
+		App.widgets.Catalog.model = App.components.Catalog;
+		App.widgets.Catalog.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
 		// App.widgets.Menu.show();
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
 		// this.activeWidget.scrollToCur();
+	};
+	PlaylistController.prototype.initWithChan = function () {
+		$('#browseView').show();
+		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};
 	PlaylistController.prototype.destroy = function () {
 		$('#browseView').hide();
@@ -1434,9 +1411,10 @@ App.controllers.GenresController = (function(window, document, undefined) {
 	}
 	GenresController.prototype = new  DefaultController();
 	GenresController.prototype.init = function () {
-		console.log('genrescontroller');
 		this.setActiveWidget.call(this, App.widgets.Menu);
 		//TODO: reuse widget's
+		App.widgets.Catalog.model = App.components.Genres;
+		App.widgets.Catalog.render();
 		$('#browseView').show();
 	}
 	GenresController.prototype.destroy = function () {
