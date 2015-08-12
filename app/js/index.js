@@ -65,7 +65,7 @@ var App = {
 			console.log('initializeEvents keydown');
 			console.log('debug fn:', debug);
 			event.preventDefault();
-			debug('keyCode : ' + event.keyCode);
+			// debug('keyCode : ' + event.keyCode);
 			if( App.currentController[App.device.getKeyFunction(event)]) 
 				App.currentController[App.device.getKeyFunction(event)]();
 			
