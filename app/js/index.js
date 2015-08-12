@@ -59,8 +59,10 @@ var App = {
 		App.go("loading");
 	}, 
 	initializeEvents: function(){
+		console.log('initializeEvents');
+
 		$(window).on("keydown", function(event){
-			console.log('initializeEvents');
+			console.log('initializeEvents keydown');
 			console.log('debug fn:', debug);
 			event.preventDefault();
 			debug('keyCode : ' + event.keyCode);
