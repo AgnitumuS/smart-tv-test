@@ -60,6 +60,8 @@ var App = {
 	}, 
 	initializeEvents: function(){
 		$(window).on("keydown", function(event){
+			console.log('initializeEvents');
+			console.log('debug fn:', dubug);
 			event.preventDefault();
 			debug('keyCode : ' + event.keyCode);
 			if( App.currentController[App.device.getKeyFunction(event)]) 
@@ -489,7 +491,7 @@ App.components.Epg = {
 		//for each chan witch has epg, set timout to upd epg next time 
 		//to interval  == 
 		var self = this;
-		console.log(self);
+		// console.log(self);
 		var order = App.components.Chans.order;
 		var all = App.components.Chans.all;
 		var timeNow = Math.floor( new Date().getTime() / 1000) ;
