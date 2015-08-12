@@ -693,13 +693,6 @@ App.widgets.Catalog = {
 					self.widget.render();
 					self.widget.highlight();
 					break;
-				
-				// case App.components.Menu.title + '/changeSelectedIndex':
-				// 	//proccesing according to menu entity
-				// 	self.widget.model.setSelectedIndex(0);
-				// 	self.widget.render();
-				// 	self.widget.highlight();
-				// 	break;
 				default:
 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
@@ -829,15 +822,9 @@ App.widgets.ChansList = {
 					starttime = App.components.Epg.convertTime(epg.start);
 				} 
 				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
-					//+ '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ curId + '.png\');">';
-					// + '<div style="width:100%; height:100%; background:rgba(0,0,0,0.24)">'
 					+ '<div class="logochan">'
 						+ '<div style="width:100%; height:100%;">'
 						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ curId + ".png" +')"></div></div>'
-						// + '<img src="' + App.api.img + 'logo/'+ curId + '.png" style="background-position:center; display:block;"/></div>';
-					// for favorites
-					/** */
-					// + '<div class="favstar"></div>'
 					if( self.model.isFav(curId) ){
 						html+= '<div class="favstar"></div>'
 					};
@@ -918,7 +905,6 @@ App.widgets.ChansList = {
 App.player = {
 	chans : App.components.Chans,
 	player : $('#iPlayer'),
-	// list : [],
 	init : function  () {
 
 	},
@@ -1046,16 +1032,6 @@ App.controllers.QuickMenuController = {
 			// switch to upNeighbor
 			changeWidgetByDirection.call(this, 'UP');
 		}
-
-
-		// if ( navigateController.up(this.activeWidget) ) {
-		// 	//make scroll
-		// 	if ( this.activeWidget.scrollTop ){
-		// 		this.activeWidget.scrollTop();
-		// 	}
-		// } else {
-		// 	//move by direction
-		// }
 	}
 
 	var RIGHT = function(){
@@ -1065,9 +1041,7 @@ App.controllers.QuickMenuController = {
 				this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() + 1);
 			}
 		} else {
-			// if( PlaylistController.hasNeighbor('RIGHT')){
 				changeWidgetByDirection.call(this, 'RIGHT');
-			// }
 		}
 	}
 
@@ -1084,18 +1058,14 @@ App.controllers.QuickMenuController = {
 	}
 
 	var LEFT = function(){
-		// if(  navigateController.left(this.activeWidget) ){
 		if( (( this.activeWidget.model.getSelectedIndex() -  1)  % this.activeWidget.grid.x)  !== 0){
 			//select prec model.id in matrix 
 		} else {
-			// if ( PlaylistController.hasNeighbor ('LEFT') ){
 				changeWidgetByDirection.call (this, 'LEFT');
-			// }
 		}
 		
 	}
 
-	// must retrun true or false, must use check hasNeighbor
 	var changeWidgetByDirection = function(orient){
 		var witch = {};
 		if (orient) {
@@ -1198,9 +1168,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		App.widgets.Catalog.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
-		// App.widgets.Menu.show();
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
-		// this.activeWidget.scrollToCur();
 	};
 	PlaylistController.prototype.initWithChan = function () {
 		$('#browseView').show();
