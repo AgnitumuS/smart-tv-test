@@ -283,18 +283,18 @@ App.components.Menu = (function (){
 	})();
 	
 
-App.components.Catalog = (function () {
+App.components.Playlists = (function () {
 	
-	function CatalogModel () {
+	function PlaylistsModel () {
 		this.selectedIndex = 0;
 		this.title = 'Playlists';
 		this.all = ['all', 'favorites', 'rating'];
 		this.currentList = this.all;
 	}
 
-	CatalogModel.prototype = new Model ();
-	var catalog = new CatalogModel();
-	return catalog;
+	PlaylistsModel.prototype = new Model ();
+	var Playlists = new PlaylistsModel();
+	return Playlists;
 })();
 
 App.components.Genres = (function() {
@@ -402,7 +402,7 @@ App.components.Chans = (function () {
 	ChansModel.prototype.changeCurList = function (type, ind) {
 		var list = [];
 		switch (type){
-			case App.components.Catalog.title:
+			case App.components.Playlists.title:
 				switch ( ind ){
 					case 0: 
 						list = this.order || [];
@@ -636,7 +636,7 @@ App.widgets.Menu = {
 
 
 App.widgets.Catalog = {
-	model : App.components.Catalog,
+	model : App.components.Playlists,
 	grid : {x : 1, y : 1},
 	neighbors : {
 		right : function () {return App.widgets.ChansList },
@@ -689,23 +689,25 @@ App.widgets.Catalog = {
 			switch (topic){
 
 				case App.components.Genres.title + '/changeSelectedIndex' :
-				case App.components.Catalog.title + '/changeSelectedIndex' :
+				case App.components.Playlists.title + '/changeSelectedIndex' :
 					self.widget.render();
 					self.widget.highlight();
 					break;
 				
-				case App.components.Menu.title + '/changeSelectedIndex':
-					//proccesing according to menu entity
-					self.widget.model.setSelectedIndex(0);
-				break;
+				// case App.components.Menu.title + '/changeSelectedIndex':
+				// 	//proccesing according to menu entity
+				// 	self.widget.model.setSelectedIndex(0);
+				// 	self.widget.render();
+				// 	self.widget.highlight();
+				// 	break;
 				default:
 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
 			}
 		}
-		PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+		PubSub.subscribe(App.components.Playlists.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-		PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+		// PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 
 
 	/**
@@ -880,7 +882,7 @@ App.widgets.ChansList = {
 				break;
 
 			case App.components.Genres.title + '/changeSelectedIndex':
-			case App.components.Catalog.title + '/changeSelectedIndex':
+			case App.components.Playlists.title + '/changeSelectedIndex':
 				//paste current catalog widget model title
 				model.changeCurList(App.widgets.Catalog.model.title,  App.widgets.Catalog.model.getSelectedIndex() );
 				self.widget.render();
@@ -902,7 +904,7 @@ App.widgets.ChansList = {
 	}
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/init', App.widgets.ChansList.controller);
-	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
+	PubSub.subscribe(App.components.Playlists.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/addFavChan', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/rmFavChan', App.widgets.ChansList.controller);
@@ -1092,39 +1094,6 @@ App.controllers.QuickMenuController = {
 		}
 		
 	}
-	/**
-	*	@description Return true if activeWidget has neighbors in direction and neighbor has active elements
-	*	@param {String} ['UP','DOWN','LEFT','RIGHT']
-	*
-	*/
-	// var hasNeighbor = function  (orient) {
-	// 	var witch = {};
-	// 	if (orient) {
-
-	// 		switch (orient){
-	// 			case 'UP':
-	// 				witch = this.activeWidget.neighbors.up;
-	// 			break;
-	// 			case 'RIGHT':
-	// 				witch = this.activeWidget.neighbors.right;
-	// 			break;
-	// 			case 'DOWN':
-	// 				witch = this.activeWidget.neighbors.down;
-	// 			break;
-	// 			case 'LEFT':
-	// 				witch = this.activeWidget.neighbors.left;
-	// 			break;
-	// 			default:
-	// 				throw new 'change widget without appropriate orient';
-	// 			break;
-	// 		}
-	// 		return witch && witch().model.currentList.length ? true :false;
-	// 	}
-	// 	else {
-	// 		throw new 'Illegal changeWidgetByDirection usage (without orient)';
-	// 	}
-	// }
-	
 
 	// must retrun true or false, must use check hasNeighbor
 	var changeWidgetByDirection = function(orient){
@@ -1214,167 +1183,6 @@ App.controllers.QuickMenuController = {
 };
 
 
-// function PlaylistController (argument) {
-// 	this.activeWidget = {},
-
-// 	this.init = function(){
-// 		//if there are no saved state, use first menu first catalog	s
-// 		$('#browseView').show();
-// 		this.setActiveWidget (App.widgets.ChansList);
-// 		// App.widgets.Menu.show();
-// 		this.activeWidget.scrollToCur();
-// 	}
-
-	// this.setActiveWidget = function  (widget) {
-	// 	if (this.activeWidget){
-	// 		this.activeWidget.active = false;
-	// 		if( this.activeWidget.highlight ) {
-	// 			this.activeWidget.highlight();
-	// 		}
-	// 		if(this.activeWidget.toggleActive){
-	// 			this.activeWidget.toggleActive();
-	// 		}
-
-	// 	}
-	// 	this.activeWidget = widget;
-	// 	this.activeWidget.active = true;
-	// 	this.activeWidget.highlight();
-	// 	if(this.activeWidget.toggleActive){
-	// 		this.activeWidget.toggleActive();
-	// 	}
-	// }
-
-	/**
-	*	@description Return true if activeWidget has neighbors in direction and neighbor has active elements
-	*	@param {String} ['UP','DOWN','LEFT','RIGHT']
-	*
-	*/
-	// this.hasNeighbor = function  (orient) {
-	// 	var witch = {};
-	// 	if (orient) {
-
-	// 		switch (orient){
-	// 			case 'UP':
-	// 				witch = this.activeWidget.neighbors.up;
-	// 			break;
-	// 			case 'RIGHT':
-	// 				witch = this.activeWidget.neighbors.right;
-	// 			break;
-	// 			case 'DOWN':
-	// 				witch = this.activeWidget.neighbors.down;
-	// 			break;
-	// 			case 'LEFT':
-	// 				witch = this.activeWidget.neighbors.left;
-	// 			break;
-	// 			default:
-	// 				throw new 'change widget without appropriate orient';
-	// 			break;
-	// 		}
-	// 		return witch && witch().model.currentList.length ? true :false;
-	// 	}
-	// 	else {
-	// 		throw new 'Illegal changeWidgetByDirection usage (without orient)';
-	// 	}
-	// }
-	
-	// this.changeWidgetByDirection = function(orient){
-	// 	var witch = {};
-	// 	if (orient) {
-
-	// 		switch (orient){
-	// 			case 'UP':
-	// 				witch = this.activeWidget.neighbors.up;
-	// 			break;
-	// 			case 'RIGHT':
-	// 				witch = this.activeWidget.neighbors.right;
-	// 			break;
-	// 			case 'DOWN':
-	// 				witch = this.activeWidget.neighbors.down;
-	// 			break;
-	// 			case 'LEFT':
-	// 				witch = this.activeWidget.neighbors.left;
-	// 			break;
-	// 			default:
-	// 				throw new 'change widget without appropriate orient';
-	// 			break;
-	// 		}
-	// 		if (witch) {
-	// 			this.setActiveWidget (witch() );
-	// 			console.log('changeWidgetByDirection to : ', witch());
-	// 		} 
-	// 	}
-	// 	else {
-	// 		throw new 'Illegal changeWidgetByDirection usage (without orient)';
-	// 	}
-	// }
-
-	// this.UP =  function(){
-	// 	if ( navigateController.up(this.activeWidget) ) {
-	// 		//make scroll
-	// 		if ( this.activeWidget.scrollTop ){
-	// 			this.activeWidget.scrollTop();
-	// 		}
-	// 	} else {
-	// 		//move by direction
-	// 		this.changeWidgetByDirection('UP');
-	// 	}
-	// },
-
-	// this.RIGHT = function(){
-	// 	if ( navigateController.right(this.activeWidget) ){
-	// 		// selected next model.id
-	// 	} else {
-	// 		if( PlaylistController.hasNeighbor('RIGHT')){
-	// 			PlaylistController.changeWidgetByDirection ('RIGHT');
-	// 		}
-	// 	}
-	// },
-
-	// this.DOWN = function(){
-	// 	if( navigateController.down(this.activeWidget) ) {
-	// 		//make scroll
-	// 		if ( this.activeWidget.scrollDown ){
-	// 			this.activeWidget.scrollDown();
-	// 		}
-	// 	} else {
-	// 		//make move by direction
-	// 		this.changeWidgetByDirection('DOWN');
-	// 	}
-
-	// 	// navigateController.down(this.activeWidget);
-	// },
-
-	// this.LEFT = function(){
-	// 	if(  navigateController.left(this.activeWidget) ){
-	// 		//scroll or another 
-	// 	} else {
-	// 		if ( PlaylistController.hasNeighbor ('LEFT') ){
-	// 			PlaylistController.changeWidgetByDirection ('LEFT');
-	// 		}
-
-	// 		//switch to left element in matrix
-	// 	}
-		
-	// },
-	// this.ENTER = function  () {
-	// 	if (this.activeWidget.enter){
-	// 		this.activeWidget.enter();
-	// 	}
-	// },
-	// //testted only . must be moved to FSController
-	// this.PAGE_UP = function  () {
-	// 	App.player.next();
-	// }
-	// this.PAGE_DOWN = function  () {
-	// 	App.player.prev();
-	// }
-	// this.YELLOW = function  () {
-	// 	if(this.activeWidget.yellow){
-	// 		this.activeWidget.yellow();
-	// 	}
-	// }
-	
-// }
 App.controllers.PlaylistController = (function(window, document, undefined) {
 	
 	function PlaylistController () {
@@ -1385,7 +1193,8 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
 		//TODO: reuse widget's
-		App.widgets.Catalog.model = App.components.Catalog;
+		App.widgets.Catalog.model = App.components.Playlists;
+		App.widgets.Catalog.model.setSelectedIndex(0);
 		App.widgets.Catalog.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
@@ -1414,6 +1223,7 @@ App.controllers.GenresController = (function(window, document, undefined) {
 		this.setActiveWidget.call(this, App.widgets.Menu);
 		//TODO: reuse widget's
 		App.widgets.Catalog.model = App.components.Genres;
+		App.widgets.Catalog.model.setSelectedIndex(0);
 		App.widgets.Catalog.render();
 		$('#browseView').show();
 	}
