@@ -67,9 +67,9 @@ body{
 	}
 #catalog{
 	position: relative;
-	left:-150px;
+	left:-265px;
 	float:left;
-	width:150px;
+	width:265px;
 	height:592px;
 	background-color: rgb(84,110,122);
 	visibility: hidden;
@@ -78,6 +78,18 @@ body{
 	transition-duration:300ms;
 	transition-timing-function:ease-out;
 }
+	.catalogTitle{
+		color:white;
+		display: block;
+		height: 50px;
+		font-size: 24px;
+		font-family: "Roboto";
+		color: rgb(255, 255, 255);
+		line-height: 50px;
+		padding-left: 28px;
+	}
+
+	
 	.catalogentity, .menuentity{
 		display: block;
 		height: 50px;
@@ -86,7 +98,7 @@ body{
 	}
 	span.catalogentity{
 		line-height: 50px;
-		padding-left: 24px;
+		padding-left: 56px;
 	}
 	#catalog.open{
 		/*display: block;*/
@@ -96,7 +108,7 @@ body{
 
 #chans{
 	position: relative;
-	left:-150px;
+	left:-265px;
 	width:624px;
 	height: 592px;
 	overflow: hidden;

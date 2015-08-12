@@ -590,6 +590,9 @@ App.widgets.Menu = {
 			this.active 
 				? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 				: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+		},
+		enter : function  () {
+				App.currentController.RIGHT();
 		}
 		
 	}
@@ -651,6 +654,11 @@ App.widgets.Catalog = {
 	},
 	render : function(){
 		var html = '';
+		if(App.widgets.Catalog.model === App.components.Playlists){
+			html += '<span class="catalogTitle">Списки</span>';
+		} else if (App.widgets.Catalog.model === App.components.Genres){
+			html += '<span class="catalogTitle">Жанры</span>';
+		}
 		this.model.currentList.forEach(function  (cur, ind) {
 			html += '<span class=catalogentity tabindex=' +ind+ '>' + cur  + '</span>';
 		})
@@ -672,9 +680,7 @@ App.widgets.Catalog = {
 		}
 	},
 	enter : function  () {
-		if( PlaylistController.hasNeighbor('RIGHT')){
-				PlaylistController.changeWidgetByDirection ('RIGHT');
-		}
+				App.currentController.RIGHT();
 	}
 }	
 	App.widgets.Catalog.controller = (function  () {
