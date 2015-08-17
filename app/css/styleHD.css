@@ -56,15 +56,16 @@ body{
 }
 
 #menu{
-	width:64px;
+	width:340px;
 	height: 592px;
 	float:left;
 	background-color:rgb(84,110,122);
 }
 	.menuentity{
-		background-position: center;
+		/*background-position: center;*/
 		background-repeat: no-repeat;
 	}
+
 #catalog{
 	position: relative;
 	left:-265px;
@@ -73,7 +74,6 @@ body{
 	height:592px;
 	background-color: rgb(84,110,122);
 	visibility: hidden;
-	/*transition : left 300ms ease-out 0s ;*/
 	transition-property : left;
 	transition-duration:300ms;
 	transition-timing-function:ease-out;
@@ -90,13 +90,13 @@ body{
 	}
 
 	
-	.catalogentity, .menuentity{
+	.menusub, .menuentity{
 		display: block;
 		height: 50px;
 		color:white;
 		/*box-shadow: 2px 2px 0px 0px #5D4037;*/
 	}
-	span.catalogentity{
+	span.menusub{
 		line-height: 50px;
 		padding-left: 56px;
 	}
@@ -229,13 +229,15 @@ body{
 	color:white;
 	/*background-color: rgb(0,172,193);*/
 	background-color: rgb(96,125,139);
-
 }
 .spotlight .timestart{
 	color: white;
 }
 .menuentity.spotlight  {
 	background-color: rgba(38,50,56,1);
+}
+.menusub.spotlight {
+	background-color: rgb(0, 172, 193);
 }
 /*Подсветка выбраного индекса*/
 .chan.highlight {

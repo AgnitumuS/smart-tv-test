@@ -110,10 +110,10 @@ var App = {
 					App.currentController = App.controllers.QuickMenuController;
 					App.currentController.init();
 					break;
-				case '#genres':
-					App.currentController = App.controllers.GenresController;
-					App.currentController.init();
-					break;
+				// case '#genres':
+				// 	App.currentController = App.controllers.GenresController;
+				// 	App.currentController.init();
+				// 	break;
 				default:
 					console.log("default case controller");
 					break;
@@ -208,8 +208,7 @@ App.controllers.LoadingController =  (function  () {
 				*/
 			/*		WebSocket's 	*/
 						
-			App.widgets.Menu.render();
-			App.widgets.Catalog.render();
+			
 		};
 		this.destroy = function () {
 		}
@@ -280,7 +279,7 @@ App.components.Menu = (function (){
 	function MenuModel () {
 			this.title = 'Menu',
 			this.selectedIndex = 0;
-			this.all = ['catalog', 'genres'];
+			this.all = ['playlists', 'genres'];
 			this.currentList = this.all
 		}
 	MenuModel.prototype = new Model();
@@ -564,154 +563,343 @@ App.widgets = {}
 	* 	@class widgets.Menu
 	*/
 
-App.widgets.Menu = {
-		model : App.components.Menu,
-		grid : {x : 1, y : 1},
-		neighbors : {
-			right : function () { return App.widgets.Catalog } 
-		},
+// App.widgets.Menu = {
+// 		model : App.components.Menu,
+// 		grid : {x : 1, y : 1},
+// 		neighbors : {
+// 			right : function () { return App.widgets.Catalog } 
+// 		},
+// 		//spotlight
+// 		active : false,
+// 		init : function() {},
+// 		/**
+// 		*	@description notify observer widgets about change active state
+// 		*/
+// 		notify : function  () {
+// 			App.widgets.Catalog.toggleActive(this.active);
+// 			App.widgets.ChansList.toggleActive(this.active);
+// 		},
+// 		render : function(){
+// 			var html = '';
+// 			this.model.all.forEach(function  (cur, ind) {
+// 				html += '<div class=menuentity data-id='+ cur+' tabindex=' +ind
+// 				+ ' style="background-image: url(./assets/icons/'+ cur +'.png);""></div>';
+// 			})
+// 			$('#menu').html(html);
+// 		},
+
+// 		highlight : function  () {
+// 			var all = 'spotlight highlight';
+// 			$('#menu .menuentity').removeClass(all);
+// 			this.active 
+// 				? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+// 				: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+// 		},
+// 		enter : function  () {
+// 				App.currentController.RIGHT();
+// 		}
+		
+// 	}
+// 	App.widgets.Menu.controller = (function  () {
+// 		function controller (widget) {
+// 			this.widget = widget;
+// 		}
+// 		return new controller (App.widgets.Menu);
+// 	})();
+// 	App.widgets.Menu.controller.handleEvent = function  (topic) {
+// 			var self = this;
+// 			var model = self.widget.model;
+// 			switch (topic){
+// 				case App.components.Menu.title + '/changeSelectedIndex' :
+// 					// self.widget.highlight();
+// 					// NOTE: widget must take a role of observer to change location.hash
+// 					switch ( model.getSelectedIndex() ){
+						
+// 						case 0:
+// 							App.go('playlist');	
+// 						break;
+						
+// 						case 1:
+// 							App.go('genres');
+// 						break;
+						
+// 						default:
+// 							throw 'Err'
+// 						break; 
+// 					}					
+// 				break;
+				
+// 				default:
+// 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+// 				break;
+// 			}
+// 		}
+// 	PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Menu.controller);
+
+App.components.RootPlaylists = ( function  () {
+	function single () {
+		this.selectedIndex = 0;
+		this.title = "RootPlaylists";
+		this.all = ['single'];
+		this.currentList = ['single'];
+	}
+	single.prototype = new Model();
+	return new single();
+})();
+	
+App.widgets.RootPlaylists = {
+	model : App.components.RootPlaylists,
+	grid : {x:1, y:1},
+	neighbors : {
+		right : function() {return App.widgets.Playlists},
+		down : function (){return App.widgets.RootGenres}
+	},
+	active : false,
+	notify : function () {
+		if(this.active){}
+	},
+	highlight : function () {
+	},
+	renderHtml : function () {
+		var html = '';
+		html += '<div id="rootPlaylists" class="menuentity" data-id=playlists tabindex=0 style="background-image: url(./assets/icons/playlists.png);""></div>'
+		return html;
+	}
+
+}
+App.widgets.Playlists = {
+	model : App.components.Playlists,
+	grid : {x : 1, y : 1},
+	neighbors : {
+		right : function () {return App.widgets.ChansList },
+		down : function () { return App.widgets.Genres	},
+		left : function () {return App.widgets.RootPlaylists}
+	},
 		//spotlight
-		active : false,
-		init : function() {},
-		/**
-		*	@description notify observer widgets about change active state
-		*/
-		notify : function  () {
-			App.widgets.Catalog.toggleActive(this.active);
-			App.widgets.ChansList.toggleActive(this.active);
-		},
-		render : function(){
-			var html = '';
-			this.model.all.forEach(function  (cur, ind) {
-				html += '<div class=menuentity data-id='+ cur+' tabindex=' +ind
-				+ ' style="background-image: url(./assets/icons/'+ cur +'.png);""></div>';
-			})
-			$('#menu').html(html);
-		},
+	active : false,
+	notify : function  () {
+		if(this.active){
+			this.model.setSelectedIndex(this.model.getSelectedIndex());
+		}
+	},
+	render : function(){
+		var html = '<div class="menublock" data-id="playlists">';
+		html += App.widgets.RootPlaylists.renderHtml();
+		html += '<div class="menuSubs">';
+		this.model.currentList.forEach(function  (cur, ind) {
+			html += '<span class=menusub tabindex=' +ind+ '>' + cur+ '</span>';
+		});
+		html += '</div>';
+		$('#menu').append(html);
+	},
 
 		highlight : function  () {
-			var all = 'spotlight highlight';
-			$('#menu .menuentity').removeClass(all);
-			this.active 
-				? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-				: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+			var all = 'spotlight';
+			var el = $('.menublock[data-id=playlists]')[0];
+			$(el).find('.menusub').removeClass(all);
+			
+			if(this.active){
+				$(el).find('.menusub[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all);
+			}
+			// this.active 
+			// 	? $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+			// 	: $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+
 		},
 		enter : function  () {
-				App.currentController.RIGHT();
+					App.currentController.RIGHT();
 		}
-		
-	}
-	App.widgets.Menu.controller = (function  () {
-		function controller (widget) {
-			this.widget = widget;
-		}
-		return new controller (App.widgets.Menu);
-	})();
-	App.widgets.Menu.controller.handleEvent = function  (topic) {
-			var self = this;
-			var model = self.widget.model;
-			switch (topic){
-				case App.components.Menu.title + '/changeSelectedIndex' :
-					// self.widget.highlight();
-					// NOTE: widget must take a role of observer to change location.hash
-					switch ( model.getSelectedIndex() ){
-						
-						case 0:
-							App.go('playlist');	
-						break;
-						
-						case 1:
-							App.go('genres');
-						break;
-						
-						default:
-							throw 'Err'
-						break; 
-					}					
-				break;
-				
-				default:
-					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
-				break;
+	}	
+		App.widgets.Playlists.controller = (function  () {
+			function controller (widget) {
+				this.widget = widget;
 			}
+			var controller = new controller (App.widgets.Playlists);
+			return controller;
+		})();
+		App.widgets.Playlists.controller.handleEvent = function(topic){
+			var self = this;
+				switch (topic){
+					case App.components.Playlists.title + '/changeSelectedIndex':
+						self.widget.highlight();
+						break;
+					default:
+						throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+					break;
+				}
+			}
+		PubSub.subscribe(App.components.Playlists.title + '/changeSelectedIndex',  App.widgets.Playlists.controller);
+	
+// }
+
+App.components.RootGenres = ( function  () {
+	function single () {
+		this.selectedIndex = 0;
+		this.title = "RootGenres";
+		this.all = ['single'];
+		this.currentList = ['single'];
+	}
+	single.prototype = new Model();
+	return new single();
+})();
+
+App.widgets.RootGenres = {
+	model : App.components.RootGenres,
+	grid : {x:1, y:1},
+	neighbors : {
+		right : function() {return App.widgets.Genres},
+		up : function (){return App.widgets.RootPlaylists}
+	},
+	active : false,
+	notify : function () {
+	},
+	highlight : function () {
+		
+	},
+	renderHtml : function () {
+		var html = '';
+		html += '<div id="rootGenres" class="menuentity" data-id=genres tabindex=0 style="background-image: url(./assets/icons/genres.png);""></div>' 
+		return html;
+	}
+}
+
+App.widgets.Genres = {
+	model : App.components.Genres,
+	grid : {x : 1, y : 1},
+	neighbors : {
+		up : function(){return App.widgets.Playlists},
+		right : function () {return App.widgets.ChansList },
+		left: function(){return App.widgets.RootGenres}
+	},
+	//spotlight
+	active : false,
+	notify : function  () {
+		if(this.active){
+			this.model.setSelectedIndex(this.model.getSelectedIndex());
 		}
-	PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Menu.controller);
+	},
+	render : function(){
+		var html = '<div class="menublock" data-id="genres">';
+		html += App.widgets.RootGenres.renderHtml();
+		html += '<div class="menuSubs">';
+		this.model.currentList.forEach(function  (cur, ind) {
+			html += '<span class=menusub tabindex=' +ind+ '>' + cur+ '</span>';
+		});
+		html += '</div>';
+		$('#menu').append(html);
+	},
+		highlight : function  () {
+			var all = 'spotlight';
+			var el = $('.menublock[data-id=genres]')[0];
+			$(el).find('.menusub').removeClass(all);
+			
+			if(this.active){
+				$(el).find('.menusub[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all);
+			}
 
+			// this.active 
+			// 	? $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+			// 	: $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
+		},
+		enter : function  () {
+					App.currentController.RIGHT();
+		}
+	}	
+		App.widgets.Genres.controller = (function  () {
+			function controller (widget) {
+				this.widget = widget;
+			}
+			var controller = new controller (App.widgets.Genres);
+			return controller;
+		})();
+		App.widgets.Genres.controller.handleEvent = function(topic){
+			var self = this;
+				switch (topic){
+					case App.components.Genres.title + '/changeSelectedIndex':
+						self.widget.highlight();
+						break;
+					default:
+						throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+					break;
+				}
+			}
+		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex',  App.widgets.Genres.controller);
+// }
 	/**
 	*	@class	widgets.Catalog
 	*/
 
 
-App.widgets.Catalog = {
-	model : App.components.Playlists,
-	grid : {x : 1, y : 1},
-	neighbors : {
-		right : function () {return App.widgets.ChansList },
-		left : function () {return App.widgets.Menu },
-	},
-	//spotlight
-	active : false,
-	init : function() {},
-	notify : function  () {
-		this.toggleActive(this.active);
-		App.widgets.ChansList.toggleActive(this.active);
-	},
-	render : function(){
-		var html = '';
-		if(App.widgets.Catalog.model === App.components.Playlists){
-			html += '<span class="catalogTitle">Списки</span>';
-		} else if (App.widgets.Catalog.model === App.components.Genres){
-			html += '<span class="catalogTitle">Жанры</span>';
-		}
-		this.model.currentList.forEach(function  (cur, ind) {
-			html += '<span class=catalogentity tabindex=' +ind+ '>' + cur  + '</span>';
-		})
-		$('#catalog').html(html);
-		},
-	highlight : function  () {
-		var all = 'spotlight highlight';
-		$('#catalog .catalogentity').removeClass(all);
-		this.active 
-			? $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-			: $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+// App.widgets.Catalog = {
+// 	model : App.components.Playlists,
+// 	grid : {x : 1, y : 1},
+// 	neighbors : {
+// 		right : function () {return App.widgets.ChansList },
+// 		left : function () {return App.widgets.Menu },
+// 	},
+// 	//spotlight
+// 	active : false,
+// 	init : function() {},
+// 	notify : function  () {
+// 		this.toggleActive(this.active);
+// 		App.widgets.ChansList.toggleActive(this.active);
+// 	},
+// 	render : function(){
+// 		var html = '';
+// 		if(App.widgets.Catalog.model === App.components.Playlists){
+// 			html += '<span class="catalogTitle">Списки</span>';
+// 		} else if (App.widgets.Catalog.model === App.components.Genres){
+// 			html += '<span class="catalogTitle">Жанры</span>';
+// 		}
+// 		this.model.currentList.forEach(function  (cur, ind) {
+// 			html += '<span class=catalogentity tabindex=' +ind+ '>' + cur  + '</span>';
+// 		})
+// 		$('#catalog').html(html);
+// 		},
+// 	highlight : function  () {
+// 		var all = 'spotlight highlight';
+// 		$('#catalog .catalogentity').removeClass(all);
+// 		this.active 
+// 			? $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+// 			: $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
-	},
-	toggleActive : function  (open) {
-		if(open){
-			$('#catalog').addClass('open');
-		} else {
-			$('#catalog').removeClass('open');
-		}
-	},
-	enter : function  () {
-				App.currentController.RIGHT();
-	}
-}	
-	App.widgets.Catalog.controller = (function  () {
-		function controller (widget) {
-			this.widget = widget;
-		}
-		var controller = new controller (App.widgets.Catalog);
-		return controller;
-	})();
-	App.widgets.Catalog.controller.handleEvent = function(topic){
-		var self = this;
-			switch (topic){
+// 	},
+// 	toggleActive : function  (open) {
+// 		if(open){
+// 			$('#catalog').addClass('open');
+// 		} else {
+// 			$('#catalog').removeClass('open');
+// 		}
+// 	},
+// 	enter : function  () {
+// 				App.currentController.RIGHT();
+// 	}
+// }	
+// 	App.widgets.Catalog.controller = (function  () {
+// 		function controller (widget) {
+// 			this.widget = widget;
+// 		}
+// 		var controller = new controller (App.widgets.Catalog);
+// 		return controller;
+// 	})();
+// 	App.widgets.Catalog.controller.handleEvent = function(topic){
+// 		var self = this;
+// 			switch (topic){
 
-				case App.components.Genres.title + '/changeSelectedIndex' :
-				case App.components.Playlists.title + '/changeSelectedIndex' :
-					self.widget.render();
-					self.widget.highlight();
-					break;
-				default:
-					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
-				break;
-			}
-		}
-		PubSub.subscribe(App.components.Playlists.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-		// PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+// 				case App.components.Genres.title + '/changeSelectedIndex' :
+// 				case App.components.Playlists.title + '/changeSelectedIndex' :
+// 					self.widget.render();
+// 					self.widget.highlight();
+// 					break;
+// 				default:
+// 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+// 				break;
+// 			}
+// 		}
+// 		PubSub.subscribe(App.components.Playlists.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+// 		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+// 		// PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 
 
 	/**
@@ -725,7 +913,7 @@ App.widgets.ChansList = {
 	grid : {x : 1, y : 1},
 	neighbors : {
 		// right : function () { return  App.widgets.ProgramsList } ,
-		left  : function () { return App.widgets.Catalog } 
+		left  : function () { return App.widgets.Playlists } 
 	},
 	//spotlight
 	active : false,
@@ -880,10 +1068,14 @@ App.widgets.ChansList = {
 				break;
 
 			case App.components.Genres.title + '/changeSelectedIndex':
+				model.changeCurList(App.components.Genres.title, App.components.Genres.getSelectedIndex());
+					self.widget.render();
+					break;
 			case App.components.Playlists.title + '/changeSelectedIndex':
 				//paste current catalog widget model title
-				model.changeCurList(App.widgets.Catalog.model.title,  App.widgets.Catalog.model.getSelectedIndex() );
-				self.widget.render();
+				//FIXME: rewrite changeCurlist method
+				model.changeCurList(App.components.Playlists.title,  App.components.Playlists.getSelectedIndex() );
+					self.widget.render();
 				break;
 			
 			case App.components.Chans.title + '/addFavChan':
@@ -1028,7 +1220,7 @@ App.controllers.QuickMenuController = {
 	}
 }
 
- function DefaultController() {
+function DefaultController() {
 	// var activeWidget {};
 	var UP =  function(){
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x) )	{
@@ -1173,15 +1365,15 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	//create observer list 
 	PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
-		//TODO: reuse widget's
-		App.widgets.Catalog.model = App.components.Playlists;
-		App.widgets.Catalog.model.setSelectedIndex(0);
-		App.widgets.Catalog.render();
+		App.widgets.Playlists.render();
+		App.widgets.Genres.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
 	};
 	PlaylistController.prototype.initWithChan = function () {
+		App.widgets.Playlists.render();
+		App.widgets.Genres.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};
@@ -1193,25 +1385,25 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 
 })(window, document);
 
-App.controllers.GenresController = (function(window, document, undefined) {
-	function GenresController () {
-		this.activeWidget = {};
-	}
-	GenresController.prototype = new  DefaultController();
-	GenresController.prototype.init = function () {
-		this.setActiveWidget.call(this, App.widgets.Menu);
-		//TODO: reuse widget's
-		App.widgets.Catalog.model = App.components.Genres;
-		App.widgets.Catalog.model.setSelectedIndex(0);
-		App.widgets.Catalog.render();
-		$('#browseView').show();
-	}
-	GenresController.prototype.destroy = function () {
-		$('#browseView').hide();
-	}
-	return new GenresController();
+// App.controllers.GenresController = (function(window, document, undefined) {
+// 	function GenresController () {
+// 		this.activeWidget = {};
+// 	}
+// 	GenresController.prototype = new  DefaultController();
+// 	GenresController.prototype.init = function () {
+// 		this.setActiveWidget.call(this, App.widgets.Menu);
+// 		//TODO: reuse widget's
+// 		App.widgets.Catalog.model = App.components.Genres;
+// 		App.widgets.Catalog.model.setSelectedIndex(0);
+// 		App.widgets.Catalog.render();
+// 		$('#browseView').show();
+// 	}
+// 	GenresController.prototype.destroy = function () {
+// 		$('#browseView').hide();
+// 	}
+// 	return new GenresController();
 
-})(window, document);
+// })(window, document);
 
 
 
