@@ -56,15 +56,28 @@ body{
 }
 
 #menu{
-	width:340px;
+	width:70px;
 	height: 592px;
+	overflow: hidden;
 	float:left;
 	background-color:rgb(84,110,122);
 }
-	.menuentity{
-		/*background-position: center;*/
-		background-repeat: no-repeat;
-	}
+.menuTitle{
+
+}
+.menuIcon{
+	display: block;
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 50px;
+	color:white;
+}
+#menu.open{
+	width:340px;
+}
+	/*.menuentity{
+		background-position: center;
+	}*/
 
 #catalog{
 	position: relative;
@@ -92,6 +105,7 @@ body{
 	
 	.menusub, .menuentity{
 		display: block;
+
 		height: 50px;
 		color:white;
 		/*box-shadow: 2px 2px 0px 0px #5D4037;*/
@@ -233,6 +247,7 @@ body{
 .spotlight .timestart{
 	color: white;
 }
+
 .menuentity.spotlight  {
 	background-color: rgba(38,50,56,1);
 }

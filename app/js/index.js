@@ -656,13 +656,22 @@ App.widgets.RootPlaylists = {
 	},
 	active : false,
 	notify : function () {
-		if(this.active){}
+		if(this.active){
+			$('#menu').addClass('open');
+
+		}
 	},
 	highlight : function () {
+		if(this.active){
+			$('#rootPlaylists').addClass('spotlight');
+		} else {
+			$('#rootPlaylists').removeClass('spotlight');
+		}
 	},
+	
 	renderHtml : function () {
 		var html = '';
-		html += '<div id="rootPlaylists" class="menuentity" data-id=playlists tabindex=0 style="background-image: url(./assets/icons/playlists.png);""></div>'
+		html += '<div id="rootPlaylists" class="menuentity" data-id=playlists tabindex=0 ><div class="menuIcon" style="background-image: url(./assets/icons/playlists.png);"></div><div class="menuTitle">Списки</div></div>'
 		return html;
 	}
 
@@ -679,6 +688,9 @@ App.widgets.Playlists = {
 	active : false,
 	notify : function  () {
 		if(this.active){
+			$('#menu').addClass('open');
+			App.widgets.Playlists.collapse(false);
+			App.widgets.Genres.collapse(false);
 			this.model.setSelectedIndex(this.model.getSelectedIndex());
 		}
 	},
@@ -692,20 +704,28 @@ App.widgets.Playlists = {
 		html += '</div>';
 		$('#menu').append(html);
 	},
+	collapse : function (bool) {
+		var el = $('.menublock[data-id=playlists]')[0];
+		if(bool){
+			$(el).find('.menuSubs').hide();
+			$(el).find('.menuIcon').show();
+			$(el).find('.menuTitle').hide();
+		} else {
+			$(el).find('.menuSubs').show();
+			$(el).find('.menuIcon').hide();
+			$(el).find('.menuTitle').show();
+		}
+	},
 
-		highlight : function  () {
-			var all = 'spotlight';
-			var el = $('.menublock[data-id=playlists]')[0];
-			$(el).find('.menusub').removeClass(all);
-			
-			if(this.active){
-				$(el).find('.menusub[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all);
-			}
-			// this.active 
-			// 	? $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-			// 	: $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
-
-		},
+	highlight : function  () {
+		var all = 'spotlight';
+		var el = $('.menublock[data-id=playlists]')[0];
+		$(el).find('.menusub').removeClass(all);
+		
+		if(this.active){
+			$(el).find('.menusub[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all);
+		}
+	},
 		enter : function  () {
 					App.currentController.RIGHT();
 		}
@@ -752,13 +772,20 @@ App.widgets.RootGenres = {
 	},
 	active : false,
 	notify : function () {
+			$('#menu').addClass('open');
+
 	},
 	highlight : function () {
+		if(this.active){
+			$('#rootGenres').addClass('spotlight');
+		} else {
+			$('#rootGenres').removeClass('spotlight');
+		}
 		
 	},
 	renderHtml : function () {
 		var html = '';
-		html += '<div id="rootGenres" class="menuentity" data-id=genres tabindex=0 style="background-image: url(./assets/icons/genres.png);""></div>' 
+		html += '<div id="rootGenres" class="menuentity" data-id=genres tabindex=0 ><div class="menuIcon" style="background-image: url(./assets/icons/genres.png);"></div><div class="menuTitle">Жанры</div></div>' 
 		return html;
 	}
 }
@@ -775,6 +802,9 @@ App.widgets.Genres = {
 	active : false,
 	notify : function  () {
 		if(this.active){
+			$('#menu').addClass('open');
+			App.widgets.Playlists.collapse(false);
+			App.widgets.Genres.collapse(false);
 			this.model.setSelectedIndex(this.model.getSelectedIndex());
 		}
 	},
@@ -787,6 +817,18 @@ App.widgets.Genres = {
 		});
 		html += '</div>';
 		$('#menu').append(html);
+	},
+	collapse : function (bool) {
+		var el = $('.menublock[data-id=genres]')[0];
+		if(bool){
+			$(el).find('.menuSubs').hide();
+			$(el).find('.menuTitle').hide();	
+			$(el).find('.menuIcon').show();
+		} else {
+			$(el).find('.menuSubs').show();	
+			$(el).find('.menuIcon').hide();
+			$(el).find('.menuTitle').show();	
+		}
 	},
 		highlight : function  () {
 			var all = 'spotlight';
@@ -917,9 +959,15 @@ App.widgets.ChansList = {
 	},
 	//spotlight
 	active : false,
-	init : function() {},
 	show : function(){
 		this.render(this.model.currentList);
+	},
+	notify : function  () {
+		if(this.active){
+			$('#menu').removeClass('open');
+			App.widgets.Playlists.collapse(true);
+			App.widgets.Genres.collapse(true);
+		}
 	},
 
 	// TODO: make scroll Valera - style
