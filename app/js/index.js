@@ -20,6 +20,7 @@ var PubSub = {
 
 
 /**
+* FIXME: something fu***cked
 * @param {String} text - Text to output
 * @description	Debug into <div id="debug"></div>
 */
