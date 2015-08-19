@@ -701,19 +701,21 @@ App.widgets.Playlists = {
 		this.model.currentList.forEach(function  (cur, ind) {
 			html += '<span class=menusub tabindex=' +ind+ '>' + cur+ '</span>';
 		});
-		html += '</div>';
-		$('#menu').append(html);
+		html += '</div></div>';
+
+		html += App.widgets.Genres.render();
+		$('#menu').html(html);
 	},
 	collapse : function (bool) {
 		var el = $('.menublock[data-id=playlists]')[0];
 		if(bool){
-			$(el).find('.menuSubs').hide();
-			$(el).find('.menuIcon').show();
-			$(el).find('.menuTitle').hide();
+			$(el).find('.menuSubs').velocity('fadeOut', { duration: 300 });
+			$(el).find('.menuTitle').velocity('fadeOut', {duration:100});
+			$(el).find('.menuIcon').velocity('fadeIn', {duration:100, delay:200});
 		} else {
-			$(el).find('.menuSubs').show();
-			$(el).find('.menuIcon').hide();
-			$(el).find('.menuTitle').show();
+			$(el).find('.menuSubs').velocity('fadeIn', { duration: 100 });
+			$(el).find('.menuIcon').velocity('fadeOut', {duration:100});
+			$(el).find('.menuTitle').velocity('fadeIn', {duration:300, delay:100});
 		}
 	},
 
@@ -816,7 +818,7 @@ App.widgets.Genres = {
 			html += '<span class=menusub tabindex=' +ind+ '>' + cur+ '</span>';
 		});
 		html += '</div>';
-		$('#menu').append(html);
+		return html;
 	},
 	collapse : function (bool) {
 		var el = $('.menublock[data-id=genres]')[0];
@@ -972,20 +974,28 @@ App.widgets.ChansList = {
 
 	// TODO: make scroll Valera - style
 	scrollDown : function(){
-		var step = $('#chans').children(":first").outerHeight();
-		var cur = $('#chans').scrollTop();
+		// var step = $('#chans').children(":first").outerHeight();
+		// var cur = $('#chans').scrollTop();
+		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
 		// 1 margin only
-		$('#chans').scrollTop( cur + step );	 
+		elem.velocity( 'scroll', { duration: 300, container:$("#chans")});
+		// $('#chans').scrollTop( cur + step );	 
 	},
 	scrollTop : function(){
-		var step = $('#chans').children(":first").outerHeight();
-		var cur = $('#chans').scrollTop();
-		$('#chans').scrollTop( cur - step );	 
+		// var step = $('#chans').children(":first").outerHeight();
+		// var cur = $('#chans').scrollTop();
+		// $('#chans').scrollTop( cur - step );	
+		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
+		// 1 margin only
+		elem.velocity( 'scroll', { duration: 300, container:$("#chans")});
 	},
 	scrollToCur : function  () {
-		var step = $('#chans').children(":first").outerHeight();
-		var items = this.model.getSelectedIndex();
-		$('#chans').scrollTop(step * items);		
+		// var step = $('#chans').children(":first").outerHeight();
+		// var items = this.model.getSelectedIndex();
+		// $('#chans').scrollTop(step * items);		
+		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
+		// 1 margin only
+		elem.velocity( 'scroll', { duration: 300, container:$("#chans")});
 	},
 	highlight : function  () {
 		var all = 'spotlight highlight';
@@ -1414,14 +1424,12 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
 		App.widgets.Playlists.render();
-		App.widgets.Genres.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
 	};
 	PlaylistController.prototype.initWithChan = function () {
 		App.widgets.Playlists.render();
-		App.widgets.Genres.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};
