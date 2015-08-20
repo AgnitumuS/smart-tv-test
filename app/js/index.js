@@ -292,7 +292,7 @@ App.components.Playlists = (function () {
 	function PlaylistsModel () {
 		this.selectedIndex = 0;
 		this.title = 'Playlists';
-		this.all = ['all', 'favorites', 'rating'];
+		this.all = ['Все', 'Избранные', 'Рейтинг'];
 		this.currentList = this.all;
 	}
 
@@ -309,6 +309,8 @@ App.components.Genres = (function() {
 		this.currentList = [];
 		this.changeList = function(arr) {
 			//without "Без категории"
+			arr.slice(1);
+
 			this.set('all', arr.slice(1), function  () {
 				this.currentList = this.all;
 			});
@@ -563,78 +565,6 @@ App.widgets = {}
 	* 	@class widgets.Menu
 	*/
 
-// App.widgets.Menu = {
-// 		model : App.components.Menu,
-// 		grid : {x : 1, y : 1},
-// 		neighbors : {
-// 			right : function () { return App.widgets.Catalog } 
-// 		},
-// 		//spotlight
-// 		active : false,
-// 		init : function() {},
-// 		/**
-// 		*	@description notify observer widgets about change active state
-// 		*/
-// 		notify : function  () {
-// 			App.widgets.Catalog.toggleActive(this.active);
-// 			App.widgets.ChansList.toggleActive(this.active);
-// 		},
-// 		render : function(){
-// 			var html = '';
-// 			this.model.all.forEach(function  (cur, ind) {
-// 				html += '<div class=menuentity data-id='+ cur+' tabindex=' +ind
-// 				+ ' style="background-image: url(./assets/icons/'+ cur +'.png);""></div>';
-// 			})
-// 			$('#menu').html(html);
-// 		},
-
-// 		highlight : function  () {
-// 			var all = 'spotlight highlight';
-// 			$('#menu .menuentity').removeClass(all);
-// 			this.active 
-// 				? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-// 				: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
-// 		},
-// 		enter : function  () {
-// 				App.currentController.RIGHT();
-// 		}
-		
-// 	}
-// 	App.widgets.Menu.controller = (function  () {
-// 		function controller (widget) {
-// 			this.widget = widget;
-// 		}
-// 		return new controller (App.widgets.Menu);
-// 	})();
-// 	App.widgets.Menu.controller.handleEvent = function  (topic) {
-// 			var self = this;
-// 			var model = self.widget.model;
-// 			switch (topic){
-// 				case App.components.Menu.title + '/changeSelectedIndex' :
-// 					// self.widget.highlight();
-// 					// NOTE: widget must take a role of observer to change location.hash
-// 					switch ( model.getSelectedIndex() ){
-						
-// 						case 0:
-// 							App.go('playlist');	
-// 						break;
-						
-// 						case 1:
-// 							App.go('genres');
-// 						break;
-						
-// 						default:
-// 							throw 'Err'
-// 						break; 
-// 					}					
-// 				break;
-				
-// 				default:
-// 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
-// 				break;
-// 			}
-// 		}
-// 	PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Menu.controller);
 
 App.components.RootPlaylists = ( function  () {
 	function single () {
@@ -688,8 +618,9 @@ App.widgets.Playlists = {
 	active : false,
 	notify : function  () {
 		if(this.active){
-			$('#menu').addClass('open');
+			App.components.Playlists.setSelectedIndex(0);
 			App.widgets.Playlists.collapse(false);
+
 			App.widgets.Genres.collapse(false);
 			this.model.setSelectedIndex(this.model.getSelectedIndex());
 		}
@@ -697,6 +628,7 @@ App.widgets.Playlists = {
 	render : function(){
 		var html = '<div class="menublock" data-id="playlists">';
 		html += App.widgets.RootPlaylists.renderHtml();
+
 		html += '<div class="menuSubs">';
 		this.model.currentList.forEach(function  (cur, ind) {
 			html += '<span class=menusub tabindex=' +ind+ '>' + cur+ '</span>';
@@ -704,18 +636,34 @@ App.widgets.Playlists = {
 		html += '</div></div>';
 
 		html += App.widgets.Genres.render();
+		html += App.widgets.RootSettings.renderHtml();
 		$('#menu').html(html);
 	},
 	collapse : function (bool) {
 		var el = $('.menublock[data-id=playlists]')[0];
 		if(bool){
-			$(el).find('.menuSubs').velocity('fadeOut', { duration: 300 });
-			$(el).find('.menuTitle').velocity('fadeOut', {duration:100});
-			$(el).find('.menuIcon').velocity('fadeIn', {duration:100, delay:200});
+		
+			// $('#menu').removeClass('open');
+			$('#menu').css({width:'70'});
+			$(el).find('.menuSubs').css({visibility:'hidden', display:'none'});
+			// $('#menu').velocity({width:"70"}, {complete: function  () {
+			// 	$(el).find('.menuSubs').velocity({ opacity: 0 }, {visibility: "hidden", complete : function  () {
+			// 	$(el).find('.menuSubs').velocity({opacity:0}, {display:'none'})
+			// }});
+			// }})
+		
 		} else {
-			$(el).find('.menuSubs').velocity('fadeIn', { duration: 100 });
-			$(el).find('.menuIcon').velocity('fadeOut', {duration:100});
-			$(el).find('.menuTitle').velocity('fadeIn', {duration:300, delay:100});
+			$('#menu').css({width:'340'});
+			$(el).find('.menuSubs').css({visibility:'visible', display:'block'});
+			
+			// $('#menu').addClass('open');
+			// $('.open#menu ').velocity({width:340}, 
+			// 	{
+			// 		complete: function(){
+			// 			$(el).find('.menuSubs').css( {display:'block'} );
+			// 			$(el).find('.menuSubs').velocity('fadeIn',{ duration:300, visibility:'visible'})				
+			// }} );
+		
 		}
 	},
 
@@ -770,11 +718,15 @@ App.widgets.RootGenres = {
 	grid : {x:1, y:1},
 	neighbors : {
 		right : function() {return App.widgets.Genres},
-		up : function (){return App.widgets.RootPlaylists}
+		up : function (){return App.widgets.RootPlaylists},
+		down: function () {
+			return App.widgets.RootSettings
+		}
 	},
 	active : false,
 	notify : function () {
 			$('#menu').addClass('open');
+			App.components.Genres.setSelectedIndex(0);
 
 	},
 	highlight : function () {
@@ -824,12 +776,12 @@ App.widgets.Genres = {
 		var el = $('.menublock[data-id=genres]')[0];
 		if(bool){
 			$(el).find('.menuSubs').hide();
-			$(el).find('.menuTitle').hide();	
-			$(el).find('.menuIcon').show();
+			// $(el).find('.menuTitle').hide();	
+			// $(el).find('.menuIcon').show();
 		} else {
 			$(el).find('.menuSubs').show();	
-			$(el).find('.menuIcon').hide();
-			$(el).find('.menuTitle').show();	
+			// $(el).find('.menuIcon').hide();
+			// $(el).find('.menuTitle').show();	
 		}
 	},
 		highlight : function  () {
@@ -869,88 +821,50 @@ App.widgets.Genres = {
 				}
 			}
 		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex',  App.widgets.Genres.controller);
-// }
-	/**
-	*	@class	widgets.Catalog
-	*/
-
-
-// App.widgets.Catalog = {
-// 	model : App.components.Playlists,
-// 	grid : {x : 1, y : 1},
-// 	neighbors : {
-// 		right : function () {return App.widgets.ChansList },
-// 		left : function () {return App.widgets.Menu },
-// 	},
-// 	//spotlight
-// 	active : false,
-// 	init : function() {},
-// 	notify : function  () {
-// 		this.toggleActive(this.active);
-// 		App.widgets.ChansList.toggleActive(this.active);
-// 	},
-// 	render : function(){
-// 		var html = '';
-// 		if(App.widgets.Catalog.model === App.components.Playlists){
-// 			html += '<span class="catalogTitle">Списки</span>';
-// 		} else if (App.widgets.Catalog.model === App.components.Genres){
-// 			html += '<span class="catalogTitle">Жанры</span>';
-// 		}
-// 		this.model.currentList.forEach(function  (cur, ind) {
-// 			html += '<span class=catalogentity tabindex=' +ind+ '>' + cur  + '</span>';
-// 		})
-// 		$('#catalog').html(html);
-// 		},
-// 	highlight : function  () {
-// 		var all = 'spotlight highlight';
-// 		$('#catalog .catalogentity').removeClass(all);
-// 		this.active 
-// 			? $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-// 			: $('.catalogentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
-
-// 	},
-// 	toggleActive : function  (open) {
-// 		if(open){
-// 			$('#catalog').addClass('open');
-// 		} else {
-// 			$('#catalog').removeClass('open');
-// 		}
-// 	},
-// 	enter : function  () {
-// 				App.currentController.RIGHT();
-// 	}
-// }	
-// 	App.widgets.Catalog.controller = (function  () {
-// 		function controller (widget) {
-// 			this.widget = widget;
-// 		}
-// 		var controller = new controller (App.widgets.Catalog);
-// 		return controller;
-// 	})();
-// 	App.widgets.Catalog.controller.handleEvent = function(topic){
-// 		var self = this;
-// 			switch (topic){
-
-// 				case App.components.Genres.title + '/changeSelectedIndex' :
-// 				case App.components.Playlists.title + '/changeSelectedIndex' :
-// 					self.widget.render();
-// 					self.widget.highlight();
-// 					break;
-// 				default:
-// 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
-// 				break;
-// 			}
-// 		}
-// 		PubSub.subscribe(App.components.Playlists.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-// 		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-// 		// PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 
 
 	/**
 	* 	Widgets.ChansList
 	*/
+App.components.RootSettings = ( function  () {
+	function single () {
+		this.selectedIndex = 0;
+		this.title = "RootSettings";
+		this.all = ['single'];
+		this.currentList = ['single'];
+	}
+	single.prototype = new Model();
+	return new single();
+})();
+App.widgets.RootSettings = {
+	model : App.components.RootSettings,
+	grid : {x:1, y:1},
+	neighbors : {
+		// right : function() {return App.widgets.Playlists},
+		// down : function (){return App.widgets.RootGenres}
+		up : function  () {return App.widgets.RootGenres}
+	},
+	active : false,
+	notify : function () {
+		if(this.active){
+			$('#menu').addClass('open');
+		}
+	},
+	highlight : function () {
+		if(this.active){
+			$('#rootSettings').addClass('spotlight');
+		} else {
+			$('#rootSettings').removeClass('spotlight');
+		}
+	},
+	
+	renderHtml : function () {
+		var html = '';
+		html += '<div id="rootSettings" class="menuentity" data-id=settings tabindex=2 ><div class="menuIcon" style="background-image: url(./assets/icons/settings.png);"></div><div class="menuTitle">Списки</div></div>'
+		return html;
+	}
 
-
+}
 App.widgets.ChansList = {
 	model : App.components.Chans,
 	spotlighted : false,
@@ -1424,12 +1338,14 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
 		App.widgets.Playlists.render();
+		// App.widgets.RootSettings.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
 	};
 	PlaylistController.prototype.initWithChan = function () {
 		App.widgets.Playlists.render();
+		// App.widgets.RootSettings.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};
