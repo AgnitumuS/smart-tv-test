@@ -588,6 +588,8 @@ App.widgets.RootPlaylists = {
 	notify : function () {
 		if(this.active){
 			$('#menu').addClass('open');
+			App.components.Playlists.setSelectedIndex(0);
+
 
 		}
 	},
@@ -618,7 +620,6 @@ App.widgets.Playlists = {
 	active : false,
 	notify : function  () {
 		if(this.active){
-			App.components.Playlists.setSelectedIndex(0);
 			App.widgets.Playlists.collapse(false);
 
 			App.widgets.Genres.collapse(false);
@@ -726,7 +727,9 @@ App.widgets.RootGenres = {
 	active : false,
 	notify : function () {
 			$('#menu').addClass('open');
+			//костыли
 			App.components.Genres.setSelectedIndex(0);
+			App.components.Playlists.setSelectedIndex(2);
 
 	},
 	highlight : function () {

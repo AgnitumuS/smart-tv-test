@@ -68,6 +68,7 @@ body{
 	width: 100%;*/
 	margin-bottom: 20px;
 }
+
 .menuSubs{
 	float:left;
 	width:260px;	
@@ -133,6 +134,7 @@ body{
 		padding-left: 50px;
 		margin-left:55px;
 	}
+	.menusub:first-letter { text-transform: uppercase }
 	#catalog.open{
 		/*display: block;*/
 		left: 0px;
