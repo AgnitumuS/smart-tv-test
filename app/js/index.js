@@ -254,15 +254,13 @@ function Model() {
 	this.hasElem = function(ind){
 		return this.currentList[ind] ? true : false; 
 	};
-	this.setSelectedIndex = function(val, delay){
+	this.setSelectedIndex = function(val){
 		var self = this;
 		//if !undefined, publish old ind
 		this.set('selectedIndex', val , function(){
 			PubSub.publish(self.title + "/changeSelectedIndex");
 		});
-		if(delay !== undefined){
-			this.notifyWithDelay(delay);
-		}
+		
 	};
 	this.getSelectedItem = function () {
 		return this.currentList[this.getSelectedIndex()];
@@ -382,10 +380,15 @@ App.components.Catalog = (function(window, document, undefined) {
 		};
 		//get first element in list with type
 		this.getFirstIdByType = function (type) {
+			var id = -1;
 			for(var i =0; i<this.currentList.length ; i ++){
 				if(this.currentList[i].type === type){
-					return i;
+					id = i;
+					return id;
 				}
+			}
+			if(id === -1){
+				return 0;
 			}
 		}
 	}
@@ -770,45 +773,34 @@ App.widgets.Catalog = {
 		if(this.active){
 			// App.widgets.ChansList подвинуть
 			$('#menu').css({width:'340'});
-
 			this.render();
+			this.highlightTitle();
 		} else {
 			$('#menu').css({width:'70'});
+			//сбросить значение
+			this.highlightTitle({});
 			//hide all, show images
 			App.widgets.Menu.render();
 		}
 	},
 	render : function(){
-		var html = '';
 
-		// this.model.currentList.forEach(function (cur, ind) {
-		// 	html += '<span class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</span>';
-		// })
-		html += '<span id="playlistsTitle" class="catalogTitles">Списки</span>';
+		var html = '';
+		html += '<div id="playlistsTitle" class="catalogTitles">Списки</div>';
 		this.model.currentList.forEach(function  (cur, ind) {
 			if (cur.type === 'playlist') {
-				html += '<span class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</span>';		
+				html += '<div class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</div>';		
 			}
 		})
-		html += '<span id="genresTitle" class="catalogTitles">Жанры</span>';
+		html += '<div id="genresTitle" class="catalogTitles">Жанры</div>';
 		this.model.currentList.forEach(function  (cur, ind) {
 			if (cur.type === 'genre') {
-				html += '<span class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</span>';
+				html += '<div class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</div>';
 			}
 		})
-		html += '<span id="settingsTitle" class="catalogTitles">Настройки</span>';
-
-		// var html = '';
-		// if(App.widgets.Catalog.model === App.components.Playlists){
-		// 	html += '<span class="catalogTitle">Списки</span>';
-		// } else if (App.widgets.Catalog.model === App.components.Genres){
-		// 	html += '<span class="catalogTitle">Жанры</span>';
-		// }
-		// this.model.currentList.forEach(function  (cur, ind) {
-		// 	html += '<span class=catalogentity tabindex=' +ind+ '>' + cur  + '</span>';
-		// })
+		html += '<div id="settingsTitle" class="catalogTitles">Настройки</div>';
 		$('#menu').html(html);
-		},
+	},
 
 	highlight : function  () {
 		var all = 'spotlight highlight';
@@ -817,6 +809,25 @@ App.widgets.Catalog = {
 			? $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
+	},
+	scrollToCur : function () {
+		var elem = $('.catalogEntity[tabindex='+ this.model.getSelectedIndex()+ ']');
+		// var to = $('#chans').scrollTop() - 2*118;
+		// console.log('position.top', elem.position().top);
+		// if(to < 0) {
+		// 	to = 0
+		// } else {
+		// 	$('#chans').scrollTop( to )
+		// }
+		// console.log(elem, 'scrollto:',to);
+		var curScrollTop = $('#menu').scrollTop();
+		var positionTop = elem.position().top;
+		var outerHeight = elem.outerHeight();
+		if( positionTop >  4 * outerHeight - 1){
+			$('#menu').scrollTop( curScrollTop + outerHeight )
+		} else {
+			$('#menu').scrollTop( curScrollTop - outerHeight )
+		}
 	},
 
 	enter : function  () {
@@ -842,7 +853,40 @@ App.widgets.Catalog = {
 			var menuItem = App.components.Menu.getSelectedItem();
 			this.model.setSelectedIndex(this.model.getFirstIdByType(menuItem.childNodeType));
 		}
-	}
+	},
+	highlightTitle : (function(window, document, undefined) {
+		var curType ; // playlist, genre, setting
+
+		function highlightTitle (type) {
+			//сбросить текущий тип (ипользуем при закрытии вкладки)
+			if(type  !== undefined){
+				curType = type;
+				return;
+			}
+			var item = App.components.Catalog.getSelectedItem();
+			console.log(curType);
+			if(item.type !== curType){
+				switch (item.type){
+					case 'playlist':
+						curType = item.type;
+						$('#genresTitle').removeClass('highlight');
+						$('#playlistsTitle').addClass('highlight');
+					break;
+					case 'genre':
+						curType = item.type;
+						$('#playlistsTitle').removeClass('highlight');
+						$('#genresTitle').addClass('highlight');
+						break;
+					default:
+						throw 'There are no such title for this type'
+						break;
+				}		
+			}
+			
+		}
+
+		return highlightTitle;
+	})(window, document)
 
 }	
 	App.widgets.Catalog.controller = (function  () {
@@ -857,10 +901,12 @@ App.widgets.Catalog = {
 			switch (topic){
 
 				case App.components.Catalog.title + '/changeSelectedIndex' :
-					self.widget.render();
-					self.widget.highlight();
+					if(self.widget.active){
+						self.widget.highlight();
+						self.widget.highlightTitle();
+					}
 					//notify dependecy widgets
-					self.widget.notifyWithDelay(400);
+					self.widget.notifyWithDelay(500);
 					break;
 				// case App.components.Menu.title + '/changeSelectedIndex':
 				// 	//set to first elem of list with current menu type
@@ -1135,31 +1181,55 @@ App.widgets.ChansList = {
 	notify : function  () {
 		if(this.active){
 			$('#menu').removeClass('open');
+			$('#chans').css({'background-color': 'rgba(38, 50, 56, 1)'});
 			// App.widgets.Playlists.collapse(true);
 			// App.widgets.Genres.collapse(true);
+		} else {
+			$('#chans').css({'background-color': 'rgba(38, 50, 56, .7)'});
+			
 		}
 	},
-
+	chanOuterHeight: null,
+	chansHeight: null, 
 	// TODO: make scroll Valera - style
 	scrollDown : function(){
 		// var step = $('#chans').children(":first").outerHeight();
 		// var cur = $('#chans').scrollTop();
 		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
 		// 1 margin only
-		elem.velocity( 'scroll', { duration: 300, container:$("#chans")});
+		elem.velocity( 'scroll', { duration: 'fast', container:$("#chans")});
 		// $('#chans').scrollTop( cur + step );	 
-	},
+	},  
 	scrollTop : function(){
 		// var step = $('#chans').children(":first").outerHeight();
 		// var cur = $('#chans').scrollTop();
 		// $('#chans').scrollTop( cur - step );	
 		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
 		// 1 margin only
-		elem.velocity( 'scroll', { duration: 300, container:$("#chans")});
+		elem.velocity( 'scroll', { duration: 'fast', container:$("#chans")});
 	},
 	scrollToCur : function  () {
 		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
-		elem.velocity( 'scroll', { duration: 300, container:$("#chans")});
+		// var to = $('#chans').scrollTop() - 2*118;
+		// console.log('position.top', elem.position().top);
+		// if(to < 0) {
+		// 	to = 0
+		// } else {
+		// 	$('#chans').scrollTop( to )
+		// }
+		// console.log(elem, 'scrollto:',to);
+		var curScrollTop = $('#chans').scrollTop();
+		var positionTop = elem.position().top;
+		var outerHeight = elem.outerHeight();
+		if( positionTop >  2 * outerHeight - 1){
+			$('#chans').scrollTop( curScrollTop + outerHeight )
+		} else {
+			$('#chans').scrollTop( curScrollTop - outerHeight )
+		}
+
+		// $('#chans').scrollTop( $('#chans').scrollTop() + $('.chan').outerHeight() - 2*$('.chan').outerHeight()		)
+		// console.log('scrollTop:', $('#chans').scrollTop() + $('.chan').outerHeight() - 2*$('.chan').outerHeight())
+		// elem.velocity( 'scroll', { duration: 'fast', container:$("#chans")});
 	},
 	highlight : function  () {
 		var all = 'spotlight highlight';
@@ -1446,8 +1516,8 @@ function DefaultController() {
 			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x );
 			// return true;
 			// FIXME: change manual using to mediator in scrollTop
-			if ( this.activeWidget.scrollTop ){
-				this.activeWidget.scrollTop();
+			if ( this.activeWidget.scrollToCur ){
+				this.activeWidget.scrollToCur();
 			}
 
 		} else {
@@ -1471,8 +1541,8 @@ function DefaultController() {
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x  ) )	{
 			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x);
 			// FIXME: change manual using to mediator in scrollTop
-			if ( this.activeWidget.scrollDown ){
-				this.activeWidget.scrollDown();
+			if ( this.activeWidget.scrollToCur ){
+				this.activeWidget.scrollToCur();
 			}
 		} else {
 			changeWidgetByDirection.call(this, 'DOWN');
