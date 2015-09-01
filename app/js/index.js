@@ -64,9 +64,7 @@ var App = {
 
 		$(window).on("keydown", function(event){
 			console.log('initializeEvents keydown');
-			console.log('debug fn:', debug);
 			event.preventDefault();
-			// debug('keyCode : ' + event.keyCode);
 			if( App.currentController[App.device.getKeyFunction(event)]) 
 				App.currentController[App.device.getKeyFunction(event)]();
 			
@@ -128,7 +126,7 @@ var App = {
 	*/
 	go : function(hash) {
 		window.location.hash = '#' + hash;
-		PubSub.publish("location.hash/changed");
+		PubSub.publish("location.hash/changed", hash);
 	}
 }
 
@@ -481,13 +479,10 @@ App.components.Chans = (function () {
     	}, this)
     }
 	
-	ChansModel.prototype.changeCurList = function (ind) {
+	ChansModel.prototype.genListByCategory = function (ind) {
 		var list = [];
 		// {id, type, title, {class}}
 		var category = App.components.Catalog.getElementById(ind);
-
-
-
 
 		switch (category.type){
 			case 'playlist':
@@ -502,7 +497,7 @@ App.components.Chans = (function () {
 						list = this.rating || [];
 						break;
 					default :
-						throw 'Wrong list ind in changeCurList'
+						throw 'Wrong list ind in genListByCategory'
 						break;
 				}
 				break;
@@ -515,9 +510,15 @@ App.components.Chans = (function () {
 				throw 'Err'
 				break;
 		}
-			console.log('current list changed to ', this.currentList);
-			this.currentList = list;
-			this.setSelectedIndex(0);
+			// console.log('current list changed to ', this.currentList);
+			console.log('genListByCategory returned list:', list);
+			// this.currentList = list;
+			// this.setSelectedIndex(0);
+			return list;
+	}
+	ChansModel.prototype.changeCurList = function (list) {
+		this.currentList = list.slice(0);
+		// PubSub.publish(this.title + '/changeCurList');
 	}
 	//Event from ws
 	ChansModel.prototype.updEpg = function  (data) {
@@ -690,53 +691,84 @@ App.widgets = {}
 // 	}
 
 // }
-
-App.widgets.Menu = {
-		model : App.components.Menu,
-		grid : {x : 1, y : 1},
-		neighbors : {
-			right : function () { return App.widgets.Catalog } 
-		},
-		//spotlight
-		active : false,
-		init : function() {},
-		/**
-		*	@description notify observer widgets about change active state
-		*/
-		notify : function  () {
-			
-		},
-		render : function(){
-			var html = '';
-			this.model.all.forEach(function  (cur, ind) {
-				html += '<div class=menuentity data-id='+ cur.id+' tabindex=' +ind
-				+ ' style="background-image: url(./assets/icons/'+ cur.id +'.png);""></div>';
-			})
-			$('#menu').html(html);
-		},
-
-		highlight : function  () {
-			var all = 'spotlight highlight';
-			$('#menu .menuentity').removeClass(all);
-			this.active 
-				? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-				: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
-		},
-		enter : function  () {
-				App.currentController.RIGHT();
-		},
-		identifyNearestNeighbor : function (prevWidget) {
-			if(prevWidget === App.widgets.Catalog){
-				var catItem = App.components.Catalog.getSelectedItem();
-				var menuItem = App.components.Menu.getSelectedItem();
-				if ( catItem.type !== menuItem.childNodeType ){
-					// change menu selectedIndex according to type of catalog entity
-					App.components.Menu.setSelectedIndex(App.components.Menu.getIdElByChildType(catItem.type));
-					} 
-			}
+App.widgets.BackDoor = {
+	active : false,
+	model : {
+		currentList : ['cap']
+	},
+	notify: function () {
+		if(this.active){
+			App.go('fsplayer');		
 		}
-		
+	},
+	highlight : function () {
 	}
+}
+App.widgets.Menu = {
+	model : App.components.Menu,
+	grid : {x : 1, y : 1},
+	neighbors : {
+		left: function () {return App.widgets.BackDoor} ,
+		right : function () { return App.widgets.Catalog } 
+	},
+	//spotlight
+	active : false,
+	init : function() {},
+	up : function () {
+		ListController.up.call(App.currentController);
+	},
+	down : function () {
+		ListController.down.call(App.currentController);
+	},
+	left : function () {
+		ListController.left.call(App.currentController);
+	},
+	right : function () {
+		ListController.right.call(App.currentController);
+	},
+	/**
+	*	@description notify observer widgets about change active state
+	*/
+	notify : function  () {
+		if(this.active){
+			// $('#chans').velocity("fadeOut", {duration:400});
+			$('#chans').hide();
+		} else {
+			// $('#chans').velocity("fadeIn", {duration:400});
+			$('#chans').show();
+		}
+	},
+	render : function(){
+		var html = '';
+		this.model.all.forEach(function  (cur, ind) {
+			html += '<div class=menuentity data-id='+ cur.id+' tabindex=' +ind
+			+ ' style="background-image: url(./assets/icons/'+ cur.id +'.png);""></div>';
+		})
+		$('#menu').html(html);
+	},
+
+	highlight : function  () {
+		var all = 'spotlight highlight';
+		$('#menu .menuentity').removeClass(all);
+		this.active 
+			? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
+			: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
+	},
+	enter : function  () {
+			App.currentController.RIGHT();
+	},
+	identifyNearestNeighbor : function (prevWidget) {
+		if(prevWidget === App.widgets.Catalog){
+			var catItem = App.components.Catalog.getSelectedItem();
+			var menuItem = App.components.Menu.getSelectedItem();
+			if ( catItem.type !== menuItem.childNodeType ){
+				// change menu selectedIndex according to type of catalog entity
+				App.components.Menu.setSelectedIndex(App.components.Menu.getIdElByChildType(catItem.type));
+				} 
+		}
+	}
+	
+}
 	App.widgets.Menu.controller = (function  () {
 		function controller (widget) {
 			this.widget = widget;
@@ -769,12 +801,33 @@ App.widgets.Catalog = {
 	//spotlight
 	active : false,
 	init : function() {},
+	up : function () {
+		ListController.up.call(App.currentController);
+	},
+	down : function () {
+		ListController.down.call(App.currentController);
+	},
+	left : function () {
+		ListController.left.call(App.currentController);
+	},
+	right : function () {
+		var idCategory = this.model.getSelectedIndex();
+		var newList = App.components.Chans.genListByCategory(idCategory);
+		if(newList.length !== 0) {
+			App.components.Chans.changeCurList(newList);
+			App.components.Chans.setSelectedIndex(0);
+			ListController.right.call(App.currentController);
+		} 
+		// App.components.Chans.setSele
+		// this.model.genListByCategory(App.components.Catalog.getSelectedIndex());
+	},
 	notify : function  () {
 		if(this.active){
 			// App.widgets.ChansList подвинуть
 			$('#menu').css({width:'340'});
 			this.render();
 			this.highlightTitle();
+			this.scrollToCur();
 		} else {
 			$('#menu').css({width:'70'});
 			//сбросить значение
@@ -811,16 +864,14 @@ App.widgets.Catalog = {
 
 	},
 	scrollToCur : function () {
-		var elem = $('.catalogEntity[tabindex='+ this.model.getSelectedIndex()+ ']');
-		// var to = $('#chans').scrollTop() - 2*118;
-		// console.log('position.top', elem.position().top);
-		// if(to < 0) {
-		// 	to = 0
-		// } else {
-		// 	$('#chans').scrollTop( to )
-		// }
-		// console.log(elem, 'scrollto:',to);
+		var ind = this.model.getSelectedIndex();
+		var elem = $('.catalogEntity[tabindex='+ ind + ']');
+		/*
+		//FIXME: fix scroll notify -> scroll from top=0
 		var curScrollTop = $('#menu').scrollTop();
+		if(curScrollTop > )
+		
+		//если нету в области видимости, 
 		var positionTop = elem.position().top;
 		var outerHeight = elem.outerHeight();
 		if( positionTop >  4 * outerHeight - 1){
@@ -828,6 +879,13 @@ App.widgets.Catalog = {
 		} else {
 			$('#menu').scrollTop( curScrollTop - outerHeight )
 		}
+		*/
+		var height = elem.outerHeight();
+		$('#menu').scrollTop(height * ind - 2 * height);
+		console.log('scrollTOp:' , height * ind -2 * height)
+
+
+
 	},
 
 	enter : function  () {
@@ -920,251 +978,7 @@ App.widgets.Catalog = {
 			}
 		}
 		PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-		// PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-		
-// App.widgets.Playlists = {
-// 	model : App.components.Playlists,
-// 	grid : {x : 1, y : 1},
-// 	neighbors : {
-// 		right : function () {return App.widgets.ChansList },
-// 		down : function () { return App.widgets.Genres	},
-// 		left : function () {return App.widgets.RootPlaylists}
-// 	},
-// 		//spotlight
-// 	active : false,
-// 	notify : function  () {
-// 		if(this.active){
-// 			App.widgets.Playlists.collapse(false);
-
-// 			App.widgets.Genres.collapse(false);
-// 			this.model.setSelectedIndex(this.model.getSelectedIndex());
-// 		}
-// 	},
-// 	render : function(){
-// 		var html = '<div class="menublock" data-id="playlists">';
-// 		html += App.widgets.RootPlaylists.renderHtml();
-
-// 		html += '<div class="menuSubs">';
-// 		this.model.currentList.forEach(function  (cur, ind) {
-// 			html += '<span class=menusub tabindex=' +ind+ '>' + cur+ '</span>';
-// 		});
-// 		html += '</div></div>';
-
-// 		html += App.widgets.Genres.render();
-// 		html += App.widgets.RootSettings.renderHtml();
-// 		$('#menu').html(html);
-// 	},
-// 	collapse : function (bool) {
-// 		var el = $('.menublock[data-id=playlists]')[0];
-// 		if(bool){
-// 			$('#menu').css({width:'70'});
-// 			$(el).find('.menuSubs').css({visibility:'hidden', display:'none'});
-// 		} else {
-// 			$('#menu').css({width:'340'});
-// 			$(el).find('.menuSubs').css({visibility:'visible', display:'block'});
-// 		}
-// 	},
-
-// 	highlight : function  () {
-// 		var all = 'spotlight';
-// 		var el = $('.menublock[data-id=playlists]')[0];
-// 		$(el).find('.menusub').removeClass(all);
-		
-// 		if(this.active){
-// 			$(el).find('.menusub[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all);
-// 		}
-// 	},
-// 		enter : function  () {
-// 					App.currentController.RIGHT();
-// 		}
-// 	}	
-// 		App.widgets.Playlists.controller = (function  () {
-// 			function controller (widget) {
-// 				this.widget = widget;
-// 			}
-// 			var controller = new controller (App.widgets.Playlists);
-// 			return controller;
-// 		})();
-// 		App.widgets.Playlists.controller.handleEvent = function(topic){
-// 			var self = this;
-// 				switch (topic){
-// 					case App.components.Playlists.title + '/changeSelectedIndex':
-// 						self.widget.highlight();
-// 						break;
-// 					default:
-// 						throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
-// 					break;
-// 				}
-// 			}
-// 		PubSub.subscribe(App.components.Playlists.title + '/changeSelectedIndex',  App.widgets.Playlists.controller);
 	
-// }
-
-// App.components.RootGenres = ( function  () {
-// 	function single () {
-// 		this.selectedIndex = 0;
-// 		this.title = "RootGenres";
-// 		this.all = ['single'];
-// 		this.currentList = ['single'];
-// 	}
-// 	single.prototype = new Model();
-// 	return new single();
-// })();
-
-// App.widgets.RootGenres = {
-// 	model : App.components.RootGenres,
-// 	grid : {x:1, y:1},
-// 	neighbors : {
-// 		right : function() {return App.widgets.Genres},
-// 		up : function (){return App.widgets.RootPlaylists},
-// 		down: function () {
-// 			return App.widgets.RootSettings
-// 		}
-// 	},
-// 	active : false,
-// 	notify : function () {
-// 			$('#menu').addClass('open');
-// 			//костыли
-// 			App.components.Genres.setSelectedIndex(0);
-// 			App.components.Playlists.setSelectedIndex(2);
-
-// 	},
-// 	highlight : function () {
-// 		if(this.active){
-// 			$('#rootGenres').addClass('spotlight');
-// 		} else {
-// 			$('#rootGenres').removeClass('spotlight');
-// 		}
-		
-// 	},
-// 	renderHtml : function () {
-// 		var html = '';
-// 		html += '<div id="rootGenres" class="menuentity" data-id=genres tabindex=0 ><div class="menuIcon" style="background-image: url(./assets/icons/genres.png);"></div><div class="menuTitle">Жанры</div></div>' 
-// 		return html;
-// 	}
-// }
-
-// App.widgets.Genres = {
-// 	model : App.components.Genres,
-// 	grid : {x : 1, y : 1},
-// 	neighbors : {
-// 		up : function(){return App.widgets.Playlists},
-// 		right : function () {return App.widgets.ChansList },
-// 		left: function(){return App.widgets.RootGenres}
-// 	},
-// 	//spotlight
-// 	active : false,
-// 	notify : function  () {
-// 		if(this.active){
-// 			$('#menu').addClass('open');
-// 			App.widgets.Playlists.collapse(false);
-// 			App.widgets.Genres.collapse(false);
-// 			this.model.setSelectedIndex(this.model.getSelectedIndex());
-// 		}
-// 	},
-// 	render : function(){
-// 		var html = '<div class="menublock" data-id="genres">';
-// 		html += App.widgets.RootGenres.renderHtml();
-// 		html += '<div class="menuSubs">';
-// 		this.model.currentList.forEach(function  (cur, ind) {
-// 			html += '<span class=menusub tabindex=' +ind+ '>' + cur+ '</span>';
-// 		});
-// 		html += '</div>';
-// 		return html;
-// 	},
-// 	collapse : function (bool) {
-// 		var el = $('.menublock[data-id=genres]')[0];
-// 		if(bool){
-// 			$(el).find('.menuSubs').hide();
-// 			// $(el).find('.menuTitle').hide();	
-// 			// $(el).find('.menuIcon').show();
-// 		} else {
-// 			$(el).find('.menuSubs').show();	
-// 			// $(el).find('.menuIcon').hide();
-// 			// $(el).find('.menuTitle').show();	
-// 		}
-// 	},
-// 		highlight : function  () {
-// 			var all = 'spotlight';
-// 			var el = $('.menublock[data-id=genres]')[0];
-// 			$(el).find('.menusub').removeClass(all);
-			
-// 			if(this.active){
-// 				$(el).find('.menusub[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all);
-// 			}
-
-// 			// this.active 
-// 			// 	? $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
-// 			// 	: $('.menusub[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
-
-// 		},
-// 		enter : function  () {
-// 					App.currentController.RIGHT();
-// 		}
-// 	}	
-// 		App.widgets.Genres.controller = (function  () {
-// 			function controller (widget) {
-// 				this.widget = widget;
-// 			}
-// 			var controller = new controller (App.widgets.Genres);
-// 			return controller;
-// 		})();
-// 		App.widgets.Genres.controller.handleEvent = function(topic){
-// 			var self = this;
-// 				switch (topic){
-// 					case App.components.Genres.title + '/changeSelectedIndex':
-// 						self.widget.highlight();
-// 						break;
-// 					default:
-// 						throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
-// 					break;
-// 				}
-// 			}
-// 		PubSub.subscribe(App.components.Genres.title + '/changeSelectedIndex',  App.widgets.Genres.controller);
-
-
-	/**
-	* 	Widgets.ChansList
-	*/
-// App.components.RootSettings = ( function  () {
-// 	function single () {
-// 		this.selectedIndex = 0;
-// 		this.title = "RootSettings";
-// 		this.all = ['single'];
-// 		this.currentList = ['single'];
-// 	}
-// 	single.prototype = new Model();
-// 	return new single();
-// })();
-// App.widgets.RootSettings = {
-// 	model : App.components.RootSettings,
-// 	grid : {x:1, y:1},
-// 	neighbors : {
-// 		// right : function() {return App.widgets.Playlists},
-// 		// down : function (){return App.widgets.RootGenres}
-// 		up : function  () {return App.widgets.RootGenres}
-// 	},
-// 	active : false,
-// 	notify : function () {
-// 		if(this.active){
-// 			$('#menu').addClass('open');
-// 		}
-// 	},
-// 	highlight : function () {
-// 		if(this.active){
-// 			$('#rootSettings').addClass('spotlight');
-// 		} else {
-// 			$('#rootSettings').removeClass('spotlight');
-// 		}
-// 	},
-	
-// 	renderHtml : function () {
-// 		var html = '';
-// 		html += '<div id="rootSettings" class="menuentity" data-id=settings tabindex=2 ><div class="menuIcon" style="background-image: url(./assets/icons/settings.png);"></div><div class="menuTitle">Списки</div></div>'
-// 		return html;
-// 	}
-
-// }
 App.widgets.ChansList = {
 	model : App.components.Chans,
 	spotlighted : false,
@@ -1175,6 +989,18 @@ App.widgets.ChansList = {
 	},
 	//spotlight
 	active : false,
+	up : function () {
+		ListController.up.call(App.currentController);
+	},
+	down : function () {
+		ListController.down.call(App.currentController);
+	},
+	left : function () {
+		ListController.left.call(App.currentController);
+	},
+	right : function () {
+		ListController.right.call(App.currentController);
+	},
 	show : function(){
 		this.render(this.model.currentList);
 	},
@@ -1182,6 +1008,7 @@ App.widgets.ChansList = {
 		if(this.active){
 			$('#menu').removeClass('open');
 			$('#chans').css({'background-color': 'rgba(38, 50, 56, 1)'});
+			this.scrollToCur();
 			// App.widgets.Playlists.collapse(true);
 			// App.widgets.Genres.collapse(true);
 		} else {
@@ -1191,45 +1018,14 @@ App.widgets.ChansList = {
 	},
 	chanOuterHeight: null,
 	chansHeight: null, 
-	// TODO: make scroll Valera - style
-	scrollDown : function(){
-		// var step = $('#chans').children(":first").outerHeight();
-		// var cur = $('#chans').scrollTop();
-		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
-		// 1 margin only
-		elem.velocity( 'scroll', { duration: 'fast', container:$("#chans")});
-		// $('#chans').scrollTop( cur + step );	 
-	},  
-	scrollTop : function(){
-		// var step = $('#chans').children(":first").outerHeight();
-		// var cur = $('#chans').scrollTop();
-		// $('#chans').scrollTop( cur - step );	
-		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
-		// 1 margin only
-		elem.velocity( 'scroll', { duration: 'fast', container:$("#chans")});
-	},
-	scrollToCur : function  () {
-		var elem = $('.chan[tabindex='+ this.model.getSelectedIndex()+ ']');
-		// var to = $('#chans').scrollTop() - 2*118;
-		// console.log('position.top', elem.position().top);
-		// if(to < 0) {
-		// 	to = 0
-		// } else {
-		// 	$('#chans').scrollTop( to )
-		// }
-		// console.log(elem, 'scrollto:',to);
-		var curScrollTop = $('#chans').scrollTop();
-		var positionTop = elem.position().top;
-		var outerHeight = elem.outerHeight();
-		if( positionTop >  2 * outerHeight - 1){
-			$('#chans').scrollTop( curScrollTop + outerHeight )
-		} else {
-			$('#chans').scrollTop( curScrollTop - outerHeight )
-		}
 
-		// $('#chans').scrollTop( $('#chans').scrollTop() + $('.chan').outerHeight() - 2*$('.chan').outerHeight()		)
-		// console.log('scrollTop:', $('#chans').scrollTop() + $('.chan').outerHeight() - 2*$('.chan').outerHeight())
-		// elem.velocity( 'scroll', { duration: 'fast', container:$("#chans")});
+	scrollToCur : function  () {
+
+		var ind = this.model.getSelectedIndex();
+		var elem = $('.chan[tabindex='+ ind + ']');
+		var height = elem.outerHeight();
+		$('#chans').scrollTop(height * ind - 2 * height);
+		console.log('scrollTOp:' , height * ind -2 * height)
 	},
 	highlight : function  () {
 		var all = 'spotlight highlight';
@@ -1290,10 +1086,13 @@ App.widgets.ChansList = {
 	/**
 	* @description - Change view of chans list 
 	*/
-	render : function(){
+	render : function(newList){
 		var html = '';
 		var self = this;
-		this.model.currentList.forEach(function(curId, index){
+		var list = newList ? newList : this.model.currentList;
+		// console.log('now model = ', model);
+
+		list.forEach(function(curId, index){
 				/** @type {App.components.Chans.all[0]} */
 				var chan = App.components.Chans.getChanById(curId);
 				/** @type {"start":1437040800,
@@ -1358,28 +1157,26 @@ App.widgets.ChansList = {
 				break;
 
 			case App.components.Catalog.title + '/notifyWithDelay':
-				model.changeCurList(App.components.Catalog.getSelectedIndex());
-				self.widget.render();
+				//only render, doesn't change currentList
+				var list =  model.genListByCategory(App.components.Catalog.getSelectedIndex());
+				self.widget.render(list);
 				break;
-			// case App.components.Playlists.title + '/changeSelectedIndex':
-				//paste current catalog widget model title
-				//FIXME: rewrite changeCurlist method
-				// model.changeCurList(App.components.Playlists.title,  App.components.Playlists.getSelectedIndex() );
-				// 	self.widget.render();
-				// break;
-			
+			// case App.components.Chans.title + '/changeCurList':
+			// 	model.setSelectedIndex(0);
+			// 	break;
+
 			case App.components.Chans.title + '/addFavChan':
 			case App.components.Chans.title + '/rmFavChan':
 				self.widget.renderChan(args);
-			break;
+				break;
 			
 			case App.components.Epg.title + '/upd_epg':
 				self.widget.renderChan(args);
-			break;
+				break;
 			
 			default: 
 				throw 'Observer was subscribed but there are no realization : ' + this;
-			break;
+				break;
 		}
 	}
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
@@ -1509,9 +1306,9 @@ App.controllers.QuickMenuController = {
 	}
 }
 
-function DefaultController() {
-	// var activeWidget {};
-	var UP =  function(){
+var  ListController = (function(window, document, undefined) {
+	
+	var up =  function(){
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x) )	{
 			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x );
 			// return true;
@@ -1526,7 +1323,7 @@ function DefaultController() {
 		}
 	}
 
-	var RIGHT = function(){
+	var right = function(){
 		if( ( this.activeWidget.model.getSelectedIndex() +  1)  %  this.activeWidget.grid.x  !== 0){			
 			// selected next model.id
 			if( this.activeWidget.model.hasElem( this.activeWidget.model.getSelectedIndex() + 1) ){
@@ -1537,7 +1334,7 @@ function DefaultController() {
 		}
 	}
 
-	var DOWN = function(){
+	var down = function(){
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x  ) )	{
 			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x);
 			// FIXME: change manual using to mediator in scrollTop
@@ -1549,7 +1346,7 @@ function DefaultController() {
 		}
 	}
 
-	var LEFT = function(){
+	var left = function(){
 		if( (( this.activeWidget.model.getSelectedIndex() -  1)  % this.activeWidget.grid.x)  !== 0){
 			//select prec model.id in matrix 
 		} else {
@@ -1599,6 +1396,7 @@ function DefaultController() {
 				console.log('changeWidgetByDirection to : ', witch);
 				return true;
 			} else {
+				// 
 				return false;
 			}
 		}
@@ -1606,69 +1404,102 @@ function DefaultController() {
 			throw new 'Illegal changeWidgetByDirection usage (without orient)';
 		}
 	};
-	var setActiveWidget = function  (widget) {
-		if (this.activeWidget){
-			this.activeWidget.active = false;
-			//FIXME: notify must present in all widgets
 
-			if(this.activeWidget.notify){
-				this.activeWidget.notify();
-			}  
-			if( this.activeWidget.highlight ) {
-				this.activeWidget.highlight();
-			}
-		}
-		this.activeWidget = widget;
-		this.activeWidget.active = true;
-		//FIXME: notify must present in all widgets
-		if(this.activeWidget.notify){
-				this.activeWidget.notify();
-		} 
-		this.activeWidget.highlight();
-		
-	};
-	var ENTER = function  () {
-		if (this.activeWidget.enter){
-			this.activeWidget.enter();
-		}
-	};
+	// var ENTER = function  () {
+	// 	if (this.activeWidget.enter){
+	// 		this.activeWidget.enter();
+	// 	}
+	// };
 	//testted only . must be moved to FSController
-	var PAGE_UP = function  () {
-		App.player.next();
-	};
-	var PAGE_DOWN = function  () {
-		App.player.prev();
-	};
-	var YELLOW = function  () {
-		if(this.activeWidget.yellow){
-			this.activeWidget.yellow();
-		}
-	};
+	// var PAGE_UP = function  () {
+	// 	App.player.next();
+	// };
+	// var PAGE_DOWN = function  () {
+	// 	App.player.prev();
+	// };
+	// var YELLOW = function  () {
+	// 	if(this.activeWidget.yellow){
+	// 		this.activeWidget.yellow();
+	// 	}
+	// };
 	
 	//facade
 	return {
-		setActiveWidget: setActiveWidget,
-		UP : UP,
-		DOWN : DOWN,
-		LEFT : LEFT,
-		RIGHT : RIGHT,
-		ENTER: ENTER,
-		PAGE_UP: PAGE_UP,
-		PAGE_DOWN: PAGE_DOWN,
-		YELLOW: YELLOW
+		// setActiveWidget: setActiveWidget,
+		up : up,
+		down : down,
+		left : left,
+		right : right,
+		// ENTER: ENTER,
+		// PAGE_UP: PAGE_UP,
+		// PAGE_DOWN: PAGE_DOWN,
+		// YELLOW: YELLOW
 	}
 
-};
+})(window, document); 
+	// var activeWidget {};
+	
 
 
 App.controllers.PlaylistController = (function(window, document, undefined) {
 	
 	function PlaylistController () {
 		this.activeWidget = {};
+		this.setActiveWidget = function  (widget) {
+			if (this.activeWidget){
+				this.activeWidget.active = false;
+				//FIXME: notify must present in all widgets
+
+				if(this.activeWidget.notify){
+					this.activeWidget.notify();
+				}  
+				if( this.activeWidget.highlight ) {
+					this.activeWidget.highlight();
+				}
+			}
+			this.activeWidget = widget;
+			this.activeWidget.active = true;
+			//FIXME: notify must present in all widgets
+			if(this.activeWidget.notify){
+					this.activeWidget.notify();
+			} 
+			this.activeWidget.highlight();
+			
+		};
+		this.UP = function () {
+			if(typeof this.activeWidget.up === 'function'){
+				this.activeWidget.up();
+			}
+		};
+		this.DOWN = function () {
+			if(typeof this.activeWidget.down === 'function'){
+				this.activeWidget.down();
+			}
+		};
+		this.LEFT = function () {
+			if(typeof this.activeWidget.left === 'function'){
+				this.activeWidget.left();
+			}
+		};
+		this.RIGHT = function () {
+			if(typeof this.activeWidget.right === 'function'){
+				this.activeWidget.right();
+			}
+		};
+		this.ENTER = function () {
+			if(typeof this.activeWidget.enter === 'function'){
+				this.activeWidget.enter();
+			}
+		};
+		this.YELLOW = function () {
+			if(typeof this.activeWidget.yellow === 'function'){
+				this.activeWidget.yellow();
+			}
+		};
 		
 	}
 	//create observer list 
-	PlaylistController.prototype = new DefaultController();
+	// PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
 		App.widgets.Menu.render();
 		App.widgets.ChansList.render();
