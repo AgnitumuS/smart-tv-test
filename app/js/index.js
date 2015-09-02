@@ -176,7 +176,7 @@ App.controllers.LoadingController =  (function  () {
 			$('#loading').show();
 
 			App.api.img = 'http://static.lanet.ua/tv/';
-			App.api.edge = 'http://kirito.la.net.ua/tv/';
+			
 			
 			$.getJSON(App.api.data, function  (data) {
 				App.components.Chans.init(data);
@@ -215,8 +215,9 @@ App.controllers.LoadingController =  (function  () {
 				case App.components.Chans.title + '/init':
 					this.loaded.chans = true;
 					//drawback - init current list of chans here
-					App.player.list = App.components.Chans.currentList;
-					App.player.loadCur();
+					App.player.changeList(App.components.Chans.getSelectedIndex());
+					// App.player.load(App.components.Chans.getCurChan());
+
 				break;
 				default:
 					throw new "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
@@ -376,6 +377,15 @@ App.components.Catalog = (function(window, document, undefined) {
 		this.getElementById = function (id) {
 			return this.currentList[id] || {type:'default'};
 		};
+		this.getCurrent = function () {
+			return this.getElementById(this.getSelectedIndex());
+		};
+		//switch according to player info
+		this.resetChanges = function () {
+			var ind = this.currentList.indexOf(App.player.chans.category);
+			console.log('resetting category ')
+			this.setSelectedIndex(ind);
+		}
 		//get first element in list with type
 		this.getFirstIdByType = function (type) {
 			var id = -1;
@@ -415,6 +425,7 @@ App.components.Chans = (function () {
 			var self = this;
 			self.all = res.list;
 			//Init api refs
+			App.api.edge = res.edge;
 			self.order = res.sort.order.slice();
 			self.rating = res.sort.rating.slice();
 			self.favorites = App.db.get('favChans') || [];
@@ -424,33 +435,36 @@ App.components.Chans = (function () {
 			App.components.Catalog.init(res);
 			PubSub.publish(self.title + '/init');
 		};
-
-		this.switchNext = function  () {
-			if (this.currentList.length){
-				if (this.getSelectedIndex() + 1 < this.currentList.length) {
-					this.setSelectedIndex ( this.getSelectedIndex() + 1);
-				} else {
-					this.setSelectedIndex (0);
-				}	
-				return this.getCurChan();
-			} else {
-				//show last runned chan if currentList is empty
-				return App.db.lastChan();
-			}
+		this.resetChanges = function () {
+			this.currentList = App.player.chans.list.slice();
+			this.setSelectedIndex(App.player.chans.selected);
 		}
-		this.switchPrev = function  () {
-			if(this.currentList.length){
-				if (this.getSelectedIndex() -1 > -1){
-					this.setSelectedIndex ( this.getSelectedIndex() - 1);
-				} else {
-					this.setSelectedIndex (this.currentList.length - 1);
-				}
-			return this.getCurChan();		
-			} else {
-				//show last runned chan if currentList is empty
-				return App.db.lastChan();
-			}
-		}
+		// this.switchNext = function  () {
+		// 	if (this.currentList.length){
+		// 		if (this.getSelectedIndex() + 1 < this.currentList.length) {
+		// 			this.setSelectedIndex ( this.getSelectedIndex() + 1);
+		// 		} else {
+		// 			this.setSelectedIndex (0);
+		// 		}	
+		// 		return this.getCurChan();
+		// 	} else {
+		// 		//show last runned chan if currentList is empty
+		// 		return App.db.lastChan();
+		// 	}
+		// }
+		// this.switchPrev = function  () {
+		// 	if(this.currentList.length){
+		// 		if (this.getSelectedIndex() -1 > -1){
+		// 			this.setSelectedIndex ( this.getSelectedIndex() - 1);
+		// 		} else {
+		// 			this.setSelectedIndex (this.currentList.length - 1);
+		// 		}
+		// 	return this.getCurChan();		
+		// 	} else {
+		// 		//show last runned chan if currentList is empty
+		// 		return App.db.lastChan();
+		// 	}
+		// }
 	}
 	
 	ChansModel.prototype = new Model();
@@ -510,10 +524,7 @@ App.components.Chans = (function () {
 				throw 'Err'
 				break;
 		}
-			// console.log('current list changed to ', this.currentList);
 			console.log('genListByCategory returned list:', list);
-			// this.currentList = list;
-			// this.setSelectedIndex(0);
 			return list;
 	}
 	ChansModel.prototype.changeCurList = function (list) {
@@ -648,67 +659,11 @@ App.widgets = {}
 	* 	@class widgets.Menu
 	*/
 
-
-// App.components.RootPlaylists = ( function  () {
-// 	function single () {
-// 		this.selectedIndex = 0;
-// 		this.title = "RootPlaylists";
-// 		this.all = ['single'];
-// 		this.currentList = ['single'];
-// 	}
-// 	single.prototype = new Model();
-// 	return new single();
-// })();
-	
-// App.widgets.RootPlaylists = {
-// 	model : App.components.RootPlaylists,
-// 	grid : {x:1, y:1},
-// 	neighbors : {
-// 		right : function() {return App.widgets.Playlists},
-// 		down : function (){return App.widgets.RootGenres}
-// 	},
-// 	active : false,
-// 	notify : function () {
-// 		if(this.active){
-// 			$('#menu').addClass('open');
-// 			App.components.Playlists.setSelectedIndex(0);
-
-
-// 		}
-// 	},
-// 	highlight : function () {
-// 		if(this.active){
-// 			$('#rootPlaylists').addClass('spotlight');
-// 		} else {
-// 			$('#rootPlaylists').removeClass('spotlight');
-// 		}
-// 	},
-	
-// 	renderHtml : function () {
-// 		var html = '';
-// 		html += '<div id="rootPlaylists" class="menuentity" data-id=playlists tabindex=0 ><div class="menuIcon" style="background-image: url(./assets/icons/playlists.png);"></div><div class="menuTitle">Списки</div></div>'
-// 		return html;
-// 	}
-
-// }
-App.widgets.BackDoor = {
-	active : false,
-	model : {
-		currentList : ['cap']
-	},
-	notify: function () {
-		if(this.active){
-			App.go('fsplayer');		
-		}
-	},
-	highlight : function () {
-	}
-}
 App.widgets.Menu = {
 	model : App.components.Menu,
 	grid : {x : 1, y : 1},
 	neighbors : {
-		left: function () {return App.widgets.BackDoor} ,
+		// left: function () {return App.widgets.BackDoor} ,
 		right : function () { return App.widgets.Catalog } 
 	},
 	//spotlight
@@ -721,7 +676,10 @@ App.widgets.Menu = {
 		ListController.down.call(App.currentController);
 	},
 	left : function () {
-		ListController.left.call(App.currentController);
+		//back according to player chan and list
+		App.components.Chans.resetChanges();
+		App.components.Catalog.resetChanges();
+		App.go('fsplayer');
 	},
 	right : function () {
 		ListController.right.call(App.currentController);
@@ -821,6 +779,9 @@ App.widgets.Catalog = {
 		// App.components.Chans.setSele
 		// this.model.genListByCategory(App.components.Catalog.getSelectedIndex());
 	},
+	enter : function () {
+		App.currentController.RIGHT();	
+	},
 	notify : function  () {
 		if(this.active){
 			// App.widgets.ChansList подвинуть
@@ -866,20 +827,6 @@ App.widgets.Catalog = {
 	scrollToCur : function () {
 		var ind = this.model.getSelectedIndex();
 		var elem = $('.catalogEntity[tabindex='+ ind + ']');
-		/*
-		//FIXME: fix scroll notify -> scroll from top=0
-		var curScrollTop = $('#menu').scrollTop();
-		if(curScrollTop > )
-		
-		//если нету в области видимости, 
-		var positionTop = elem.position().top;
-		var outerHeight = elem.outerHeight();
-		if( positionTop >  4 * outerHeight - 1){
-			$('#menu').scrollTop( curScrollTop + outerHeight )
-		} else {
-			$('#menu').scrollTop( curScrollTop - outerHeight )
-		}
-		*/
 		var height = elem.outerHeight();
 		$('#menu').scrollTop(height * ind - 2 * height);
 		console.log('scrollTOp:' , height * ind -2 * height)
@@ -1129,7 +1076,7 @@ App.widgets.ChansList = {
 	},
 
 	enter : function  () {
-		App.player.loadCur();
+		App.player.changeList(this.model.getSelectedIndex());
 		$('#browseView').hide();
 		App.go('fsplayer');
 	},
@@ -1190,29 +1137,62 @@ App.widgets.ChansList = {
 	/**
 	* @class
 	*/
-
+// App.components.
 App.player = {
-	chans : App.components.Chans,
-	player : $('#iPlayer'),
-	init : function  () {
 
+	player : $('#iPlayer'),
+
+	chans : {
+		list : [],
+		category : {},
+		selected : -1, 
+		// all : App.components.Chans.all, 
+		switchNext : function () {
+			if( this.selected +1 < this.list.length ){
+				this.selected++;
+			} else {
+				this.selected = 0;
+			}
+			return this.getCur();
+		},
+		switchPrev : function () {
+			if( this.selected -1 > -1 ){
+				this.selected--;
+			} else {
+				this.selected = this.list.length -1;
+			}
+			return this.getCur();
+		},
+		getCur : function () {
+			return App.components.Chans.getChanById ( this.list[this.selected])
+		}
 	},
+
+	init : function  () {},
+	changeList : function (selected) {
+		this.chans.list = App.components.Chans.currentList.slice();
+		this.chans.category = App.components.Catalog.getCurrent();
+		console.log('chans list in player changed to :' , this.chans.list);
+		this.chans.selected = selected;
+		this.load(this.chans.getCur());
+	},
+	//private
 	load : function  (chan) {
 		this.player.attr('src', chan.url);
 		App.db.lastChan(chan);
 	},
 	next : function  () {
 		this.load( this.chans.switchNext() );
+		App.components.Chans.setSelectedIndex(this.chans.selected);
 	},
 	prev : function  () {
 		this.load( this.chans.switchPrev());
-	},
-	loadCur : function  () {
-		this.load( this.chans.getCurChan() );
+		App.components.Chans.setSelectedIndex(this.chans.selected);
 	}
+	
 }
 
-
+//FIXME: use playlist form player, not CurrentList from Chans
 App.widgets.FSSmallEpg = {
 	model : App.components.Chans
 }
@@ -1221,7 +1201,6 @@ App.widgets.FSSmallEpg.render = (function  () {
 	var dTimeout;
 	function show () {
 		$("#smallepg").show();
-		//add text
 		var id = self.model.getCurChanId();
 		var html =  '<div class="logochan" style="background-image: url(\'' 
 			+ App.api.img + 'logo/'+ id + '.png\');"></div>';
@@ -1237,6 +1216,11 @@ App.widgets.FSSmallEpg.render = (function  () {
 	}
 	return show; 
 })();
+
+
+App.widgets.FS = {
+
+}
 
 App.controllers.FSPlayerController = {
 	init : function  () {
@@ -1425,81 +1409,76 @@ var  ListController = (function(window, document, undefined) {
 	
 	//facade
 	return {
-		// setActiveWidget: setActiveWidget,
 		up : up,
 		down : down,
 		left : left,
 		right : right,
-		// ENTER: ENTER,
-		// PAGE_UP: PAGE_UP,
-		// PAGE_DOWN: PAGE_DOWN,
-		// YELLOW: YELLOW
 	}
 
 })(window, document); 
-	// var activeWidget {};
 	
+function DefaultController() {
+	this.UP = function () {
+		if(typeof this.activeWidget.up === 'function'){
+			this.activeWidget.up();
+		}
+	};
+	this.DOWN = function () {
+		if(typeof this.activeWidget.down === 'function'){
+			this.activeWidget.down();
+		}
+	};
+	this.LEFT = function () {
+		if(typeof this.activeWidget.left === 'function'){
+			this.activeWidget.left();
+		}
+	};
+	this.RIGHT = function () {
+		if(typeof this.activeWidget.right === 'function'){
+			this.activeWidget.right();
+		}
+	};
+	this.ENTER = function () {
+		if(typeof this.activeWidget.enter === 'function'){
+			this.activeWidget.enter();
+		}
+	};
+	this.YELLOW = function () {
+		if(typeof this.activeWidget.yellow === 'function'){
+			this.activeWidget.yellow();
+		}
+	};
+	this.setActiveWidget = function  (widget) {
+		if (this.activeWidget){
+			this.activeWidget.active = false;
+			//FIXME: notify must present in all widgets
+
+			if(this.activeWidget.notify){
+				this.activeWidget.notify();
+			}  
+			if( this.activeWidget.highlight ) {
+				this.activeWidget.highlight();
+			}
+		}
+		this.activeWidget = widget;
+		this.activeWidget.active = true;
+		//FIXME: notify must present in all widgets
+		if(this.activeWidget.notify){
+				this.activeWidget.notify();
+		} 
+		this.activeWidget.highlight();
+	};
+
+		
+}
 
 
 App.controllers.PlaylistController = (function(window, document, undefined) {
 	
 	function PlaylistController () {
 		this.activeWidget = {};
-		this.setActiveWidget = function  (widget) {
-			if (this.activeWidget){
-				this.activeWidget.active = false;
-				//FIXME: notify must present in all widgets
-
-				if(this.activeWidget.notify){
-					this.activeWidget.notify();
-				}  
-				if( this.activeWidget.highlight ) {
-					this.activeWidget.highlight();
-				}
-			}
-			this.activeWidget = widget;
-			this.activeWidget.active = true;
-			//FIXME: notify must present in all widgets
-			if(this.activeWidget.notify){
-					this.activeWidget.notify();
-			} 
-			this.activeWidget.highlight();
-			
-		};
-		this.UP = function () {
-			if(typeof this.activeWidget.up === 'function'){
-				this.activeWidget.up();
-			}
-		};
-		this.DOWN = function () {
-			if(typeof this.activeWidget.down === 'function'){
-				this.activeWidget.down();
-			}
-		};
-		this.LEFT = function () {
-			if(typeof this.activeWidget.left === 'function'){
-				this.activeWidget.left();
-			}
-		};
-		this.RIGHT = function () {
-			if(typeof this.activeWidget.right === 'function'){
-				this.activeWidget.right();
-			}
-		};
-		this.ENTER = function () {
-			if(typeof this.activeWidget.enter === 'function'){
-				this.activeWidget.enter();
-			}
-		};
-		this.YELLOW = function () {
-			if(typeof this.activeWidget.yellow === 'function'){
-				this.activeWidget.yellow();
-			}
-		};
-		
 	}
-	//create observer list 
-	// PlaylistController.prototype = new DefaultController();
+	PlaylistController.prototype = new DefaultController();
 	PlaylistController.prototype.init = function  () {
 		App.widgets.Menu.render();
 		App.widgets.ChansList.render();
@@ -1509,6 +1488,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	};
 	PlaylistController.prototype.initWithChan = function () {
 		App.widgets.Menu.render();
+		App.components.Chans.currentList = App.player.chans.list.slice()
 		App.widgets.ChansList.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
