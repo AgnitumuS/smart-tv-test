@@ -8,7 +8,7 @@ var PubSub = {
 		this.topics[topic].push(observer);
 	},
 	publish : function(topic, args){
-		console.log("published topic : " + topic, 'with args:' , args || '[empty]');
+		console.log("published topic : " + topic, 'with args:' , args || '{empty}');
 		if(this.topics[topic]) {
 			this.topics[topic].forEach(function(cur, ind){
 			cur.handleEvent(topic, args);
@@ -254,12 +254,18 @@ function Model() {
 		return this.currentList[ind] ? true : false; 
 	};
 	this.setSelectedIndex = function(val){
-		var self = this;
-		//if !undefined, publish old ind
-		this.set('selectedIndex', val , function(){
-			PubSub.publish(self.title + "/changeSelectedIndex");
-		});
-		
+
+		var self = this,
+		oldInd = this.selectedIndex  >= 0 
+							? this.selectedIndex 
+							: undefined;
+
+		this.set('selectedIndex', val);
+		var args = {
+			"prev" : oldInd
+		}; 
+
+		PubSub.publish(self.title + "/changeSelectedIndex", args);
 	};
 	this.getSelectedItem = function () {
 		return this.currentList[this.getSelectedIndex()];
@@ -776,8 +782,7 @@ App.widgets.Catalog = {
 			App.components.Chans.setSelectedIndex(0);
 			ListController.right.call(App.currentController);
 		} 
-		// App.components.Chans.setSele
-		// this.model.genListByCategory(App.components.Catalog.getSelectedIndex());
+		
 	},
 	enter : function () {
 		App.currentController.RIGHT();	
@@ -816,9 +821,14 @@ App.widgets.Catalog = {
 		$('#menu').html(html);
 	},
 
-	highlight : function  () {
+	highlight : function  (args) {
 		var all = 'spotlight highlight';
-		$('#menu .catalogEntity').removeClass(all);
+		if(args && args.prev) {
+			$('#menu .catalogEntity[tabindex=' + args.prev + ']').removeClass(all);
+		} 
+		else {
+			$('#menu .catalogEntity').removeClass(all);
+		}
 		this.active 
 			? $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
@@ -901,24 +911,21 @@ App.widgets.Catalog = {
 		var controller = new controller (App.widgets.Catalog);
 		return controller;
 	})();
-	App.widgets.Catalog.controller.handleEvent = function(topic){
+	App.widgets.Catalog.controller.handleEvent = function(topic, args){
+		
 		var self = this;
+		
 			switch (topic){
 
 				case App.components.Catalog.title + '/changeSelectedIndex' :
 					if(self.widget.active){
-						self.widget.highlight();
+						self.widget.highlight(args);
 						self.widget.highlightTitle();
 					}
 					//notify dependecy widgets
 					self.widget.notifyWithDelay(500);
 					break;
-				// case App.components.Menu.title + '/changeSelectedIndex':
-				// 	//set to first elem of list with current menu type
-				// 	var menuItem = App.components.Menu.getSelectedItem();
-				// 	self.widget.model.setSelectedIndex(self.widget.model.getFirstIdByType(menuItem.childNodeType));
-				// 	break;
-
+				
 				default:
 					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
@@ -963,8 +970,6 @@ App.widgets.ChansList = {
 			
 		}
 	},
-	chanOuterHeight: null,
-	chansHeight: null, 
 
 	scrollToCur : function  () {
 
@@ -974,21 +979,23 @@ App.widgets.ChansList = {
 		$('#chans').scrollTop(height * ind - 2 * height);
 		console.log('scrollTOp:' , height * ind -2 * height)
 	},
-	highlight : function  () {
+	highlight : function  (args) {
+
 		var all = 'spotlight highlight';
-		$('#chans .chan').removeClass(all);
+
+		if(args && args.prev){
+			$('#chans .chan[tabindex='+ args.prev + ']').removeClass(all);
+		}
+		else {
+			$('#chans .chan').removeClass(all);
+		}
+
 		this.active 
 			? $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
 	},
-	toggleActive : function  (open) {
-		if(open){
-			$('#chans').addClass('withCatalog');
-		} else {
-			$('#chans').removeClass('withCatalog');
-		}
-	},
+
 	/** { id:id, 'position': id in array }*/
 	renderChan : function  (id) {
 		/** @type {App.components.Chans.all[0]} */
@@ -1095,8 +1102,9 @@ App.widgets.ChansList = {
 		var self = this;
 		var model = self.widget.model;
 		switch (topic){
+
 			case App.components.Chans.title + '/changeSelectedIndex':
-				self.widget.highlight();
+				self.widget.highlight(args);
 				break;
 			
 			case App.components.Chans.title + '/init':
@@ -1389,24 +1397,6 @@ var  ListController = (function(window, document, undefined) {
 		}
 	};
 
-	// var ENTER = function  () {
-	// 	if (this.activeWidget.enter){
-	// 		this.activeWidget.enter();
-	// 	}
-	// };
-	//testted only . must be moved to FSController
-	// var PAGE_UP = function  () {
-	// 	App.player.next();
-	// };
-	// var PAGE_DOWN = function  () {
-	// 	App.player.prev();
-	// };
-	// var YELLOW = function  () {
-	// 	if(this.activeWidget.yellow){
-	// 		this.activeWidget.yellow();
-	// 	}
-	// };
-	
 	//facade
 	return {
 		up : up,
