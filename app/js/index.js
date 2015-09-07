@@ -62,12 +62,14 @@ var App = {
 	initializeEvents: function(){
 		console.log('initializeEvents');
 
-		$(window).on("keydown", function(event){
-			console.log('initializeEvents keydown');
-			event.preventDefault();
+		var throttled = _.throttle(function(event){
 			if( App.currentController[App.device.getKeyFunction(event)]) 
 				App.currentController[App.device.getKeyFunction(event)]();
-			
+			}, 200);
+
+		$(window).on("keydown", function(event){
+			event.preventDefault();
+			throttled(event);
 		});
 		
 		
