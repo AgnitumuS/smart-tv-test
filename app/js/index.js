@@ -20,7 +20,6 @@ var PubSub = {
 
 
 /**
-* FIXME: something fu***cked
 * @param {String} text - Text to output
 * @description	Debug into <div id="debug"></div>
 */
@@ -45,13 +44,14 @@ var PubSub = {
 
 var App = {
 	api : {
-		main : "http://api.lanet.tv/",
+		main : "http://api.lanet.tv/", // old
 		epg   : "http://api.lanet.tv/epg/",
 		rating : "list/rating/all",
 		img : '',
 		ws : 'ws://data.lanet.tv',
-		data : "https://data.lanet.tv/"
+		data : "https://data.lanet.tv/" // actual
 	},
+	pack : "",
 	socket : {},
 	controllers: {},
 	widgets: {},
@@ -65,7 +65,7 @@ var App = {
 		var throttled = _.throttle(function(event){
 			if( App.currentController[App.device.getKeyFunction(event)]) 
 				App.currentController[App.device.getKeyFunction(event)]();
-			}, 200);
+			}, 150);
 
 		$(window).on("keydown", function(event){
 			event.preventDefault();
@@ -323,9 +323,9 @@ App.components.Playlists = (function () {
 		this.selectedIndex = 0;
 		this.title = 'Playlists';
 		this.all = [
-				{ id:'all', type:'playlist', title : 'Все'}, 
 				{ id:'favorites', type:'playlist', title:'Избранные'}, 
-				{ id:'rating', type:'playlist', title:'Рейтинг'}
+				{ id:'rating', type:'playlist', title:'Рейтинг'},
+				{ id:'all', type:'playlist', title : 'Все'} 
 			];
 		this.currentList = this.all;
 	}
@@ -363,7 +363,7 @@ App.components.Genres = (function() {
 
 App.components.Catalog = (function(window, document, undefined) {
 	function catalog() {
-		this.selectedIndex = 0;
+		this.selectedIndex = 1;
 		this.title = "Catalog";
 		this.all = [];
 		this.currentList = [];
@@ -373,7 +373,6 @@ App.components.Catalog = (function(window, document, undefined) {
 			App.components.Genres.changeList(res.classList);
 			// create full list
 			App.components.Playlists.all.forEach(function (cur, ind) {
-				// console.log('inside context = ', this);
 				this.all.push(cur);
 			}, this)
 
@@ -433,46 +432,23 @@ App.components.Chans = (function () {
 			var self = this;
 			self.all = res.list;
 			//Init api refs
+			App.pack = res.pack;
 			App.api.edge = res.edge;
 			self.order = res.sort.order.slice();
 			self.rating = res.sort.rating.slice();
 			self.favorites = App.db.get('favChans') || [];
-			self.currentList = self.order;
+			self.currentList = self.rating;
 			self.setSelectedIndex(0);
 			//init Catalog(take playlists , genres, tags alltogether)
 			App.components.Catalog.init(res);
+			App.helpers.Clock.initClock();
 			PubSub.publish(self.title + '/init');
 		};
 		this.resetChanges = function () {
 			this.currentList = App.player.chans.list.slice();
 			this.setSelectedIndex(App.player.chans.selected);
 		}
-		// this.switchNext = function  () {
-		// 	if (this.currentList.length){
-		// 		if (this.getSelectedIndex() + 1 < this.currentList.length) {
-		// 			this.setSelectedIndex ( this.getSelectedIndex() + 1);
-		// 		} else {
-		// 			this.setSelectedIndex (0);
-		// 		}	
-		// 		return this.getCurChan();
-		// 	} else {
-		// 		//show last runned chan if currentList is empty
-		// 		return App.db.lastChan();
-		// 	}
-		// }
-		// this.switchPrev = function  () {
-		// 	if(this.currentList.length){
-		// 		if (this.getSelectedIndex() -1 > -1){
-		// 			this.setSelectedIndex ( this.getSelectedIndex() - 1);
-		// 		} else {
-		// 			this.setSelectedIndex (this.currentList.length - 1);
-		// 		}
-		// 	return this.getCurChan();		
-		// 	} else {
-		// 		//show last runned chan if currentList is empty
-		// 		return App.db.lastChan();
-		// 	}
-		// }
+
 	}
 	
 	ChansModel.prototype = new Model();
@@ -494,7 +470,7 @@ App.components.Chans = (function () {
     	return this.rating.filter(function  (el, ind) {
     		if (this.all[el].epg.length !== 0) {
     			// +1 avoiding "без жанра"
-    			return this.all[el].epg[0].class === id + 1;
+    			return this.all[el].epg[0].class === (id + 1);
     		} else {
     			return false;
     		}
@@ -508,15 +484,15 @@ App.components.Chans = (function () {
 
 		switch (category.type){
 			case 'playlist':
-				switch ( ind ){
-					case 0: 
-						list = this.order || [];
+				switch ( category.id ){
+					case "rating": 
+						list = this.rating || [];
 						break;
-					case 1:
+					case "favorites":
 						list = App.db.get('favChans') || [];
 						break;
-					case 2:
-						list = this.rating || [];
+					case 'all':
+						list = this.order || [];
 						break;
 					default :
 						throw 'Wrong list ind in genListByCategory'
@@ -578,26 +554,59 @@ App.components.Chans = (function () {
 
 PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingController);
 
+App.helpers = {};
+App.helpers.Clock = {
+	initClock : function () {
+		var updateClock = function () {
+			var date = new Date(),
+				html = '';
+			html += date.getHours() + ' ' + '<span id="timeDivid">:</span> ' + this.getMinutes();
+			$('#clockContainer').html(html);
+		}
+		updateClock.apply(this);
+		setInterval(updateClock.bind(this), 60000);
+	},
+
+	convertTime : function  (utcTime) {
+		if( utcTime ){
+			var date = new Date( utcTime * 1000 );
+			return date.getHours() + ":" 
+			+ this.getMinutes(utcTime) ;
+		} else {
+			return ''
+		}
+	},
+
+	getMinutes : function (utcTime) {
+		var date;
+		if (!utcTime) {
+			date = new Date();
+		} else {
+			date = new Date(utcTime * 1000);
+		}
+		return ( (date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()) ;	
+	}
+}
+
 App.components.Epg = {
 	title : 'Epg',
 	/**
 	*	@param {Number} - UTC time
 	*	@describe Convert UTC time to redable {String} format hh:mm
 	*/
-	convertTime : function  (utcTime) {
-		if( utcTime ){
-			var date = new Date( utcTime * 1000 );
-			return date.getHours() + ":" 
-			+ (	(date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()	) ;
-		} else {
-			return ''
-		}
-	},
+	// convertTime : function  (utcTime) {
+	// 	if( utcTime ){
+	// 		var date = new Date( utcTime * 1000 );
+	// 		return date.getHours() + ":" 
+	// 		+ (	(date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()	) ;
+	// 	} else {
+	// 		return ''
+	// 	}
+	// },
 	initUpdEpg : function  () {
 		//for each chan witch has epg, set timout to upd epg next time 
 		//to interval  == 
 		var self = this;
-		// console.log(self);
 		var order = App.components.Chans.order;
 		var all = App.components.Chans.all;
 		var timeNow = Math.floor( new Date().getTime() / 1000) ;
@@ -609,10 +618,10 @@ App.components.Epg = {
 						console.log('timeout = ', Math.floor( (all[cur].epg[0].stop - timeNow + 5) /60) , 'min, chan=', cur)
 						setTimeout(
 							function  () {
-								self.nextUpdEpg.apply(App.components.Epg, [cur]);
+								self.nextUpdEpg(cur);
 							}
 							// self.nextUpdEpg, (all[cur].epg[0].stop - timeNow + 5)*1000
-							,  (all[cur].epg[0].stop - timeNow + 5)*1000 );
+							,  (all[cur].epg[0].stop - timeNow + 5)*1000);
 					}
 				};
 			})
@@ -697,10 +706,8 @@ App.widgets.Menu = {
 	*/
 	notify : function  () {
 		if(this.active){
-			// $('#chans').velocity("fadeOut", {duration:400});
 			$('#chans').hide();
 		} else {
-			// $('#chans').velocity("fadeIn", {duration:400});
 			$('#chans').show();
 		}
 	},
@@ -713,9 +720,14 @@ App.widgets.Menu = {
 		$('#menu').html(html);
 	},
 
-	highlight : function  () {
+	highlight : function  (args) {
 		var all = 'spotlight highlight';
-		$('#menu .menuentity').removeClass(all);
+		if(args && args.prev) {
+			$('#menu .menuentity[tabindex=' + args.prev + ']').removeClass(all);
+		} 
+		else {
+			$('#menu .menuentity').removeClass(all);
+		}
 		this.active 
 			? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
@@ -741,12 +753,12 @@ App.widgets.Menu = {
 		}
 		return new controller (App.widgets.Menu);
 	})();
-	App.widgets.Menu.controller.handleEvent = function  (topic) {
+	App.widgets.Menu.controller.handleEvent = function  (topic, args) {
 			var self = this;
 			var model = self.widget.model;
 			switch (topic){
 				case App.components.Menu.title + '/changeSelectedIndex' :
-					self.widget.highlight();
+					self.widget.highlight(args);
 					break;
 				
 				default:
@@ -842,8 +854,6 @@ App.widgets.Catalog = {
 		var height = elem.outerHeight();
 		$('#menu').scrollTop(height * ind - 2 * height);
 		console.log('scrollTOp:' , height * ind -2 * height)
-
-
 
 	},
 
@@ -1010,12 +1020,12 @@ App.widgets.ChansList = {
 				"cat":"2:2","likes":0} */
 			var epg = chan.epg[0] || { 
 				start : '',
-				title : 'Нет программы телепередач',
+				title : 'Прямой эфир.',
 				text : ''
 			};
 			var starttime='';
 			if (epg.start){
-				starttime = App.components.Epg.convertTime(epg.start);
+				starttime = App.helpers.Clock.convertTime(epg.start);
 			} 
 			//tabindex - ??
 			var html =
@@ -1058,12 +1068,12 @@ App.widgets.ChansList = {
 					"cat":"2:2","likes":0} */
 				var epg = chan.epg[0] || { 
 					start : '',
-					title : 'Нет программы телепередач',
+					title : 'Прямой эфир.',
 					text : ''
 				};
 				var starttime='';
 				if (epg.start){
-					starttime = App.components.Epg.convertTime(epg.start);
+					starttime = App.helpers.Clock.convertTime(epg.start);
 				} 
 				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
 					+ '<div class="logochan">'
@@ -1144,10 +1154,44 @@ App.widgets.ChansList = {
 	PubSub.subscribe(App.components.Epg.title + '/upd_epg', App.widgets.ChansList.controller);
 
 
-	/**
-	* @class
-	*/
-// App.components.
+App.widgets.Appbar = {
+	model : App.components.Chans,
+	dTimeout: undefined
+}
+App.widgets.Appbar.render = function  () {
+	var self = App.widgets.Appbar;
+	$("#nav").show();
+	var id = self.model.getCurChanId();
+	var chan = self.model.getCurChan();
+	var html =  '<div class="smallLogoChan" style="background-image: url(\'' 
+		+ App.api.img + 'logo/'+ id + '.png\');"></div>';
+	if (chan.epg[0] && chan.epg[1]){
+		html += '<span class="epgnow">' 
+		+ chan.title + '<br>'
+		+ chan.epg[0].title +'</span>';
+		html += '<span class="epgnext">' 
+		+ 'Далее:' + '<br>'
+		+ chan.epg[1].title +'</span>';
+
+	} else {
+		html += '<span class="epgnow">' 
+		+ chan.title + '<br>'
+		+ 'Прямой эфир' +'</span>';
+	}
+	$("#smallEpgContainer").html(html);
+	clearTimeout(this.dTimeout);
+	
+	if (App.currentController !== App.controllers.FSPlayerController){
+		return;
+	}
+	
+	this.dTimeout = setTimeout(
+		function  (){
+			$('#nav').hide();
+		},	3000 );
+};
+
+
 App.player = {
 
 	player : $('#iPlayer'),
@@ -1156,7 +1200,6 @@ App.player = {
 		list : [],
 		category : {},
 		selected : -1, 
-		// all : App.components.Chans.all, 
 		switchNext : function () {
 			if( this.selected +1 < this.list.length ){
 				this.selected++;
@@ -1202,30 +1245,7 @@ App.player = {
 	
 }
 
-//FIXME: use playlist form player, not CurrentList from Chans
-App.widgets.FSSmallEpg = {
-	model : App.components.Chans
-}
-App.widgets.FSSmallEpg.render = (function  () {
-	var self = App.widgets.FSSmallEpg;
-	var dTimeout;
-	function show () {
-		$("#smallepg").show();
-		var id = self.model.getCurChanId();
-		var html =  '<div class="logochan" style="background-image: url(\'' 
-			+ App.api.img + 'logo/'+ id + '.png\');"></div>';
-		if (self.model.all[id].epg[0]){
-			html += '<span class="epgnow">' + self.model.all[id].epg[0].title +'</span>'
-		}; 
-		$("#smallepg").html(html);
-		clearTimeout(dTimeout);
-		dTimeout = setTimeout(
-			function  (){
-				$('#smallepg').hide();
-			},	3000 );
-	}
-	return show; 
-})();
+
 
 
 App.widgets.FS = {
@@ -1234,17 +1254,17 @@ App.widgets.FS = {
 
 App.controllers.FSPlayerController = {
 	init : function  () {
-		App.widgets.FSSmallEpg.render();
+		App.widgets.Appbar.render();
 	},
 	destroy : function () {
 	},
 	PAGE_UP : function  () {
 		App.player.next();
-		App.widgets.FSSmallEpg.render();
+		App.widgets.Appbar.render();
 	},
 	PAGE_DOWN : function  () {
 		App.player.prev();
-		App.widgets.FSSmallEpg.render();
+		App.widgets.Appbar.render();
 
 	},
 	ENTER : function  () {
@@ -1271,6 +1291,7 @@ App.controllers.QuickMenuController = {
 	init : function  () {
 		//show quickMenu widget
 		$('#quickMenuView').show();	
+		App.widgets.Appbar.render();
 		this.visible = true;	
 	},
 	destroy : function () {
@@ -1289,15 +1310,9 @@ App.controllers.QuickMenuController = {
 		$('#quickMenuView').hide();
 		App.go('playlist?chan');		
 	},
-	UP : function  () {
-		
-	},
-	RIGHT : function  () {
-		
-	},
-	DOWN : function  () {
-		// body...
-	}
+	UP : function (){},
+	RIGHT : function (){},
+	DOWN : function (){}
 }
 
 var  ListController = (function(window, document, undefined) {
@@ -1305,7 +1320,6 @@ var  ListController = (function(window, document, undefined) {
 	var up =  function(){
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x) )	{
 			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x );
-			// return true;
 			// FIXME: change manual using to mediator in scrollTop
 			if ( this.activeWidget.scrollToCur ){
 				this.activeWidget.scrollToCur();
@@ -1474,6 +1488,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	PlaylistController.prototype.init = function  () {
 		App.widgets.Menu.render();
 		App.widgets.ChansList.render();
+		App.widgets.Appbar.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
@@ -1482,6 +1497,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		App.widgets.Menu.render();
 		App.components.Chans.currentList = App.player.chans.list.slice()
 		App.widgets.ChansList.render();
+		App.widgets.Appbar.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};
