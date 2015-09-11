@@ -164,6 +164,45 @@ App.db = {
 		}
 	}
 }
+
+App.helpers = {};
+App.helpers.Clock = {
+	initClock : function () {
+		var updateClock = function () {
+			var date = new Date(),
+				html = '';
+			html += date.getHours() + ' ' + '<span id="timeDivid">:</span> ' + this.getMinutes();
+			$('#clockContainer').html(html);
+		}
+		updateClock.apply(this);
+		setInterval(updateClock.bind(this), 60000);
+	},
+	/**
+	*	@param {Number} - UTC time
+	*	@describe Convert UTC time to redable {String} format hh:mm
+	*/
+	convertTime : function  (utcTime) {
+		if( utcTime ){
+			var date = new Date( utcTime * 1000 );
+			return date.getHours() + ":" 
+			+ this.getMinutes(utcTime) ;
+		} else {
+			return ''
+		}
+	},
+
+	getMinutes : function (utcTime) {
+		var date;
+		if (!utcTime) {
+			date = new Date();
+		} else {
+			date = new Date(utcTime * 1000);
+		}
+		return ( (date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()) ;	
+	}
+}
+
+
 	/** 
 	 * @module Loading Controller
 	 * 
@@ -184,7 +223,7 @@ App.controllers.LoadingController =  (function  () {
 				App.components.Chans.init(data);
 			});
 
-			/*		WebSocket's 	*/
+			/*		WebSocket's (only for WebOs. Draft protocol in NetCast)	*/
 				/*
 				App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
 				debug('created socket');
@@ -216,10 +255,7 @@ App.controllers.LoadingController =  (function  () {
 			switch (topic){
 				case App.components.Chans.title + '/init':
 					this.loaded.chans = true;
-					//drawback - init current list of chans here
 					App.player.changeList(App.components.Chans.getSelectedIndex());
-					// App.player.load(App.components.Chans.getCurChan());
-
 				break;
 				default:
 					throw new "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
@@ -554,55 +590,11 @@ App.components.Chans = (function () {
 
 PubSub.subscribe(App.components.Chans.title + '/init', App.controllers.LoadingController);
 
-App.helpers = {};
-App.helpers.Clock = {
-	initClock : function () {
-		var updateClock = function () {
-			var date = new Date(),
-				html = '';
-			html += date.getHours() + ' ' + '<span id="timeDivid">:</span> ' + this.getMinutes();
-			$('#clockContainer').html(html);
-		}
-		updateClock.apply(this);
-		setInterval(updateClock.bind(this), 60000);
-	},
 
-	convertTime : function  (utcTime) {
-		if( utcTime ){
-			var date = new Date( utcTime * 1000 );
-			return date.getHours() + ":" 
-			+ this.getMinutes(utcTime) ;
-		} else {
-			return ''
-		}
-	},
-
-	getMinutes : function (utcTime) {
-		var date;
-		if (!utcTime) {
-			date = new Date();
-		} else {
-			date = new Date(utcTime * 1000);
-		}
-		return ( (date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()) ;	
-	}
-}
 
 App.components.Epg = {
 	title : 'Epg',
-	/**
-	*	@param {Number} - UTC time
-	*	@describe Convert UTC time to redable {String} format hh:mm
-	*/
-	// convertTime : function  (utcTime) {
-	// 	if( utcTime ){
-	// 		var date = new Date( utcTime * 1000 );
-	// 		return date.getHours() + ":" 
-	// 		+ (	(date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()	) ;
-	// 	} else {
-	// 		return ''
-	// 	}
-	// },
+	currentList : [],
 	initUpdEpg : function  () {
 		//for each chan witch has epg, set timout to upd epg next time 
 		//to interval  == 
@@ -620,7 +612,6 @@ App.components.Epg = {
 							function  () {
 								self.nextUpdEpg(cur);
 							}
-							// self.nextUpdEpg, (all[cur].epg[0].stop - timeNow + 5)*1000
 							,  (all[cur].epg[0].stop - timeNow + 5)*1000);
 					}
 				};
@@ -793,6 +784,7 @@ App.widgets.Catalog = {
 		var newList = App.components.Chans.genListByCategory(idCategory);
 		if(newList.length !== 0) {
 			App.components.Chans.changeCurList(newList);
+			App.widgets.FullEpg.render()
 			App.components.Chans.setSelectedIndex(0);
 			ListController.right.call(App.currentController);
 		} 
@@ -923,6 +915,7 @@ App.widgets.Catalog = {
 		var controller = new controller (App.widgets.Catalog);
 		return controller;
 	})();
+
 	App.widgets.Catalog.controller.handleEvent = function(topic, args){
 		
 		var self = this;
@@ -943,11 +936,11 @@ App.widgets.Catalog = {
 				break;
 			}
 		}
-		PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
+	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
 	
 App.widgets.ChansList = {
 	model : App.components.Chans,
-	spotlighted : false,
+	// spotlighted : false,
 	grid : {x : 1, y : 1},
 	neighbors : {
 		// right : function () { return  App.widgets.ProgramsList } ,
@@ -967,9 +960,9 @@ App.widgets.ChansList = {
 	right : function () {
 		ListController.right.call(App.currentController);
 	},
-	show : function(){
-		this.render(this.model.currentList);
-	},
+	// show : function(){
+	// 	this.render(this.model.currentList);
+	// },
 	notify : function  () {
 		if(this.active){
 			$('#menu').removeClass('open');
@@ -1090,6 +1083,7 @@ App.widgets.ChansList = {
 					html+= ' </div></div>';
 			})
 		$('#chans').html(html);
+		App.widgets.FullEpg.render(list);
 		this.highlight();
 		this.scrollToCur();
 	},
@@ -1153,11 +1147,11 @@ App.widgets.ChansList = {
 	PubSub.subscribe(App.components.Chans.title + '/rmFavChan', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Epg.title + '/upd_epg', App.widgets.ChansList.controller);
 
-
 App.widgets.Appbar = {
 	model : App.components.Chans,
 	dTimeout: undefined
 }
+
 App.widgets.Appbar.render = function  () {
 	var self = App.widgets.Appbar;
 	$("#nav").show();
@@ -1190,6 +1184,76 @@ App.widgets.Appbar.render = function  () {
 			$('#nav').hide();
 		},	3000 );
 };
+
+App.widgets.FullEpg = {
+	model : App.components.Chans,
+	active : false,
+	grid : {x : 1, y : 1},
+	neighbors : {
+		left  : function () { return App.widgets.Chans } 
+	},
+	up : function () {
+		ListController.up.call(App.currentController);
+	},
+	down : function () {
+		ListController.down.call(App.currentController);
+	},
+	left : function () {
+		ListController.left.call(App.currentController);
+	},
+	right : function () {
+		// ListController.right.call(App.currentController);
+		App.go('fsplayer');
+	},
+	scrollToCur : function () {
+		var ind = this.model.getSelectedIndex();
+		var elem = $('.smallEpgSS[tabindex='+ ind + ']');
+		var height = elem.outerHeight(true);
+		$('#fullEpg').scrollTop(height * ind - 2 * height);
+		console.log('scrollTOp:' , height * ind -2 * height)
+	},
+	render : function (newList) {
+		if(!this.active){
+			//only screenshots
+			var html = '',
+				chansList = newList ? newList : App.components.Chans.currentList,
+				order = App.components.Chans.order,
+				// resolution 128 * 72 
+				resolution = {
+					height : 72,
+					width : 128
+				}
+			chansList.forEach(function  (cur, ind) {
+				var indexInSprite = order.indexOf(cur);
+				console.log('elem ', cur, 'has index in sprite:', indexInSprite);
+				html += '<div class="smallEpgSS" tabindex= ' + ind + ' style="background-image:'
+				+'url(http://kirito.la.net.ua/tv/sprite_web_lanet.jpg?' + new Date().getTime() +');'
+				+' background-position:-' + (resolution.width * indexInSprite) + 'px 0px"></div>'
+			})
+			$('#fullEpg').html(html);
+		}
+	},
+	controller : {
+		handleEvent : function (topic, args) {
+			switch (topic){
+			
+				case App.components.Chans.title + '/changeSelectedIndex': 
+					App.widgets.FullEpg.scrollToCur();
+					break;
+			
+				default:
+					throw 'Err in Observer'
+					break;
+			}
+		}
+	}
+}
+
+// PubSub.subscribe(App.components.Epg.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
+PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
+// PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
+
+
 
 
 App.player = {
@@ -1489,6 +1553,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		App.widgets.Menu.render();
 		App.widgets.ChansList.render();
 		App.widgets.Appbar.render();
+		
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
@@ -1498,6 +1563,8 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		App.components.Chans.currentList = App.player.chans.list.slice()
 		App.widgets.ChansList.render();
 		App.widgets.Appbar.render();
+		//for test
+		App.widgets.FullEpg.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};
