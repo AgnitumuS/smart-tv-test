@@ -322,35 +322,67 @@ App.components = {};
 * 
 */
 App.components.Menu = (function (){
-	function MenuModel () {
-		this.title = 'Menu',
-		this.selectedIndex = 0;
-		this.all = [
-			{
-				id : 'playlists',
-				childNodeType : 'playlist'
-			},
-			{
-				id : 'genres',
-				childNodeType: 'genre',
-			},
-			{
-				id : 'settings',
-				childNodeType: 'setting'
-			}
-		]
-		this.currentList = this.all,
-		this.getIdElByChildType  = function (type) {
-			for(var i = 0 ; i< this.currentList.length; i ++) { 
-				if (this.currentList[i].childNodeType === type){
-					return i;
-				}
+	var menuModel = Object.create(new Model());
+		
+	if(typeof Object.create != 'function'){
+		$('#debug').html('Object create != function');	
+	}
+	
+	menuModel.title = 'Menu';
+	menuModel.selectedIndex = 0;
+	menuModel.all = [
+		{
+			id : 'playlists',
+			childNodeType : 'playlist'
+		},
+		{
+			id : 'genres',
+			childNodeType: 'genre',
+		},
+		{
+			id : 'settings',
+			childNodeType: 'setting'
+		}
+	]
+	menuModel.currentList = menuModel.all;
+	menuModel.getIdElByChildType  = function (type) {
+		for(var i = 0 ; i< this.currentList.length; i ++) { 
+			if (this.currentList[i].childNodeType === type){
+				return i;
 			}
 		}
-	}
-	MenuModel.prototype = new Model();
-	return new MenuModel();
-	})();
+	};
+	return menuModel;
+})()
+	// function MenuModel () {
+	// 	this.title = 'Menu',
+	// 	this.selectedIndex = 0;
+	// 	this.all = [
+	// 		{
+	// 			id : 'playlists',
+	// 			childNodeType : 'playlist'
+	// 		},
+	// 		{
+	// 			id : 'genres',
+	// 			childNodeType: 'genre',
+	// 		},
+	// 		{
+	// 			id : 'settings',
+	// 			childNodeType: 'setting'
+	// 		}
+	// 	]
+	// 	this.currentList = this.all,
+	// 	this.getIdElByChildType  = function (type) {
+	// 		for(var i = 0 ; i< this.currentList.length; i ++) { 
+	// 			if (this.currentList[i].childNodeType === type){
+	// 				return i;
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// MenuModel.prototype = new Model();
+	// return new MenuModel();
+	// })();
 	
 
 App.components.Playlists = (function () {
@@ -698,8 +730,10 @@ App.widgets.Menu = {
 	notify : function  () {
 		if(this.active){
 			$('#chans').hide();
+			$('#fullEpg').hide();
 		} else {
 			$('#chans').show();
+			$('#fullEpg').show();
 		}
 	},
 	render : function(){
@@ -784,7 +818,7 @@ App.widgets.Catalog = {
 		var newList = App.components.Chans.genListByCategory(idCategory);
 		if(newList.length !== 0) {
 			App.components.Chans.changeCurList(newList);
-			App.widgets.FullEpg.render()
+			// App.widgets.FullEpg.render()
 			App.components.Chans.setSelectedIndex(0);
 			ListController.right.call(App.currentController);
 		} 
@@ -796,12 +830,12 @@ App.widgets.Catalog = {
 	notify : function  () {
 		if(this.active){
 			// App.widgets.ChansList подвинуть
-			$('#menu').css({width:'340'});
+			$('#menu').addClass('open');
 			this.render();
 			this.highlightTitle();
 			this.scrollToCur();
 		} else {
-			$('#menu').css({width:'70'});
+			$('#menu').removeClass('open');
 			//сбросить значение
 			this.highlightTitle({});
 			//hide all, show images
@@ -1083,7 +1117,7 @@ App.widgets.ChansList = {
 					html+= ' </div></div>';
 			})
 		$('#chans').html(html);
-		App.widgets.FullEpg.render(list);
+		// App.widgets.FullEpg.render(list);
 		this.highlight();
 		this.scrollToCur();
 	},
@@ -1185,73 +1219,90 @@ App.widgets.Appbar.render = function  () {
 		},	3000 );
 };
 
-App.widgets.FullEpg = {
-	model : App.components.Chans,
-	active : false,
-	grid : {x : 1, y : 1},
-	neighbors : {
-		left  : function () { return App.widgets.Chans } 
-	},
-	up : function () {
-		ListController.up.call(App.currentController);
-	},
-	down : function () {
-		ListController.down.call(App.currentController);
-	},
-	left : function () {
-		ListController.left.call(App.currentController);
-	},
-	right : function () {
-		// ListController.right.call(App.currentController);
-		App.go('fsplayer');
-	},
-	scrollToCur : function () {
-		var ind = this.model.getSelectedIndex();
-		var elem = $('.smallEpgSS[tabindex='+ ind + ']');
-		var height = elem.outerHeight(true);
-		$('#fullEpg').scrollTop(height * ind - 2 * height);
-		console.log('scrollTOp:' , height * ind -2 * height)
-	},
-	render : function (newList) {
-		if(!this.active){
-			//only screenshots
-			var html = '',
-				chansList = newList ? newList : App.components.Chans.currentList,
-				order = App.components.Chans.order,
-				// resolution 128 * 72 
-				resolution = {
-					height : 72,
-					width : 128
-				}
-			chansList.forEach(function  (cur, ind) {
-				var indexInSprite = order.indexOf(cur);
-				console.log('elem ', cur, 'has index in sprite:', indexInSprite);
-				html += '<div class="smallEpgSS" tabindex= ' + ind + ' style="background-image:'
-				+'url(http://kirito.la.net.ua/tv/sprite_web_lanet.jpg?' + new Date().getTime() +');'
-				+' background-position:-' + (resolution.width * indexInSprite) + 'px 0px"></div>'
-			})
-			$('#fullEpg').html(html);
-		}
-	},
-	controller : {
-		handleEvent : function (topic, args) {
-			switch (topic){
-			
-				case App.components.Chans.title + '/changeSelectedIndex': 
-					App.widgets.FullEpg.scrollToCur();
-					break;
-			
-				default:
-					throw 'Err in Observer'
-					break;
-			}
-		}
-	}
-}
+// App.widgets.FullEpg = {
+// 	model : App.components.Chans,
+// 	active : false,
+// 	grid : {x : 1, y : 1},
+// 	neighbors : {
+// 		left  : function () { return App.widgets.Chans } 
+// 	},
+// 	up : function () {
+// 		ListController.up.call(App.currentController);
+// 	},
+// 	down : function () {
+// 		ListController.down.call(App.currentController);
+// 	},
+// 	left : function () {
+// 		ListController.left.call(App.currentController);
+// 	},
+// 	right : function () {
+// 		// ListController.right.call(App.currentController);
+// 		App.go('fsplayer');
+// 	},
+// 	scrollToCur : function (args) {
+// 		var ind = this.model.getSelectedIndex(),
+// 			screen = $('.smallEpgSS[tabindex='+ ind + ']')[0],
+// 			idChan = $(screen).data('id'),
+// 			height = $(screen).outerHeight(true);
 
-// PubSub.subscribe(App.components.Epg.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
-PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
+// 		$('#fullEpg').scrollTop(height * ind - 2 * height);
+		
+// 		$(screen).css('background-image','url(http://kirito.la.net.ua/tv/_' + idChan +'.jpg?'+ new Date().getTime() +')' )
+// 		console.log('scrollTOp:' , height * ind -2 * height)
+// 		if(args && (args.prev !== undefined )){
+// 			//desaturate
+// 			var prevScreen = $('.smallEpgSS[tabindex='+ args.prev + ']')[0],
+// 				idChan = $(prevScreen).data('id');
+// 			$(prevScreen).css('background-image', 'url(http://kirito.la.net.ua/tv/_' + idChan +'_gs.jpg?'+ new Date().getTime() +')');
+// 		}
+
+// 	},
+// 	render : function (newList) {
+		
+// 		if(!this.active){
+// 			//only screenshots
+// 			var html = '',
+// 				chansList = newList ? newList : App.components.Chans.currentList;
+// 				// order = App.components.Chans.order;
+// 				// resolution 128 * 72 
+// 				// resolution = {
+// 				// 	height : 72,
+// 				// 	width : 128
+// 				// }
+// 			chansList.forEach(function  (cur, ind) {
+// 				// var indexInSprite = order.indexOf(cur);
+// 				// console.log('elem ', cur, 'has index in sprite:', indexInSprite);
+// 				html += '<div class="smallEpgSS" tabindex= ' + ind 
+// 				+' data-id=' + cur +' style="background-image:'
+// 				+'url(http://kirito.la.net.ua/tv/_' + cur +'_gs.jpg?' + new Date().getTime() +')">'
+// 								/*Sprite need more time to positioned pic*/
+// 				// +'url(http://kirito.la.net.ua/tv/sprite_web_lanet.jpg?' + new Date().getTime() +');'
+// 				// +' background-position:-' + (resolution.width * indexInSprite) + 'px 0px">'
+// 				+'</div>'
+// 			})
+// 			$('#fullEpg').html(html);
+// 		}
+// 	},
+
+// 	controller : {
+// 		handleEvent : function (topic, args) {
+// 			switch (topic){
+			
+// 				case App.components.Chans.title + '/changeSelectedIndex': 
+// 					App.widgets.FullEpg.scrollToCur(args);
+// 					break;
+			
+// 				default:
+// 					throw 'Err in Observer'
+// 					break;
+// 			}
+// 		}
+// 	}
+// }
+
+// // PubSub.subscribe(App.components.Epg.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
 // PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
+// // PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.FullEpg.controller);
 
 
 
@@ -1564,7 +1615,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		App.widgets.ChansList.render();
 		App.widgets.Appbar.render();
 		//for test
-		App.widgets.FullEpg.render();
+		// App.widgets.FullEpg.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};

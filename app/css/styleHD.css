@@ -70,7 +70,7 @@ body{
 			.smallLogoChan{
 				width: 90px;
 				height: 100%;
-				margin-left:150px;
+				margin-left:165px;
 				float:left;
 				/*margin:auto;*/
 				background-size: 100%;
@@ -80,6 +80,7 @@ body{
 			span.epgnow, span.epgnext{
 				display: block;
 				color:white;
+				width:312px;
 				margin-left:35px;
 				float:left;
 				height: 65px;
@@ -137,6 +138,9 @@ body{
 	transition-duration: 300ms;
 	transition-timing-function:ease;
 }
+	#menu.open{
+		width:288px;
+	}
 .menublock{
 	/*overflow: hidden;
 	width: 100%;*/
@@ -197,12 +201,12 @@ body{
 	}
 	.catalogEntity {
 		display: block;
-		height: 70px;
+		height: 56px;
 		padding-left:70px;
 		font-size: 20px;
 		font-family: "Roboto";
 		color: rgba(255, 255, 255, .56);
-		line-height: 70px;
+		line-height: 56px;
 	}
 	.catalogEntity.spotlight{
 		background-color:rgba(0,172,193,1);
