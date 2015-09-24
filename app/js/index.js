@@ -1,4 +1,4 @@
-/* Events controller*/
+/* Singleton Notify widgets about changing in models */
 var PubSub = {
 	topics : {},
 	subscribe : function(topic, observer){
@@ -54,10 +54,7 @@ var App = {
 		
 		
 		window.onhashchange =  function(event){
-			//FIXME: make destroy fn for current controller
-			if (App.currentController) {
-				App.currentController.destroy();
-			};
+
 			switch(location.hash){
 
 				case '#loading':
@@ -118,9 +115,6 @@ var App = {
 	* Persistent storage
 	*/
 App.db = {
-	//must save 
-	//last chan
-	//favorite chans
 	prefix : '_db_',
 	get : function  (key) {
 		return localStorage['' +  this.prefix + key] 
@@ -298,9 +292,6 @@ function Model() {
 */
 App.components = {};
 
-/**
-* 
-*/
 App.components.Menu = (function (){
 	var menuModel = Object.create(new Model());
 		
@@ -334,36 +325,7 @@ App.components.Menu = (function (){
 	};
 	return menuModel;
 })()
-	// function MenuModel () {
-	// 	this.title = 'Menu',
-	// 	this.selectedIndex = 0;
-	// 	this.all = [
-	// 		{
-	// 			id : 'playlists',
-	// 			childNodeType : 'playlist'
-	// 		},
-	// 		{
-	// 			id : 'genres',
-	// 			childNodeType: 'genre',
-	// 		},
-	// 		{
-	// 			id : 'settings',
-	// 			childNodeType: 'setting'
-	// 		}
-	// 	]
-	// 	this.currentList = this.all,
-	// 	this.getIdElByChildType  = function (type) {
-	// 		for(var i = 0 ; i< this.currentList.length; i ++) { 
-	// 			if (this.currentList[i].childNodeType === type){
-	// 				return i;
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// MenuModel.prototype = new Model();
-	// return new MenuModel();
-	// })();
-	
+
 
 App.components.Playlists = (function () {
 	
@@ -527,7 +489,6 @@ App.components.Chans = (function () {
 	
 	ChansModel.prototype.genListByCategory = function (ind) {
 		var list = [];
-		// {id, type, title, {class}}
 		var category = App.components.Catalog.getElementById(ind);
 
 		switch (category.type){
@@ -561,19 +522,18 @@ App.components.Chans = (function () {
 	}
 	ChansModel.prototype.changeCurList = function (list) {
 		this.currentList = list.slice(0);
-		// PubSub.publish(this.title + '/changeCurList');
 	}
 	//Event from ws
 	ChansModel.prototype.updEpg = function  (data) {
 		this.all[data.id].epg = data.epg;
 		console.log('upd_epg event ws');
 	}
-	// 
+	
 	ChansModel.prototype.changeRating = function  (data) {
 		this.rating = data;
 		console.log("ws rating changed");
 	}
-	//
+	
 	ChansModel.prototype.toggleFavChan = function  (id) {
 		if 	(!id)	{
 			throw 'Toggle without id Exception'
@@ -683,10 +643,8 @@ App.widgets.Menu = {
 	model : App.components.Menu,
 	grid : {x : 1, y : 1},
 	neighbors : {
-		// left: function () {return App.widgets.BackDoor} ,
 		right : function () { return App.widgets.Catalog } 
 	},
-	//spotlight
 	active : false,
 	init : function() {},
 	up : function () {
@@ -696,7 +654,6 @@ App.widgets.Menu = {
 		ListController.down.call(App.currentController);
 	},
 	left : function () {
-		//back according to player chan and list
 		App.components.Chans.resetChanges();
 		App.components.Catalog.resetChanges();
 		App.go('fsplayer');
@@ -864,10 +821,9 @@ App.widgets.Catalog = {
 	},
 
 	enter : function  () {
-				App.currentController.RIGHT();
+		App.currentController.RIGHT();
 	},
 	notifyWithDelay : (function(window, document, undefined) {
-		
 		var dTimeout;
 	
 		function notifyWithDelay (delay) {
@@ -881,6 +837,7 @@ App.widgets.Catalog = {
 		return notifyWithDelay;
 
 	})(window, document),
+
 	identifyNearestNeighbor : function (prevWidget) {
 		if(prevWidget === App.widgets.Menu){
 			var menuItem = App.components.Menu.getSelectedItem();
@@ -931,7 +888,6 @@ App.widgets.Catalog = {
 	})();
 
 	App.widgets.Catalog.controller.handleEvent = function(topic, args){
-		
 		var self = this;
 		
 			switch (topic){
@@ -1592,8 +1548,6 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		App.components.Chans.currentList = App.player.chans.list.slice()
 		App.widgets.ChansList.render();
 		App.widgets.Appbar.render();
-		//for test
-		// App.widgets.FullEpg.render();
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.ChansList);
 	};
