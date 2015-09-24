@@ -2,7 +2,7 @@
 
 ## Как все работает
 
-Приложение построено на модели MVC (MVVP) [Мантры](http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailmvcmvp)
+Приложение построено на модели MVC (MVVP) [Мантры](http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailmvcmvp).
 Есть модели (**App.components**), есть отображение (**App.widgets**). Общаются они с помощью паттерна *PubSub* : **widgets** изменяют модели и подписаны на их изменения. Когда приходит евент про изменение, изменяют вид.
 
 В зависимости от экрана (фул скрин видео/меню/ квик меню) наш депад должен реагировать по разному. 
@@ -33,3 +33,28 @@
 
 **App.helpers** - Clock и другие вспомогательные елементы
 
+## Links
+
+1. LG Developer http://developer.lge.com/main/Intro.dev
+2. NetCast platform spec http://developer.lge.com/resource/tv/RetrieveDocDevLibrary.dev
+3. JS http://addyosmani.com/resources/essentialjsdesignpatterns/book/
+4. Для следующего стабильного релиза я бы уже посмотрел в сторону enyo.js
+
+## Testing on real TV
+
+1. Создать архив zip из следующих файлов: index.html, css/* js/* assets/*
+2. http://developer.lge.com/apptest/retrieveApptestNCList.dev Зарегистрировать и отправить на подпись архив
+3. Скачаный ответ разархивировать и залить на флешку в /lgapps/installed
+4. Запустить на телевизоре с флешки
+
+
+
+
+
+## Distribution and Contribution
+
+Distributed under terms and conditions of GNU GPL v3 (only).
+The following people are involved in development:
+
+Sashyn Vitalii <sashyn.v@gmail.com>
+Mail them any suggestions, bugreports and comments.

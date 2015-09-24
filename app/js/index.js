@@ -45,7 +45,7 @@ var App = {
 		var throttled = _.throttle(function(event){
 			if( App.currentController[App.device.getKeyFunction(event)]) 
 				App.currentController[App.device.getKeyFunction(event)]();
-			}, 150);
+			}, 50);
 
 		$(window).on("keydown", function(event){
 			event.preventDefault();
@@ -54,6 +54,10 @@ var App = {
 		
 		
 		window.onhashchange =  function(event){
+			//FIXME: make destroy fn for current controller
+			if (App.currentController) {
+				App.currentController.destroy();
+	 		};
 
 			switch(location.hash){
 
