@@ -18,26 +18,6 @@ var PubSub = {
 };
 
 
-
-/**
-* @param {String} text - Text to output
-* @description	Debug into <div id="debug"></div>
-*/
-	var debug = (function  () {
-		var dTimeout;
-		function debug (text) {
-			$('#debug').show();
-			$('#debug').append(text , '<br>');
-			clearTimeout(dTimeout);
-			dTimeout = setTimeout(
-				function  (){
-					$('#debug').hide();
-				},	10000 );
-		}
-		return debug;
-	})();
-/**/
-
 /**
 * @namespace
 */
@@ -974,8 +954,9 @@ App.widgets.Catalog = {
 	
 App.widgets.ChansList = {
 	model : App.components.Chans,
-	// spotlighted : false,
+	visibleItemCount: 5,
 	grid : {x : 1, y : 1},
+	list : [],
 	neighbors : {
 		// right : function () { return  App.widgets.ProgramsList } ,
 		left  : function () { return App.widgets.Catalog } 
@@ -994,9 +975,6 @@ App.widgets.ChansList = {
 	right : function () {
 		ListController.right.call(App.currentController);
 	},
-	// show : function(){
-	// 	this.render(this.model.currentList);
-	// },
 	notify : function  () {
 		if(this.active){
 			$('#menu').removeClass('open');
