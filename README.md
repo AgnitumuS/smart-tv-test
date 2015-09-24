@@ -2,7 +2,7 @@
 
 ## Как все работает
 
-	Приложение построено на модели MVC (MVVP) [Мантры](http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailmvcmvp)
+	Приложение построено на модели MVC (MVVP) http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailmvcmvp
 Есть модели (**App.components**), есть отображение (**App.widgets**). Общаются они с помощью паттерна *PubSub* : **widgets** изменяют модели и подписаны на их изменения. Когда приходит евент про изменение, изменяют вид.
 
 	В зависимости от экрана (фул скрин видео/меню/ квик меню) наш депад должен реагировать по разному. 
