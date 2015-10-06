@@ -46,7 +46,8 @@ function SocketAPI(addr, params) {
 			var data = {};
 			try {
 				data = JSON.parse(msg.data)
-			} catch(e) {};
+			} catch (e) {
+			}
 			if (data.type && data.data) {
 				if (data.type in Router) {
 					Router[ data.type ] ( data.data )
@@ -75,7 +76,7 @@ function SocketAPI(addr, params) {
 
 	this.on = function (type, callback) {
 		Router[type] = callback;
-	}
+	};
 
 	this.send = function (type, data) { Send(type, data) }
 

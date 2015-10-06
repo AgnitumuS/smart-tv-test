@@ -1,57 +1,62 @@
-<!DOCTYPE HTML>
+<!doctype html>
 <html>
-
 <head>
-	<title> LanetTV</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<meta name="description" content="LanetTV for WebOS"/>
-	<meta charset="UTF-8"/>
-	<link rel="stylesheet" type="text/css" href="./css/styleHD.css">
-	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300italic,300,100italic,100,400italic,500,500italic,700,700italic,900italic,900' rel='stylesheet' type='text/css'>
-	<script type="text/javascript" src="./js/socket_api.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.2/velocity.min.js"></script>
+    <title>LanetTV</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="description" content="LanetTV for WebOS"/>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="./css/styleHD.css">
+    <!--<link rel="stylesheet" type="text/css" href="http://10.10.50.9/app/css/styleHD.css">-->
+    <script type="text/javascript" src="../mockups/socket_api.js"></script>
+    <script type="text/javascript" src="./js/underscore.js"></script>
+    <script type="text/javascript" src="./js/jquery.js"></script>
+    <script type="text/javascript" src="./js/velocity.min.js"></script>
 </head>
-
 <body>
-
-	 <video id="iPlayer" autoplay></video> 
-	
-	<div id="loading">
-		<span class="loadingTitle"> Loading </span>
-	</div>
-
- 	<div id="nav">
-        <div id="aniLogo"></div>
-        <span id='LanetTvTitle'>Ланет TV</span> 
-		<div id="smallEpgContainer"></div>
-		<div id="clockContainer"></div>
-
- 	</div>
-
- <div id="browseView">
-
-	 <div id="menu"></div>
-	 <div id="chans"></div>
-	 <div id="hint">
-		<div id="hintparent">
-		<div class="hintbut"><div class="yellow"></div><span>Избранное</span></div>
-		</div>
-	</div>
+<video id="iPlayer" autoplay></video>
+<div id="loading">
+    <span class="loadingTitle">Loading</span>
 </div>
-
+<div id="nav">
+    <div id="aniLogo"></div>
+    <span id='LanetTvTitle'>Ланет TV</span>
+    <div id="smallEpgContainer"></div>
+    <div id="clockContainer"></div>
+</div>
+<div id="browseView">
+    <div id="menu"></div>
+    <div id="chans"></div>
+    <div id="hint">
+        <div id="hintparent">
+            <div class="hintbut">
+                <div class="yellow"></div>
+                <span>Избранное</span>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="quickMenuView">
-	  <div id="quickMenu">
-	    <div id="center"><img src="assets/icons/ic_close_white_24dp.png"></div>
-	    <div id="top"><img src="assets/icons/ic_equilizer_white_24dp.png"></div>
-		<div id="right"><img src="assets/icons/ic_share_white_24dp.png"></div>
-		<div id="bottom"><img src="assets/icons/ic_play_arrow_white_24dp.png" style="margin-left: 38px; margin-top: 50px;"><img src="assets/icons/ic_pause_white_24dp.png" style="margin-left: -1px; margin-bottom: 8px;"></div>
-		<div id="left"><img src="assets/icons/ic_menu_white_24dp.png"></div>
-	  </div>
+    <div id="quickMenu">
+        <div id="center">
+            <img src="assets/icons/ic_close_white_24dp.png">
+        </div>
+        <div id="top">
+            <img src="assets/icons/ic_equilizer_white_24dp.png">
+        </div>
+        <div id="right">
+            <img src="assets/icons/ic_share_white_24dp.png">
+        </div>
+        <div id="bottom">
+            <img src="assets/icons/ic_play_arrow_white_24dp.png" style="margin-left: 38px; margin-top: 50px;">
+            <img src="assets/icons/ic_pause_white_24dp.png" style="margin-left: -1px; margin-bottom: 8px;">
+        </div>
+        <div id="left">
+            <img src="assets/icons/ic_menu_white_24dp.png">
+        </div>
+    </div>
 </div>
-
-</div>
+<textarea id="debug" title="debug" readonly style="display: none;"></textarea>
+<script type="text/javascript" src="./js/index.js"></script>
+<!--<script type="text/javascript" src="http://10.10.50.9/app/js/index.js"></script>-->
 </body>
-	<script type="text/javascript" src="./js/index.js"></script>
 </html>

@@ -1,175 +1,201 @@
-body > div{
-	margin: 0;
-	padding: 0;
-	font-family: "Roboto", san-serif;
-}
-body{
-	margin:0px;
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../assets/fonts/roboto-regular.woff')
 }
 
-#loading{
-	height: 100%;
-	width: 100%;
-	background-color: white;
-	position: absolute;
-	top:0;
-	left: 0;
-	z-index: 5;
-}
-	.loadingTitle{
-		font-size:30px; 
-		position:absolute; 
-		top:50%; 
-		left:50%
-	}
-#browseView{
-	display: none;
-	position: absolute;
-	height:655px;
-	width: 100%;
-	background:rgba(0,0,0,0.75);
-}
-	#nav{
-	position: relative;
-	z-index: 5;
-	  background: rgba(0,0,0,0.56);
-	  height: 65px;
-	  width: 100%;
-	  box-shadow: 50px 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); 
-	}
-		#aniLogo{
-		/*height: 26px;*/
-		/*left: 52px;*/
-		overflow: hidden;
-		/*position: relative;*/
-		/*top: 0px;*/
-		margin-left:15px;
-		margin-right:15px;
-		margin-top: 10px;
-		width: 40px;
-		float:left;
-		height: 40px;
-		background-image: url(../assets/logotv.png);
-		background-repeat: no-repeat;
-		background-size: contain;
-		}
-		#LanetTvTitle{
-			color:white;
-			float:left;
-			line-height: 65px;
-			margin-left: 20px;
-			font-size: 20px;
-			letter-spacing: -0.5px;
-		}
-		#smallEpgContainer{
-			float:left;
-			width:auto;
-			height: 100%;
-			/*background-color: rgba(0,0,0,0.56);*/
-		}
-			.smallLogoChan{
-				width: 90px;
-				height: 100%;
-				margin-left:165px;
-				float:left;
-				/*margin:auto;*/
-				background-size: 100%;
-				background-repeat:  no-repeat;
-			}
-
-			span.epgnow, span.epgnext{
-				display: block;
-				color:white;
-				width:312px;
-				margin-left:35px;
-				float:left;
-				height: 65px;
-				line-height: 30px;
-				max-width: 300px;
-				overflow: hidden;
-			}
-			span.epgnext{
-				margin-left:100px;
-			}
-
-		@keyframes myblink {
-		    0%   {opacity: 0.5;}
-		    50%  {opacity: 1;}
-		    100% {opacity: 0;}
-		}
-		#clockContainer{
-			float:right;
-			width:100px;
-			height: 100%;
-			float:right;
-			color:white;
-			line-height: 65px;
-			font-size: 20px;
-			opacity: 0.9;
-		}
-		
-		#timeDivid{
-			color:white;
-			animation-name: myblink;
-			animation-duration:2s;
-			animation-iteration-count:infinite;
-			animation-play-state:running;
-		}
-
-#iPlayer{
-	position: fixed;
-	top:0;
-	height: 100%;
-	width:100%;
+body > div {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
-#menu{
-	width:70px;
-	height: 590px;
-	overflow: hidden;
-	float:left;
-	opacity: 0.95;
-	background-color:rgb(84,110,122);
-	transition-property:all;
-	transition-duration: 300ms;
-	transition-timing-function:ease;
-}
-	#menu.open{
-		width:288px;
-	}
-.menublock{
-	margin-bottom: 20px;
+body {
+    margin: 0;
+    background: #000;
 }
 
-.menuSubs{
-	float:left;
-	width:260px;	
-}
-.menuTitle{
-	display: none;
-	float:left;
-	height: 50px;
-	line-height: 50px;
-	padding-left: 16px;
-
-}
-.menuIcon{
-	display: block;
-	float:left;
-	background-repeat: no-repeat;
-	background-position: center;
-	height: 50px;
-	width:80px;
-	color:white;
+#loading {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
 }
 
-	.menuentity{
-		background-position: center;
-		float:left;
-		height: 56px;
-		width:100%;
-		background-repeat: no-repeat;
-	}
+.loadingTitle {
+    font-size: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%
+}
+
+#browseView {
+    display: none;
+    position: absolute;
+    height: 655px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.75);
+}
+
+#nav {
+    position: relative;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.56);
+    height: 65px;
+    width: 100%;
+    box-shadow: 50px 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+#aniLogo {
+    /*height: 26px;*/
+    /*left: 52px;*/
+    overflow: hidden;
+    /*position: relative;*/
+    /*top: 0px;*/
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 10px;
+    width: 40px;
+    float: left;
+    height: 40px;
+    background: url('../assets/logotv.png') no-repeat;
+    background-size: contain;
+}
+
+#LanetTvTitle {
+    color: white;
+    float: left;
+    line-height: 65px;
+    margin-left: 20px;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+}
+
+#smallEpgContainer {
+    float: left;
+    width: auto;
+    height: 100%;
+    /*background-color: rgba(0,0,0,0.56);*/
+}
+
+.smallLogoChan {
+    width: 90px;
+    height: 100%;
+    margin-left: 165px;
+    float: left;
+    /*margin:auto;*/
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+span.epgnow, span.epgnext {
+    display: block;
+    color: white;
+    width: 312px;
+    margin-left: 35px;
+    float: left;
+    height: 65px;
+    line-height: 30px;
+    max-width: 300px;
+    overflow: hidden;
+}
+
+span.epgnext {
+    margin-left: 100px;
+}
+
+@keyframes myblink {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+#clockContainer {
+    float: right;
+    width: 100px;
+    height: 100%;
+    color: white;
+    line-height: 65px;
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+#timeDivid {
+    color: white;
+    animation-name: myblink;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+}
+
+#iPlayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background-color: #000;
+}
+
+#menu {
+    width: 70px;
+    height: 590px;
+    overflow: hidden;
+    float: left;
+    opacity: 0.95;
+    background-color: rgb(84, 110, 122);
+    transition-property: all;
+    transition-duration: 300ms;
+    transition-timing-function: ease;
+}
+
+#menu.open {
+    width: 288px;
+}
+
+.menublock {
+    margin-bottom: 20px;
+}
+
+.menuSubs {
+    float: left;
+    width: 260px;
+}
+
+.menuTitle {
+    display: none;
+    float: left;
+    height: 50px;
+    line-height: 50px;
+    padding-left: 16px;
+
+}
+
+.menuIcon {
+    display: block;
+    float: left;
+    background: no-repeat center;
+    height: 50px;
+    width: 80px;
+    color: white;
+}
+
+.menuentity {
+    float: left;
+    height: 56px;
+    width: 100%;
+    background: no-repeat center;
+}
 
 /*#catalog{
 	position: relative;
@@ -183,357 +209,402 @@ body{
 	transition-duration:300ms;
 	transition-timing-function:ease-out;
 }*/
-	.catalogTitles{
-		color:white;
-		display: block;
-		height: 50px;
-		font-size: 24px;
-		font-family: "Roboto";
-		color: rgba(255, 255, 255, .56);
-		line-height: 50px;
-		padding-left: 28px;
-	}
-	.catalogEntity {
-		display: block;
-		height: 56px;
-		padding-left:70px;
-		font-size: 20px;
-		font-family: "Roboto";
-		color: rgba(255, 255, 255, .56);
-		line-height: 56px;
-	}
-	.catalogEntity.spotlight{
-		background-color:rgba(0,172,193,1);
-	}
-	.catalogTitles.highlight{
-		color:rgba(255,255,255,1);
-	}
-	.menuentity{
-		display: block;
+.catalogTitles {
+    color: white;
+    display: block;
+    height: 50px;
+    font-size: 24px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(255, 255, 255, .56);
+    line-height: 50px;
+    padding-left: 28px;
+}
 
-		height: 50px;
-		color:white;
-		/*box-shadow: 2px 2px 0px 0px #5D4037;*/
-	}
+.catalogEntity {
+    display: block;
+    height: 56px;
+    padding-left: 70px;
+    font-size: 20px;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(255, 255, 255, .56);
+    line-height: 56px;
+}
+
+.catalogEntity.spotlight {
+    background-color: rgba(0, 172, 193, 1);
+}
+
+.catalogTitles.highlight {
+    color: rgba(255, 255, 255, 1);
+}
+
+.menuentity {
+    display: block;
+
+    height: 50px;
+    color: white;
+    /*box-shadow: 2px 2px 0px 0px #5D4037;*/
+}
+
 /*	span.menusub{
 		line-height: 50px;
 		padding-left: 50px;
 		margin-left:55px;
 	}*/
-	.catalogEntity:first-letter { text-transform: uppercase }
-	#catalog.open{
-		/*display: block;*/
-		left: 0px;
-		visibility: visible;
-	}
-
-#chans{
-	position: relative;
-	/*left:-265px;*/
-	width:624px;
-	height: 590px;
-	overflow: hidden;
-	float:left;
-	background-color: rgba(38, 50, 56, 1);
-	opacity: .9;
-    box-shadow: 0px 3px 6px 0px rgba(32, 32, 32, 0.16);
-	transition : all 300ms ease-out 0s ;
+.catalogEntity:first-letter {
+    text-transform: uppercase
 }
-	#chans.withCatalog{
-		left:0px;
-		opacity: .87;
-	}
+
+#catalog.open {
+    /*display: block;*/
+    left: 0;
+    visibility: visible;
+}
+
+#chans {
+    position: relative;
+    /*left:-265px;*/
+    width: 624px;
+    height: 590px;
+    overflow: hidden;
+    float: left;
+    background-color: rgba(38, 50, 56, 1);
+    opacity: .9;
+    box-shadow: 0 3px 6px 0 rgba(32, 32, 32, 0.16);
+    transition: all 300ms ease-out 0s;
+}
+
+#chans.withCatalog {
+    left: 0;
+    opacity: .87;
+}
+
 .chan {
-		width: 100%;
-		height: 102px;
-	/*	margin-bottom: 8px;
-		margin-top: 8px;*/
-		padding-top: 8px;
-		padding-bottom: 8px;
-		/*opacity: 0.54;*/
-		color:black;
-	    background-repeat: no-repeat;
-	    background-size: 80%;
-	    background-position: center;
-	}
-	.logochan{
-		position: relative;
-		width:144px;
-		margin:0px 24px 0px 24px;
-		height: 96px;
-		/*position:;*/
-		float:left;
-		background-repeat: no-repeat;
-		background-position: center; 
-		background-size:100% 100%;
-	}
-	.chanPic{
-		height: 100%;
-		width: 100%;
-		background-repeat: no-repeat;
-		background-position: center;
-		/*background-size: 100% 100%;*/
-	}
-		.favstar{
-			/*display: none;*/
-			position: absolute;
-			right:8px;
-			top: 8px;
-			height: 24px;
-			width:	24px;
-			background-image: url('../assets/icons/star.png');
-		}
-	.programcontent{
-		position: relative;
-		/*height: 112px;*/
-		float: left;
-		width: 355px;
-	}
-	
-	.timestart{
-		position: absolute; 
-		right: -56px; 
-		top: 0px; 
-		font-size: 20px;
-		line-height: 1.55;
-		color: rgba(255,255,255,.56); 
-		 /*font-size: 14px;*/
-	}
-	.titleprog{
-		color: rgba(255,255,255,.77); 
-		font-size: 20px; 
-		/*line-height: 29px;*/ 
-		margin-bottom: 8px;
-		margin-top: 4px; 
-		overflow: hidden; 
-		text-overflow: ellipsis; 
-		white-space: nowrap;
-		line-height: 1.409;
-		text-align: left;
-	}
-	.textprog{
-		height: 50px;
-		color: rgba(255,255,255,.32); 
- 		overflow: hidden;
-		margin-top: 8px;
-		font-size: 20px;
-		text-align: left;
-	}
-	.chan:hover{
-		opacity: 0.87;
-	}
+    width: 100%;
+    height: 102px;
+    /*	margin-bottom: 8px;
+        margin-top: 8px;*/
+    padding-top: 8px;
+    padding-bottom: 8px;
+    /*opacity: 0.54;*/
+    color: black;
+    background-size: 80%;
+    background: no-repeat center;
+}
 
-	.chan:focus{
-		opacity:0.87;
-	}
+.logochan {
+    position: relative;
+    width: 144px;
+    margin: 0 24px 0 24px;
+    height: 96px;
+    /*position:;*/
+    float: left;
+    background: no-repeat center;
+    background-size: 100% 100%;
+}
 
-.cat, .subcat{
-		/*width:100%;*/
-		display: block;
-		font-size: 16px;
-		padding-left:24px;
-		line-height: 48px;
-		color:white;
-		margin-bottom: 30px;
-	}
+.chanPic {
+    height: 100%;
+    width: 100%;
+    background: no-repeat center;
+    /*background-size: 100% 100%;*/
+}
+
+.favstar {
+    /*display: none;*/
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    height: 24px;
+    width: 24px;
+    background-image: url('../assets/icons/star.png');
+}
+
+.programcontent {
+    position: relative;
+    /*height: 112px;*/
+    float: left;
+    width: 355px;
+}
+
+.timestart {
+    position: absolute;
+    right: -56px;
+    top: 0;
+    font-size: 20px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, .56);
+    /*font-size: 14px;*/
+}
+
+.titleprog {
+    color: rgba(255, 255, 255, .77);
+    font-size: 20px;
+    /*line-height: 29px;*/
+    margin-bottom: 8px;
+    margin-top: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.409;
+    text-align: left;
+}
+
+.textprog {
+    height: 50px;
+    color: rgba(255, 255, 255, .32);
+    overflow: hidden;
+    margin-top: 8px;
+    font-size: 20px;
+    text-align: left;
+}
+
+.chan:hover {
+    opacity: 0.87;
+}
+
+.chan:focus {
+    opacity: 0.87;
+}
+
+.cat, .subcat {
+    /*width:100%;*/
+    display: block;
+    font-size: 16px;
+    padding-left: 24px;
+    line-height: 48px;
+    color: white;
+    margin-bottom: 30px;
+}
+
 /*Основной центр внимания*/
 .spotlight {
-	/*border: 3px solid yellow ;*/
-/*	transform:scale(1.1,1.1);
-	transition:all 300ms;*/
-	color:white;
-	/*background-color: rgb(0,172,193);*/
-	background-color: rgb(96,125,139);
-}
-.spotlight .timestart{
-	color:rgba(255,255,255,.7);
-}
-.spotlight .titleprog{
-	color:rgba(255,255,255,1);
-}
-.spotlight .textprog{
-	color:rgba(255,255,255,.7);
+    /*border: 3px solid yellow ;*/
+    /*	transform:scale(1.1,1.1);
+        transition:all 300ms;*/
+    color: white;
+    /*background-color: rgb(0,172,193);*/
+    background-color: rgb(96, 125, 139);
 }
 
-.menuentity.spotlight  {
-	background-color: rgba(0,172,193,1);
+.spotlight .timestart {
+    color: rgba(255, 255, 255, .7);
+}
+
+.spotlight .titleprog {
+    color: rgba(255, 255, 255, 1);
+}
+
+.spotlight .textprog {
+    color: rgba(255, 255, 255, .7);
+}
+
+.menuentity.spotlight {
+    background-color: rgba(0, 172, 193, 1);
 }
 
 /*Подсветка выбраного индекса*/
 .chan.highlight {
-	/*box-shadow: 2px 2px 10px 2px rgba(0, 0, 0, 0.12);*/
+    /*box-shadow: 2px 2px 10px 2px rgba(0, 0, 0, 0.12);*/
     /*background-color: rgb(80, 79, 79);*/
     /*box-shadow: 0px 3px 6px 0px rgba(32, 32, 32, 0.23);*/
 }
+
 .chan.spotlight {
-	background-color:rgba(0,172,193,1);
+    background-color: rgba(0, 172, 193, 1);
 }
 
-#fullEpg{
-	width: 128px;
-	background-color: rgb(84,110,122) ;
-	height: 590px;
-	overflow:hidden;
-	float:left;
+#fullEpg {
+    width: 128px;
+    background-color: rgb(84, 110, 122);
+    height: 590px;
+    overflow: hidden;
+    float: left;
 }
-	.smallEpgSS{
-	    width: 100%;
-	    height: 72px;
-	    /*padding-top: 23px;*/
-	    /*padding-bottom: 23px;*/
-	    margin-bottom:46px;
-	}
 
-
-#hint{
-	position: absolute;
-	bottom: 0;
-	height: 65px;
-	width: 100%;
-	background: rgba(0,0,0,0.56);
+.smallEpgSS {
+    width: 100%;
+    height: 72px;
+    /*padding-top: 23px;*/
+    /*padding-bottom: 23px;*/
+    margin-bottom: 46px;
 }
-	/*.hintbut{
-		position: relative;
-		left:300px;
-		width: 100px;
-		height: 100%;
-		background-color: yellow;
-	}*/
-	
-	#hintparent{
-		position: absolute;
-		left: 80px;
-		top: 20px;
-	}
-	#hintparent span{
-		font-size: 20px;
-		margin-left:10px;
-		font-weight: bold;
-	}
-	.hintbut{
-		position: relative;
-		width: 180px;
-		float: left;
-		color: white;
-	}
-	.yellow{
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		background-color: rgb( 255, 234, 0 );
-		float:left;
-	}
-	.red{
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		background-color: rgb( 255, 61, 0 );
-		float:left;
-	}
-	.green{
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		background-color: rgb( 100, 221, 23 );
-		float:left;
-	}
-	.blue{
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		background-color: rgb( 41, 98, 255 );
-		float:left;
-	}
 
+#hint {
+    position: absolute;
+    bottom: 0;
+    height: 65px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.56);
+}
 
+/*.hintbut{
+    position: relative;
+    left:300px;
+    width: 100px;
+    height: 100%;
+    background-color: yellow;
+}*/
+
+#hintparent {
+    position: absolute;
+    left: 80px;
+    top: 20px;
+}
+
+#hintparent span {
+    font-size: 20px;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.hintbut {
+    position: relative;
+    width: 180px;
+    float: left;
+    color: white;
+}
+
+.yellow {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(255, 234, 0);
+    float: left;
+}
+
+.red {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(255, 61, 0);
+    float: left;
+}
+
+.green {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(100, 221, 23);
+    float: left;
+}
+
+.blue {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(41, 98, 255);
+    float: left;
+}
 
 #quickMenuView {
-	display: none;
-	background-color: rgba(0,0,0,0.75);
-	height: 100%;
-	position: fixed;
-	width: 100%;
-	/*z-index: 10;*/
-	top: 0;
-	left: 0;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.75);
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    /*z-index: 10;*/
+    top: 0;
+    left: 0;
 }
-	#quickMenu {
-	  height: 300px;
-	  width: 300px;
-	  position: fixed;
-	  top: 50%;
-	  left: 50%;
-	  margin-left: -150px;
-	  margin-top: -150px;
-	}
-	#top, #right, #bottom, #left{
-	  width: 100px;
-	  height: 100px;
-	  -webkit-transform: rotateZ(45deg);
-	  background-color: #0098AF;
-	  z-index: 30;
-	}
-	#center{
-	    width: 80px;
-		height: 80px;
-		border-radius: 100px;
-		background-color: #00080A;
-		z-index: 40;
-	}
-	 #top{
-	     position: absolute;
-	     left: 100px;
-		 top: 27px;
-		 border-radius: 30px 0;
-		 background-color: #B6B6B6;
-	     }
-		
-	 #left{
-	     position: absolute;
-	     top: 100px;
-		 left: 27px;
-		 border-radius: 0 30px;
-	 }
-	 #bottom{
-	     position: absolute;
-	     left: 100px;
-		 bottom: 27px;
-		 border-radius: 30px 0;
-		 background-color: #B6B6B6;
-	 }
-	 #right{
-	     position: absolute;
-	     top: 100px;
-		 right: 27px;
-		 border-radius: 0 30px;
-		 background-color: #B6B6B6;
-	 }
-	 #center{
-	     position: absolute;
-	     left: 110px;
-	     top: 110px;
-	 }
- #center img {margin:33px;}
- #top img, #left img, #right img{-webkit-transform: rotate(-45deg);transform: rotate(-45deg); margin:40px;}
- #bottom img {-webkit-transform: rotate(-45deg);transform: rotate(-45deg);}
 
+#quickMenu {
+    height: 300px;
+    width: 300px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -150px;
+}
+
+#top, #right, #bottom, #left {
+    width: 100px;
+    height: 100px;
+    -webkit-transform: rotateZ(45deg);
+    background-color: #0098AF;
+    z-index: 30;
+}
+
+#center {
+    width: 80px;
+    height: 80px;
+    border-radius: 100px;
+    background-color: #00080A;
+    z-index: 40;
+}
+
+#top {
+    position: absolute;
+    left: 100px;
+    top: 27px;
+    border-radius: 30px 0;
+    background-color: #B6B6B6;
+}
+
+#left {
+    position: absolute;
+    top: 100px;
+    left: 27px;
+    border-radius: 0 30px;
+}
+
+#bottom {
+    position: absolute;
+    left: 100px;
+    bottom: 27px;
+    border-radius: 30px 0;
+    background-color: #B6B6B6;
+}
+
+#right {
+    position: absolute;
+    top: 100px;
+    right: 27px;
+    border-radius: 0 30px;
+    background-color: #B6B6B6;
+}
+
+#center {
+    position: absolute;
+    left: 110px;
+    top: 110px;
+}
+
+#center img {
+    margin: 33px;
+}
+
+#top img, #left img, #right img {
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    margin: 40px;
+}
+
+#bottom img {
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
 
 #debug {
-	position: absolute;
-	bottom:0px;
-	right: 0px;
-	height: 200px;
-	width:200px;
-	background-color: black;
-	color:white;
-	z-index: 500;
-	overflow: auto;
+    position: absolute;
+    bottom: 0;
+    height: 100px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .6);
+    padding: 0;
+    border: none;
+    color: white;
+    z-index: 500;
+    overflow: auto;
 }
-#mjpeg{
-	height: 72px;
-	width: 128px;
-	background-color: white;
+
+#mjpeg {
+    height: 72px;
+    width: 128px;
+    background-color: white;
 }
-video{
-	background-color:black;
+
+::-webkit-scrollbar {
+    display: none;
 }

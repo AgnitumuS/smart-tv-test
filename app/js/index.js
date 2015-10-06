@@ -1,3 +1,8 @@
+function log(message) {
+	var el = $('#debug');
+	el.append(message + '\n');
+	document.getElementById('debug').scrollTop = document.getElementById('debug').scrollHeight;
+}
 /* Singleton Notify widgets about changing in models */
 var PubSub = {
 	topics : {},
@@ -12,15 +17,10 @@ var PubSub = {
 		if(this.topics[topic]) {
 			this.topics[topic].forEach(function(cur, ind){
 			cur.handleEvent(topic, args);
-			}) 
+			})
 		}
 	}
 };
-
-
-/**
-* @namespace
-*/
 
 var App = {
 	api : {
@@ -38,12 +38,12 @@ var App = {
 	currentController: null,
 	initialize : function(){
 		App.go("loading");
-	}, 
+	},
 	initializeEvents: function(){
 		console.log('initializeEvents');
 
 		var throttled = _.throttle(function(event){
-			if( App.currentController[App.device.getKeyFunction(event)]) 
+			if( App.currentController[App.device.getKeyFunction(event)])
 				App.currentController[App.device.getKeyFunction(event)]();
 			}, 50);
 
@@ -51,14 +51,13 @@ var App = {
 			event.preventDefault();
 			throttled(event);
 		});
-		
-		
+
+
 		window.onhashchange =  function(event){
 			//FIXME: make destroy fn for current controller
 			if (App.currentController) {
 				App.currentController.destroy();
-	 		};
-
+			}
 			switch(location.hash){
 
 				case '#loading':
@@ -69,12 +68,12 @@ var App = {
 				case '#login' :
 					App.currentController = App.controllers.loginController;
 					break;
-				
+
 				case '#fsplayer':
 					App.currentController = App.controllers.FSPlayerController;
 					App.currentController.init();
 					break;
-				
+
 				case '#playlist':
 					App.currentController = App.controllers.PlaylistController;
 					App.currentController.init();
@@ -86,12 +85,12 @@ var App = {
 					App.currentController = App.controllers.PlaylistController;
 					App.currentController.initWithChan();
 					break;
-			
+
 				case '#quickMenu':
 					App.currentController = App.controllers.QuickMenuController;
 					App.currentController.init();
 					break;
-				
+
 				default:
 					console.log("default case controller");
 					break;
@@ -104,14 +103,14 @@ var App = {
 		this.initialize();
 	},
 
-	/* 
+	/*
 	* @description Routing between controllers
 	*/
 	go : function(hash) {
 		window.location.hash = '#' + hash;
 		PubSub.publish("location.hash/changed", hash);
 	}
-}
+};
 
 
 
@@ -121,7 +120,7 @@ var App = {
 App.db = {
 	prefix : '_db_',
 	get : function  (key) {
-		return localStorage['' +  this.prefix + key] 
+		return localStorage['' +  this.prefix + key]
 		? JSON.parse(localStorage['' +  this.prefix + key])
 		: undefined;
 	},
@@ -130,8 +129,8 @@ App.db = {
 	},
 
 	/**
-     * @param {Object} chan - новое значение для chan. Не обязателен. 
-     * @description   Если указан, то lastChan(...) действует, как setter. 
+     * @param {Object} chan - новое значение для chan. Не обязателен.
+     * @description   Если указан, то lastChan(...) действует, как setter.
      *    			  Если не указан, то lastChan() действует, как getter.
      */
 	lastChan : function  (chan) {
@@ -141,7 +140,7 @@ App.db = {
 			return this.get('lastChan') || {};
 		}
 	}
-}
+};
 
 App.helpers = {};
 App.helpers.Clock = {
@@ -151,18 +150,18 @@ App.helpers.Clock = {
 				html = '';
 			html += date.getHours() + ' ' + '<span id="timeDivid">:</span> ' + this.getMinutes();
 			$('#clockContainer').html(html);
-		}
+		};
 		updateClock.apply(this);
 		setInterval(updateClock.bind(this), 60000);
 	},
 	/**
-	*	@param {Number} - UTC time
-	*	@describe Convert UTC time to redable {String} format hh:mm
-	*/
+	 * @describe Convert UTC time to readable {String} format hh:mm
+	 * @param utcTime
+	 */
 	convertTime : function  (utcTime) {
 		if( utcTime ){
 			var date = new Date( utcTime * 1000 );
-			return date.getHours() + ":" 
+			return date.getHours() + ":"
 			+ this.getMinutes(utcTime) ;
 		} else {
 			return ''
@@ -176,27 +175,26 @@ App.helpers.Clock = {
 		} else {
 			date = new Date(utcTime * 1000);
 		}
-		return ( (date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()) ;	
+		return ( (date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes()) ;
 	}
-}
+};
 
 
-	/** 
+	/**
 	 * @module Loading Controller
-	 * 
+	 *
 	 */
 App.controllers.LoadingController =  (function  () {
 	function LoadingController(){
 		this.loaded = {
-
-			chans : false,
-		}
+			chans : false
+		};
 		this.init = function(){
 			$('#loading').show();
 
 			App.api.img = 'http://static.lanet.ua/tv/';
-			
-			
+
+
 			$.getJSON(App.api.data, function  (data) {
 				App.components.Chans.init(data);
 			});
@@ -210,7 +208,7 @@ App.controllers.LoadingController =  (function  () {
 					App.components.Chans.init(data);
 					debug('ws connected');
 				})
-				
+
 				App.socket.on('upd_epg', function  (data) {
 					App.components.Chans.updEpg(data);
 					debug('ws upd_epg')
@@ -221,14 +219,14 @@ App.controllers.LoadingController =  (function  () {
 				})
 				*/
 			/*		WebSocket's 	*/
-						
-			
+
+
 		};
 		this.destroy = function () {
-		}
+		};
 		this.isReady = function(){
 			return (this.loaded.chans && this.loaded.genres );
-		}
+		};
 		this.handleEvent = function(topic){
 			switch (topic){
 				case App.components.Chans.title + '/init':
@@ -236,7 +234,7 @@ App.controllers.LoadingController =  (function  () {
 					App.player.changeList(App.components.Chans.getSelectedIndex());
 				break;
 				default:
-					throw new "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
+					throw "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
 				break;
 			}
 			if( this.isReady ){
@@ -245,8 +243,7 @@ App.controllers.LoadingController =  (function  () {
 			}
 		}
 	}
-	var controller  = new LoadingController();
-	return controller;
+	return new LoadingController();
 })();
 
 
@@ -267,42 +264,38 @@ function Model() {
 		return this.selectedIndex;
 	};
 	this.hasElem = function(ind){
-		return this.currentList[ind] ? true : false; 
+		return this.currentList[ind] ? true : false;
 	};
 	this.setSelectedIndex = function(val){
 
 		var self = this,
-		oldInd = this.selectedIndex  >= 0 
-							? this.selectedIndex 
+		oldInd = this.selectedIndex  >= 0
+							? this.selectedIndex
 							: undefined;
 
 		this.set('selectedIndex', val);
 		var args = {
 			"prev" : oldInd
-		}; 
+		};
 
 		PubSub.publish(self.title + "/changeSelectedIndex", args);
 	};
 	this.getSelectedItem = function () {
 		return this.currentList[this.getSelectedIndex()];
 	}
-	
+
 }
 
 
 /**
 * @namespace Components
-* 
+*
 */
 App.components = {};
 
 App.components.Menu = (function (){
 	var menuModel = Object.create(new Model());
-		
-	if(typeof Object.create != 'function'){
-		$('#debug').html('Object create != function');	
-	}
-	
+
 	menuModel.title = 'Menu';
 	menuModel.selectedIndex = 0;
 	menuModel.all = [
@@ -312,45 +305,44 @@ App.components.Menu = (function (){
 		},
 		{
 			id : 'genres',
-			childNodeType: 'genre',
+			childNodeType: 'genre'
 		},
 		{
 			id : 'settings',
 			childNodeType: 'setting'
 		}
-	]
+	];
 	menuModel.currentList = menuModel.all;
 	menuModel.getIdElByChildType  = function (type) {
-		for(var i = 0 ; i< this.currentList.length; i ++) { 
+		for(var i = 0 ; i< this.currentList.length; i ++) {
 			if (this.currentList[i].childNodeType === type){
 				return i;
 			}
 		}
 	};
 	return menuModel;
-})()
+})();
 
 
 App.components.Playlists = (function () {
-	
+
 	function PlaylistsModel () {
 		this.selectedIndex = 0;
 		this.title = 'Playlists';
 		this.all = [
-				{ id:'favorites', type:'playlist', title:'Избранные'}, 
+				{ id:'favorites', type:'playlist', title:'Избранные'},
 				{ id:'rating', type:'playlist', title:'Рейтинг'},
-				{ id:'all', type:'playlist', title : 'Все'} 
+				{ id:'all', type:'playlist', title : 'Все'}
 			];
 		this.currentList = this.all;
 	}
 
 	PlaylistsModel.prototype = new Model ();
-	var Playlists = new PlaylistsModel();
-	return Playlists;
+	return new PlaylistsModel();
 })();
 
 App.components.Genres = (function() {
-	function genres () {
+	function Genres () {
 		this.selectedIndex = 0;
 		this.title = "Genres";
 		this.all = [];
@@ -365,18 +357,18 @@ App.components.Genres = (function() {
 					title : cur,
 					class : ind
 				})
-			})
+			});
 			this.set('all', genres, function  () {
 				this.currentList = this.all;
 			});
 		};
 	}
-	genres.prototype = new Model();
-	return new genres();
+	Genres.prototype = new Model();
+	return new Genres();
 })();
 
 App.components.Catalog = (function(window, document, undefined) {
-	function catalog() {
+	function Catalog() {
 		this.selectedIndex = 1;
 		this.title = "Catalog";
 		this.all = [];
@@ -388,7 +380,7 @@ App.components.Catalog = (function(window, document, undefined) {
 			// create full list
 			App.components.Playlists.all.forEach(function (cur, ind) {
 				this.all.push(cur);
-			}, this)
+			}, this);
 
 			App.components.Genres.all.forEach(function  (cur, ind) {
 				this.all.push(cur);
@@ -404,9 +396,9 @@ App.components.Catalog = (function(window, document, undefined) {
 		//switch according to player info
 		this.resetChanges = function () {
 			var ind = this.currentList.indexOf(App.player.chans.category);
-			console.log('resetting category ')
+			console.log('resetting category ');
 			this.setSelectedIndex(ind);
-		}
+		};
 		//get first element in list with type
 		this.getFirstIdByType = function (type) {
 			var id = -1;
@@ -421,8 +413,8 @@ App.components.Catalog = (function(window, document, undefined) {
 			}
 		}
 	}
-	catalog.prototype = new Model();
-	return new catalog();
+	Catalog.prototype = new Model();
+	return new Catalog();
 })(window, document);
 
 	/**
@@ -464,21 +456,21 @@ App.components.Chans = (function () {
 		}
 
 	}
-	
+
 	ChansModel.prototype = new Model();
 
  	ChansModel.prototype.getCurChanId = function  () {
  		return this.currentList[this.getSelectedIndex()];
- 		}
+ 		};
  	ChansModel.prototype.getCurChan = function  () {
  		return this.all[this.getCurChanId()];
- 	}
+ 	};
  	ChansModel.prototype.getCurList = function  () {
  		return this.currentList;
-    	}
+    	};
     ChansModel.prototype.getChanById = function  (id) {
     	return this.all[id] || undefined;
-    }
+    };
     ChansModel.prototype.getChansByGenre = function  (id) {
     	var self = this;
     	return this.rating.filter(function  (el, ind) {
@@ -489,8 +481,8 @@ App.components.Chans = (function () {
     			return false;
     		}
     	}, this)
-    }
-	
+    };
+
 	ChansModel.prototype.genListByCategory = function (ind) {
 		var list = [];
 		var category = App.components.Catalog.getElementById(ind);
@@ -498,7 +490,7 @@ App.components.Chans = (function () {
 		switch (category.type){
 			case 'playlist':
 				switch ( category.id ){
-					case "rating": 
+					case "rating":
 						list = this.rating || [];
 						break;
 					case "favorites":
@@ -512,32 +504,32 @@ App.components.Chans = (function () {
 						break;
 				}
 				break;
-			
+
 			case 'genre':
 				list = this.getChansByGenre(category.class);
 				break;
-			
+
 			default:
-				throw 'Err'
+				throw 'Err';
 				break;
 		}
 			console.log('genListByCategory returned list:', list);
 			return list;
-	}
+	};
 	ChansModel.prototype.changeCurList = function (list) {
 		this.currentList = list.slice(0);
-	}
+	};
 	//Event from ws
 	ChansModel.prototype.updEpg = function  (data) {
 		this.all[data.id].epg = data.epg;
 		console.log('upd_epg event ws');
-	}
-	
+	};
+
 	ChansModel.prototype.changeRating = function  (data) {
 		this.rating = data;
 		console.log("ws rating changed");
-	}
-	
+	};
+
 	ChansModel.prototype.toggleFavChan = function  (id) {
 		if 	(!id)	{
 			throw 'Toggle without id Exception'
@@ -548,19 +540,18 @@ App.components.Chans = (function () {
 		if( position === -1) {
 			fav.push(id);
 			this.favorites = fav;
-			PubSub.publish(this.title + '/addFavChan', id);	
+			PubSub.publish(this.title + '/addFavChan', id);
 		} else {
 			fav.splice(position, 1);
 			this.favorites = fav;
-			PubSub.publish(this.title + '/rmFavChan', id);	
+			PubSub.publish(this.title + '/rmFavChan', id);
 		}
 		db.set('favChans', fav);
 	};
 	ChansModel.prototype.isFav = function  (id) {
-		return (this.favorites.indexOf(id) !== -1) ? true: false;
-	}
-	var chans = new ChansModel();
-	return chans;
+		return this.favorites.indexOf(id) !== -1;
+	};
+	return new ChansModel();
 })();
 
 
@@ -572,8 +563,8 @@ App.components.Epg = {
 	title : 'Epg',
 	currentList : [],
 	initUpdEpg : function  () {
-		//for each chan witch has epg, set timout to upd epg next time 
-		//to interval  == 
+		//for each chan witch has epg, set timout to upd epg next time
+		//to interval  ==
 		var self = this;
 		var order = App.components.Chans.order;
 		var all = App.components.Chans.all;
@@ -583,14 +574,14 @@ App.components.Epg = {
 			order.forEach(function  (cur, ind) {
 				if( all[cur].epg.length ){
 					if( all[cur].epg[0].stop > timeNow){
-						console.log('timeout = ', Math.floor( (all[cur].epg[0].stop - timeNow + 5) /60) , 'min, chan=', cur)
+						console.log('timeout = ', Math.floor( (all[cur].epg[0].stop - timeNow + 5) /60) , 'min, chan=', cur);
 						setTimeout(
-							function  () {
+							function() {
 								self.nextUpdEpg(cur);
-							}
-							,  (all[cur].epg[0].stop - timeNow + 5)*1000);
+							}, (all[cur].epg[0].stop - timeNow + 5)*1000
+                        );
 					}
-				};
+				}
 			})
 		}
 
@@ -623,11 +614,11 @@ App.components.Epg = {
 				this.initUpdEpg();
 			break;
 			default:
-				throw  new 'Observer was subscribed but hasn\'t handling' 
+				throw 'Observer was subscribed but hasn\'t handling';
 			break;
 		}
 	}
-}
+};
 
 PubSub.subscribe(App.components.Chans.title + '/init', App.components.Epg);
 
@@ -637,7 +628,7 @@ PubSub.subscribe(App.components.Chans.title + '/init', App.components.Epg);
 
 
 //App.widgets //Menu, ChansCats, Chans, Progs, ExtendProgs
-App.widgets = {}
+App.widgets = {};
 
 	/**
 	* 	@class widgets.Menu
@@ -647,7 +638,7 @@ App.widgets.Menu = {
 	model : App.components.Menu,
 	grid : {x : 1, y : 1},
 	neighbors : {
-		right : function () { return App.widgets.Catalog } 
+		right : function () { return App.widgets.Catalog }
 	},
 	active : false,
 	init : function() {},
@@ -682,7 +673,7 @@ App.widgets.Menu = {
 		this.model.all.forEach(function  (cur, ind) {
 			html += '<div class=menuentity data-id='+ cur.id+' tabindex=' +ind
 			+ ' style="background-image: url(./assets/icons/'+ cur.id +'.png);""></div>';
-		})
+		});
 		$('#menu').html(html);
 	},
 
@@ -690,11 +681,11 @@ App.widgets.Menu = {
 		var all = 'spotlight highlight';
 		if(args && args.prev) {
 			$('#menu .menuentity[tabindex=' + args.prev + ']').removeClass(all);
-		} 
+		}
 		else {
 			$('#menu .menuentity').removeClass(all);
 		}
-		this.active 
+		this.active
 			? $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.menuentity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 	},
@@ -708,16 +699,16 @@ App.widgets.Menu = {
 			if ( catItem.type !== menuItem.childNodeType ){
 				// change menu selectedIndex according to type of catalog entity
 				App.components.Menu.setSelectedIndex(App.components.Menu.getIdElByChildType(catItem.type));
-				} 
+				}
 		}
 	}
-	
-}
+
+};
 	App.widgets.Menu.controller = (function  () {
-		function controller (widget) {
+		function Controller (widget) {
 			this.widget = widget;
 		}
-		return new controller (App.widgets.Menu);
+		return new Controller (App.widgets.Menu);
 	})();
 	App.widgets.Menu.controller.handleEvent = function  (topic, args) {
 			var self = this;
@@ -726,21 +717,21 @@ App.widgets.Menu = {
 				case App.components.Menu.title + '/changeSelectedIndex' :
 					self.widget.highlight(args);
 					break;
-				
+
 				default:
-					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+					throw 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
 			}
-		}
+		};
 	PubSub.subscribe(App.components.Menu.title + '/changeSelectedIndex', App.widgets.Menu.controller);
-	
+
 
 App.widgets.Catalog = {
 	model : App.components.Catalog,
 	grid : {x : 1, y : 1},
 	neighbors : {
 		right : function () {return App.widgets.ChansList },
-		left : function () {return App.widgets.Menu },
+		left : function () {return App.widgets.Menu }
 	},
 	//spotlight
 	active : false,
@@ -762,11 +753,11 @@ App.widgets.Catalog = {
 			// App.widgets.FullEpg.render()
 			App.components.Chans.setSelectedIndex(0);
 			ListController.right.call(App.currentController);
-		} 
-		
+		}
+
 	},
 	enter : function () {
-		App.currentController.RIGHT();	
+		App.currentController.RIGHT();
 	},
 	notify : function  () {
 		if(this.active){
@@ -789,15 +780,15 @@ App.widgets.Catalog = {
 		html += '<div id="playlistsTitle" class="catalogTitles">Списки</div>';
 		this.model.currentList.forEach(function  (cur, ind) {
 			if (cur.type === 'playlist') {
-				html += '<div class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</div>';		
+				html += '<div class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</div>';
 			}
-		})
+		});
 		html += '<div id="genresTitle" class="catalogTitles">Жанры</div>';
 		this.model.currentList.forEach(function  (cur, ind) {
 			if (cur.type === 'genre') {
 				html += '<div class=catalogEntity tabindex=' +ind+ '>' + cur.title  + '</div>';
 			}
-		})
+		});
 		html += '<div id="settingsTitle" class="catalogTitles">Настройки</div>';
 		$('#menu').html(html);
 	},
@@ -806,11 +797,11 @@ App.widgets.Catalog = {
 		var all = 'spotlight highlight';
 		if(args && args.prev) {
 			$('#menu .catalogEntity[tabindex=' + args.prev + ']').removeClass(all);
-		} 
+		}
 		else {
 			$('#menu .catalogEntity').removeClass(all);
 		}
-		this.active 
+		this.active
 			? $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
@@ -823,13 +814,9 @@ App.widgets.Catalog = {
 		console.log('scrollTOp:' , height * ind -2 * height)
 
 	},
-
-	enter : function  () {
-		App.currentController.RIGHT();
-	},
 	notifyWithDelay : (function(window, document, undefined) {
 		var dTimeout;
-	
+
 		function notifyWithDelay (delay) {
 			var self = this;
 
@@ -874,26 +861,25 @@ App.widgets.Catalog = {
 					default:
 						throw 'There are no such title for this type'
 						break;
-				}		
+				}
 			}
-			
+
 		}
 
 		return highlightTitle;
 	})(window, document)
 
-}	
+};
 	App.widgets.Catalog.controller = (function  () {
-		function controller (widget) {
+		function Controller (widget) {
 			this.widget = widget;
 		}
-		var controller = new controller (App.widgets.Catalog);
-		return controller;
+        return new Controller(App.widgets.Catalog);
 	})();
 
 	App.widgets.Catalog.controller.handleEvent = function(topic, args){
 		var self = this;
-		
+
 			switch (topic){
 
 				case App.components.Catalog.title + '/changeSelectedIndex' :
@@ -904,14 +890,14 @@ App.widgets.Catalog = {
 					//notify dependecy widgets
 					self.widget.notifyWithDelay(500);
 					break;
-				
+
 				default:
-					throw new 'Observer ' + this.title + ' was subscribed, but there are no realization';
+					throw 'Observer ' + this.title + ' was subscribed, but there are no realization';
 				break;
 			}
-		}
+		};
 	PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widgets.Catalog.controller );
-	
+
 App.widgets.ChansList = {
 	model : App.components.Chans,
 	visibleItemCount: 5,
@@ -919,7 +905,7 @@ App.widgets.ChansList = {
 	list : [],
 	neighbors : {
 		// right : function () { return  App.widgets.ProgramsList } ,
-		left  : function () { return App.widgets.Catalog } 
+		left  : function () { return App.widgets.Catalog }
 	},
 	//spotlight
 	active : false,
@@ -944,7 +930,7 @@ App.widgets.ChansList = {
 			// App.widgets.Genres.collapse(true);
 		} else {
 			$('#chans').css({'background-color': 'rgba(38, 50, 56, .7)'});
-			
+
 		}
 	},
 
@@ -967,7 +953,7 @@ App.widgets.ChansList = {
 			$('#chans .chan').removeClass(all);
 		}
 
-		this.active 
+		this.active
 			? $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass(all)
 			: $('.chan[tabindex=' + this.model.getSelectedIndex() +']').addClass('highlight');
 
@@ -976,14 +962,14 @@ App.widgets.ChansList = {
 	/** { id:id, 'position': id in array }*/
 	renderChan : function  (id) {
 		/** @type {App.components.Chans.all[0]} */
-			console.log('rendered chan with id = ', id); 
+			console.log('rendered chan with id = ', id);
 			var chan = App.components.Chans.getChanById(id);
 			/** @type {"start":1437040800,
 				"stop":1437042000,
 				"title":"Новости (с сурдопереводом).",
 				"text":"Новости (с сурдопереводом).",
 				"cat":"2:2","likes":0} */
-			var epg = chan.epg[0] || { 
+			var epg = chan.epg[0] || {
 				start : '',
 				title : 'Прямой эфир.',
 				text : ''
@@ -991,14 +977,14 @@ App.widgets.ChansList = {
 			var starttime='';
 			if (epg.start){
 				starttime = App.helpers.Clock.convertTime(epg.start);
-			} 
+			}
 			//tabindex - ??
 			var html =
-			 // '<div class="chan" tabindex='+ .position + " data-id="+ id  + '>' 
+			 // '<div class="chan" tabindex='+ .position + " data-id="+ id  + '>'
 				// '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ id + '.png\');">';
 				'<div class="logochan">'
 						+ '<div style="width:100%; height:100%;">'
-						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ id + ".png" +')"></div></div>'
+						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ id + ".png" +')"></div></div>';
 				// for favorites
 				if( this.model.isFav(id) ){
 					html+= '<div class="favstar"></div>'
@@ -1015,7 +1001,7 @@ App.widgets.ChansList = {
 	},
 
 	/**
-	* @description - Change view of chans list 
+	* @description - Change view of chans list
 	*/
 	render : function(newList){
 		var html = '';
@@ -1031,7 +1017,7 @@ App.widgets.ChansList = {
 					"title":"Новости (с сурдопереводом).",
 					"text":"Новости (с сурдопереводом).",
 					"cat":"2:2","likes":0} */
-				var epg = chan.epg[0] || { 
+				var epg = chan.epg[0] || {
 					start : '',
 					title : 'Прямой эфир.',
 					text : ''
@@ -1039,11 +1025,11 @@ App.widgets.ChansList = {
 				var starttime='';
 				if (epg.start){
 					starttime = App.helpers.Clock.convertTime(epg.start);
-				} 
-				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>' 
+				}
+				html += '<div class="chan" tabindex='+ index + " data-id= "+ curId  + '>'
 					+ '<div class="logochan">'
 						+ '<div style="width:100%; height:100%;">'
-						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ curId + ".png" +')"></div></div>'
+						+ '<div class="chanPic" style="background-image:url(' +  App.api.img + "logo/"+ curId + ".png" +')"></div></div>';
 					if( self.model.isFav(curId) ){
 						html+= '<div class="favstar"></div>'
 					};
@@ -1053,7 +1039,7 @@ App.widgets.ChansList = {
 					+ '<div class="textprog">'+epg.text +'</div>'
 					;
 					html+= ' </div></div>';
-			})
+			});
 		$('#chans').html(html);
 		// App.widgets.FullEpg.render(list);
 		this.highlight();
@@ -1068,13 +1054,12 @@ App.widgets.ChansList = {
 	yellow : function  () {
 		this.model.toggleFavChan(this.model.getCurChanId());
 	}
-}
+};
 	App.widgets.ChansList.controller = (function  () {
-		function controller (widget) {
+		function Controller (widget) {
 			this.widget = widget;
 		}
-		var controller = new controller (App.widgets.ChansList);
-		return controller;
+        return new Controller(App.widgets.ChansList);
 	})();
 	App.widgets.ChansList.controller.handleEvent  = function  (	topic , args) {
 		var self = this;
@@ -1084,7 +1069,7 @@ App.widgets.ChansList = {
 			case App.components.Chans.title + '/changeSelectedIndex':
 				self.widget.highlight(args);
 				break;
-			
+
 			case App.components.Chans.title + '/init':
 				self.widget.render();
 				break;
@@ -1102,16 +1087,16 @@ App.widgets.ChansList = {
 			case App.components.Chans.title + '/rmFavChan':
 				self.widget.renderChan(args);
 				break;
-			
+
 			case App.components.Epg.title + '/upd_epg':
 				self.widget.renderChan(args);
 				break;
-			
-			default: 
+
+			default:
 				throw 'Observer was subscribed but there are no realization : ' + this;
 				break;
 		}
-	}
+	};
 	PubSub.subscribe(App.components.Chans.title + '/changeSelectedIndex', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Chans.title + '/init', App.widgets.ChansList.controller);
 	PubSub.subscribe(App.components.Catalog.title + '/notifyWithDelay', App.widgets.ChansList.controller);
@@ -1122,35 +1107,35 @@ App.widgets.ChansList = {
 App.widgets.Appbar = {
 	model : App.components.Chans,
 	dTimeout: undefined
-}
+};
 
 App.widgets.Appbar.render = function  () {
 	var self = App.widgets.Appbar;
 	$("#nav").show();
 	var id = self.model.getCurChanId();
 	var chan = self.model.getCurChan();
-	var html =  '<div class="smallLogoChan" style="background-image: url(\'' 
+	var html =  '<div class="smallLogoChan" style="background-image: url(\''
 		+ App.api.img + 'logo/'+ id + '.png\');"></div>';
 	if (chan.epg[0] && chan.epg[1]){
-		html += '<span class="epgnow">' 
+		html += '<span class="epgnow">'
 		+ chan.title + '<br>'
 		+ chan.epg[0].title +'</span>';
-		html += '<span class="epgnext">' 
+		html += '<span class="epgnext">'
 		+ 'Далее:' + '<br>'
 		+ chan.epg[1].title +'</span>';
 
 	} else {
-		html += '<span class="epgnow">' 
+		html += '<span class="epgnow">'
 		+ chan.title + '<br>'
 		+ 'Прямой эфир' +'</span>';
 	}
 	$("#smallEpgContainer").html(html);
 	clearTimeout(this.dTimeout);
-	
+
 	if (App.currentController !== App.controllers.FSPlayerController){
 		return;
 	}
-	
+
 	this.dTimeout = setTimeout(
 		function  (){
 			$('#nav').hide();
@@ -1184,7 +1169,7 @@ App.widgets.Appbar.render = function  () {
 // 			height = $(screen).outerHeight(true);
 
 // 		$('#fullEpg').scrollTop(height * ind - 2 * height);
-		
+
 // 		$(screen).css('background-image','url(http://kirito.la.net.ua/tv/_' + idChan +'.jpg?'+ new Date().getTime() +')' )
 // 		console.log('scrollTOp:' , height * ind -2 * height)
 // 		if(args && (args.prev !== undefined )){
@@ -1196,7 +1181,7 @@ App.widgets.Appbar.render = function  () {
 
 // 	},
 // 	render : function (newList) {
-		
+
 // 		if(!this.active){
 // 			//only screenshots
 // 			var html = '',
@@ -1225,11 +1210,11 @@ App.widgets.Appbar.render = function  () {
 // 	controller : {
 // 		handleEvent : function (topic, args) {
 // 			switch (topic){
-			
+
 // 				case App.components.Chans.title + '/changeSelectedIndex': 
 // 					App.widgets.FullEpg.scrollToCur(args);
 // 					break;
-			
+
 // 				default:
 // 					throw 'Err in Observer'
 // 					break;
@@ -1252,7 +1237,7 @@ App.player = {
 	chans : {
 		list : [],
 		category : {},
-		selected : -1, 
+		selected : -1,
 		switchNext : function () {
 			if( this.selected +1 < this.list.length ){
 				this.selected++;
@@ -1284,6 +1269,28 @@ App.player = {
 	},
 	//private
 	load : function  (chan) {
+		log(JSON.stringify(chan));
+		var ratio = $.map(chan.ratio.split(':'), function(value) {
+			return parseInt(value, 10);
+		});
+		var real = window.innerWidth / window.innerHeight;
+		var orig = ratio[0] / ratio[1];
+		if (real > orig) {
+			this.player.width((ratio[1] / ratio[0]) * window.innerWidth);
+			this.player.height(window.innerHeight);
+		} else {
+			this.player.width((ratio[0] / ratio[1]) * window.innerHeight);
+			this.player.height(window.innerHeight);
+		}
+		//var width = this.player.width((ratio[1] / ratio[0]) * window.innerWidth);
+		//if (ratio[0] >= ratio[1]) {
+		//	this.player.width((ratio[0] / ratio[1]) * window.innerWidth);
+		//	this.player.height(window.innerHeight);
+		//} else {
+		//	//this.player.height(ratio[0] / ratio[1] * window.innerHeight);
+		//	this.player.height(window.innerHeight);
+		//	this.player.width(window.innerWidth);
+		//}
 		this.player.attr('src', chan.url);
 		App.db.lastChan(chan);
 	},
@@ -1295,21 +1302,26 @@ App.player = {
 		this.load( this.chans.switchPrev());
 		App.components.Chans.setSelectedIndex(this.chans.selected);
 	}
-	
-}
+};
 
 
 
 
 App.widgets.FS = {
 
-}
+};
 
 App.controllers.FSPlayerController = {
 	init : function  () {
 		App.widgets.Appbar.render();
 	},
 	destroy : function () {
+	},
+	RED : function () {
+		window.location.reload();
+	},
+	BLUE : function () {
+		$('#debug').toggle();
 	},
 	PAGE_UP : function  () {
 		App.player.next();
@@ -1325,51 +1337,57 @@ App.controllers.FSPlayerController = {
 		App.go('quickMenu');
 	},
 	LEFT : function  () {
-		
+
 	},
 	UP : function  () {
-		
+
 	},
 	RIGHT : function  () {
-		
+
 	},
 	DOWN : function  () {
 		// body...
 	}
 
-}
+};
 
 App.controllers.QuickMenuController = {
 	visible : false,
 	init : function  () {
 		//show quickMenu widget
-		$('#quickMenuView').show();	
+		$('#quickMenuView').show();
 		App.widgets.Appbar.render();
-		this.visible = true;	
+		this.visible = true;
 	},
 	destroy : function () {
 	},
+	RED : function () {
+		window.location.reload();
+	},
+	BLUE : function () {
+		$('#debug').toggle();
+	},
 	ENTER : function  () {
 		if (this.visible)  {
-			$('#quickMenuView').hide(); 
+			$('#quickMenuView').hide();
 			this.visible = false;
 			App.go('fsplayer');
-		} else { 
-			$('#quickMenuView').show(); 
+		} else {
+			$('#quickMenuView').show();
 			this.visible = true;
 		}
 	},
 	LEFT : function  () {
 		$('#quickMenuView').hide();
-		App.go('playlist?chan');		
+		App.go('playlist?chan');
 	},
 	UP : function (){},
 	RIGHT : function (){},
 	DOWN : function (){}
-}
+};
 
 var  ListController = (function(window, document, undefined) {
-	
+
 	var up =  function(){
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x) )	{
 			this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x );
@@ -1382,10 +1400,10 @@ var  ListController = (function(window, document, undefined) {
 			// switch to upNeighbor
 			changeWidgetByDirection.call(this, 'UP');
 		}
-	}
+	};
 
 	var right = function(){
-		if( ( this.activeWidget.model.getSelectedIndex() +  1)  %  this.activeWidget.grid.x  !== 0){			
+		if( ( this.activeWidget.model.getSelectedIndex() +  1)  %  this.activeWidget.grid.x  !== 0){
 			// selected next model.id
 			if( this.activeWidget.model.hasElem( this.activeWidget.model.getSelectedIndex() + 1) ){
 				this.activeWidget.model.setSelectedIndex ( this.activeWidget.model.getSelectedIndex() + 1);
@@ -1393,7 +1411,7 @@ var  ListController = (function(window, document, undefined) {
 		} else {
 				changeWidgetByDirection.call(this, 'RIGHT');
 		}
-	}
+	};
 
 	var down = function(){
 		if ( this.activeWidget.model.hasElem ( this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x  ) )	{
@@ -1405,17 +1423,17 @@ var  ListController = (function(window, document, undefined) {
 		} else {
 			changeWidgetByDirection.call(this, 'DOWN');
 		}
-	}
+	};
 
 	var left = function(){
 		if( (( this.activeWidget.model.getSelectedIndex() -  1)  % this.activeWidget.grid.x)  !== 0){
-			//select prec model.id in matrix 
+			//select prec model.id in matrix
 		} else {
 
 			changeWidgetByDirection.call (this, 'LEFT');
 		}
-		
-	}
+
+	};
 
 	var changeWidgetByDirection = function(orient){
 		var witch = {};
@@ -1443,7 +1461,7 @@ var  ListController = (function(window, document, undefined) {
 					}
 				break;
 				default:
-					throw new 'change widget without appropriate orient';
+					throw 'change widget without appropriate orient';
 				break;
 			}
 			if (Object.getOwnPropertyNames(witch).length !== 0 && witch.model.currentList.length ) {
@@ -1457,12 +1475,12 @@ var  ListController = (function(window, document, undefined) {
 				console.log('changeWidgetByDirection to : ', witch);
 				return true;
 			} else {
-				// 
+				//
 				return false;
 			}
 		}
 		else {
-			throw new 'Illegal changeWidgetByDirection usage (without orient)';
+			throw 'Illegal changeWidgetByDirection usage (without orient)';
 		}
 	};
 
@@ -1471,12 +1489,18 @@ var  ListController = (function(window, document, undefined) {
 		up : up,
 		down : down,
 		left : left,
-		right : right,
+		right : right
 	}
 
-})(window, document); 
-	
+})(window, document);
+
 function DefaultController() {
+	this.RED = function () {
+		window.location.reload();
+	};
+	this.BLUE = function () {
+		$('#debug').toggle();
+	};
 	this.UP = function () {
 		if(typeof this.activeWidget.up === 'function'){
 			this.activeWidget.up();
@@ -1502,11 +1526,11 @@ function DefaultController() {
 			this.activeWidget.enter();
 		}
 	};
-	this.YELLOW = function () {
-		if(typeof this.activeWidget.yellow === 'function'){
-			this.activeWidget.yellow();
-		}
-	};
+    this.YELLOW = function () {
+        if(typeof this.activeWidget.yellow === 'function'){
+            this.activeWidget.yellow();
+        }
+    };
 	this.setActiveWidget = function  (widget) {
 		if (this.activeWidget){
 			this.activeWidget.active = false;
@@ -1514,7 +1538,7 @@ function DefaultController() {
 
 			if(this.activeWidget.notify){
 				this.activeWidget.notify();
-			}  
+			}
 			if( this.activeWidget.highlight ) {
 				this.activeWidget.highlight();
 			}
@@ -1524,16 +1548,16 @@ function DefaultController() {
 		//FIXME: notify must present in all widgets
 		if(this.activeWidget.notify){
 				this.activeWidget.notify();
-		} 
+		}
 		this.activeWidget.highlight();
 	};
 
-		
+
 }
 
 
 App.controllers.PlaylistController = (function(window, document, undefined) {
-	
+
 	function PlaylistController () {
 		this.activeWidget = {};
 	}
@@ -1542,7 +1566,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 		App.widgets.Menu.render();
 		App.widgets.ChansList.render();
 		App.widgets.Appbar.render();
-		
+
 		$('#browseView').show();
 		this.setActiveWidget.call (this, App.widgets.Menu);
 		//FIXME: change from manual to mediator: scrollToCur in init PlaylistController
@@ -1558,7 +1582,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 	PlaylistController.prototype.destroy = function () {
 		$('#browseView').hide();
 	};
-	
+
 	return new PlaylistController();
 
 })(window, document);
@@ -1570,7 +1594,7 @@ App.controllers.PlaylistController = (function(window, document, undefined) {
 App.device = {
 	keys : {
 			'13': 'ENTER',
-            '461': 'BACK', 
+            '461': 'BACK',
         	'33': 'PAGE_UP',
             '34': 'PAGE_DOWN',
             '107': 'PAGE_UP',
@@ -1596,15 +1620,16 @@ App.device = {
             '57': 'NUM9',
 
             '403': 'RED',
+            '82': 'RED', //"R" testing
             '404': 'GREEN', //g
             '405': 'YELLOW', //y
             '67': 'YELLOW', //"C" testing
             '406': 'BLUE',
-	}, 
+            '66': 'BLUE'//"B" testing
+	},
 	getKeyFunction: function(event){
 		return App.device.keys[event.keyCode]
 	}
-}
-
+};
 
 App.start();

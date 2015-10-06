@@ -11,7 +11,7 @@ var $play = {
 			this.player.attr('src', $edge + $(_chan).attr("data-id") + '.m3u8');
 
 		}
-}
+};
 // var sessionStorage = window.sessionStorage;
 var $db = {
 	prefix: '_db_',
@@ -33,7 +33,7 @@ function drawList(_cat){
 				+ '</div>' ; 
 			}
 			
-	})
+	});
 	// if(resHtml){
 		$(".left").html(resHtml);
 	// } 
@@ -114,7 +114,7 @@ var $epg = {
 			}
 		} 
 	}
-}
+};
 
 // function Block( element, direction ){
 // 	this.element = element;
@@ -273,7 +273,7 @@ var $programInfo = {
 		$(".epgProgramContent").html(_html);
 
 	}
-}
+};
 
 // var epgProgramInfo = new Block($("#epgProgramInfo")[0],"column");
 // 	epgProgramInfo.prepareContent = function(eventTarget){
