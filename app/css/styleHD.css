@@ -303,7 +303,25 @@ span.epgnext {
     background-size: 100% 100%;
 }
 
+.previewchan {
+    position: relative;
+    width: 144px;
+    margin: 0 24px 0 24px;
+    height: 96px;
+    /*position:;*/
+    float: right;
+    background: no-repeat center;
+    background-size: 100% 100%;
+}
+
 .chanPic {
+    height: 100%;
+    width: 100%;
+    background: no-repeat center;
+    /*background-size: 100% 100%;*/
+}
+
+.chanPreview {
     height: 100%;
     width: 100%;
     background: no-repeat center;
