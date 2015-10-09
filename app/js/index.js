@@ -1,7 +1,11 @@
 function log(message) {
-    var el = $('#debug');
-    el.append(message + '\n');
-    document.getElementById('debug').scrollTop = document.getElementById('debug').scrollHeight;
+    var el = document.getElementById('debug');
+    if (el) {
+        el.value += message + '\n';
+        el.scrollTop = el.scrollHeight;
+    } else {
+        console.log(message);
+    }
 }
 
 /* Singleton Notify widgets about changing in models */
@@ -25,12 +29,9 @@ var PubSub = {
 
 var App = {
     api: {
-        main: "http://api.lanet.tv/", // old
-        epg: "http://api.lanet.tv/epg/",
-        rating: "list/rating/all",
-        img: 'http://static.lanet.ua/tv/',
-        ws: 'ws://data.lanet.tv',
-        data: "https://data.lanet.tv/" // actual
+        api: 'api.lanet.tv',
+        static: 'static.lanet.ua',
+        data: 'data.lanet.tv'
     },
     pack: "",
     socket: {},
@@ -120,12 +121,12 @@ App.db = {
     },
 
     /**
-     * @param {Object} chan - новое значение для chan. Не обязателен.
+     * @param {Object=} chan - новое значение для chan. Не обязателен.
      * @description Если указан, то lastChan(...) действует, как setter.
      *              Если не указан, то lastChan() действует, как getter.
      */
     lastChan: function (chan) {
-        if (typeof chan != "undefined") {
+        if (chan != undefined) {
             this.set('lastChan', chan);
         } else {
             return this.get('lastChan') || {};
@@ -180,13 +181,13 @@ App.controllers.LoadingController = (function () {
             chans: false
         };
         this.init = function () {
-            $('#loading').show();
-            $.getJSON(App.api.data, function (data) {
+            //$('#loading').show();
+            $.getJSON('//' + App.api.data, function (data) {
                 App.components.Chans.init(data);
             });
             /* WebSockets (only for WebOs. Draft protocol in NetCast) */
             /*
-             App.socket = new SocketAPI(App.api.ws, { key: 'test', lang: 'ru' });
+             App.socket = new SocketAPI('ws://' + App.api.data, { key: 'test', lang: 'ru' });
              debug('created socket');
              App.socket.on('connect', function(data){
              App.components.Chans.init(data);
@@ -214,11 +215,11 @@ App.controllers.LoadingController = (function () {
                     App.player.changeList(App.components.Chans.getSelectedIndex());
                     break;
                 default:
-                    throw "Observer was subscribed for this topic, but there is no processing" + topic + ' blabl';
+                    throw 'Observer was subscribed for this topic, but there is no processing ' + topic;
                     break;
             }
             if (this.isReady) {
-                $('#loading').hide();
+                //$('#loading').hide();
                 App.go('fsplayer');
             }
         }
@@ -405,7 +406,6 @@ App.components.Chans = (function () {
         this.rating = [];
         //cable order
         this.order = [];
-
         this.init = function (res) {
             var self = this;
             self.all = res.list;
@@ -416,7 +416,7 @@ App.components.Chans = (function () {
             self.rating = res.sort.rating.slice();
             self.favorites = App.db.get('favChans') || [];
             self.currentList = self.rating;
-            self.setSelectedIndex(0);
+            self.setSelectedIndex(this.getIndexById(App.db.lastChan()) || 0);
             //init Catalog(take playlists , genres, tags alltogether)
             App.components.Catalog.init(res);
             App.helpers.Clock.initClock();
@@ -426,11 +426,8 @@ App.components.Chans = (function () {
             this.currentList = App.player.chans.list.slice();
             this.setSelectedIndex(App.player.chans.selected);
         }
-
     }
-
     ChansModel.prototype = new Model();
-
     ChansModel.prototype.getCurChanId = function () {
         return this.currentList[this.getSelectedIndex()];
     };
@@ -442,6 +439,10 @@ App.components.Chans = (function () {
     };
     ChansModel.prototype.getChanById = function (id) {
         return this.all[id] || undefined;
+    };
+    ChansModel.prototype.getIndexById = function (id) {
+        var index = this.currentList.indexOf(id);
+        return index != -1 ? index : undefined;
     };
     ChansModel.prototype.getChansByGenre = function (id) {
         var self = this;
@@ -472,7 +473,7 @@ App.components.Chans = (function () {
                         list = this.order || [];
                         break;
                     default :
-                        throw 'Wrong list ind in genListByCategory'
+                        throw 'Wrong list ind in genListByCategory';
                         break;
                 }
                 break;
@@ -543,7 +544,7 @@ App.components.Epg = {
             order.forEach(function (cur, ind) {
                 if (all[cur].epg.length) {
                     if (all[cur].epg[0].stop > timeNow) {
-                        console.log('timeout = ', Math.floor((all[cur].epg[0].stop - timeNow + 5) / 60), 'min, chan=', cur);
+                        //console.log('timeout = ', Math.floor((all[cur].epg[0].stop - timeNow + 5) / 60), 'min, chan=', cur);
                         setTimeout(
                             function () {
                                 self.nextUpdEpg(cur);
@@ -559,7 +560,7 @@ App.components.Epg = {
         var self = this;
         var all = App.components.Chans.all;
         var timeNow = Math.floor(new Date().getTime() / 1000);
-        $.getJSON(App.api.epg + chanId + '/now?next=1', function (res) {
+        $.getJSON('//' + App.api.api + '/epg/' + chanId + '/now?next=1', function (res) {
             if (res.length) {
                 console.log('nextUpd for chan=', chanId, res[0].start !== all[chanId].epg[0].start);
                 if (res[0].start !== all[chanId].epg[0].start) {
@@ -834,7 +835,7 @@ App.widgets.Catalog = {
                         $('#genresTitle').addClass('highlight');
                         break;
                     default:
-                        throw 'There are no such title for this type'
+                        throw 'There are no such title for this type';
                         break;
                 }
             }
@@ -950,25 +951,19 @@ App.widgets.ChansList = {
         if (epg.start) {
             starttime = App.helpers.Clock.convertTime(epg.start);
         }
-        //tabindex - ??
-        var html =
-            // '<div class="chan" tabindex='+ .position + " data-id="+ id  + '>'
-            // '<div class="logochan" style="background-image: url(\'' + App.api.img + 'logo/'+ id + '.png\');">';
-            '<div class="logochan">'
-            + '<div style="width:100%; height:100%;">'
-            + '<div class="chanPic" style="background-image:url(' + App.api.img + "logo/" + id + ".png" + ')"></div></div>';
-        // for favorites
+        var html = '<div class="logochan">'
+            + '<div>'
+            + '<div class="chanPic" style="background-image:url(//' + App.api.static + "/tv/logo/" + id + ".png" + ')"></div>'
+            + '</div>'
+            + '</div>';
         if (this.model.isFav(id)) {
             html += '<div class="favstar"></div>'
         }
-        /** */
         html += '</div></div><div class="programcontent">'
             + '<div class="timestart">' + starttime + '</div>'
             + '<div class="titleprog">' + epg.title + '</div>'
             + '<div class="textprog">' + epg.text + '</div></div>'
         ;
-        // html+= ' </div>';
-        console.log(html);
         $('.chan[data-id=' + id + ']').html(html);
     },
 
@@ -996,7 +991,7 @@ App.widgets.ChansList = {
             html += '<div class="chan" tabindex=' + index + " data-id= " + curId + '>'
                 + '<div class="logochan">'
                 + '<div style="width:100%; height:100%;">'
-                + '<div class="chanPic" style="background-image:url(' + App.api.img + "logo/" + curId + ".png" + ')"></div></div>';
+                + '<div class="chanPic" style="background-image:url(//' + App.api.static + "/tv/logo/" + curId + ".png" + ')"></div></div>';
             if (self.model.isFav(curId)) {
                 html += '<div class="favstar"></div>'
             }
@@ -1006,10 +1001,10 @@ App.widgets.ChansList = {
                 + '<div class="textprog">' + epg.text + '</div>'
             ;
             html += '</div>';
-            html += ''
-            + '<div class="previwchan">'
-            + '<div style="width:100%; height:100%;">'
-            + '<div class="chanPreview" style="background-image:url(http://kirito.la.net.ua/tv/' + curId + ".jpg" + ')"></div></div></div>';
+            html += '<div class="previewchan">'
+                + '<div style="width:100%; height:100%;">'
+                + '<div class="chanPreview" style="background-image:url(//' + App.api.edge + '/tv/' + curId + '.jpg' + ')"></div></div></div>';
+            //+ '<img class="chanPreview" src="http://kirito.la.net.ua/tv/' + curId + '.jpg"></img></div></div>';
             html += '</div>';
         });
         $('#chans').html(html);
@@ -1087,8 +1082,7 @@ App.widgets.Appbar.render = function () {
     $("#nav").show();
     var id = self.model.getCurChanId();
     var chan = self.model.getCurChan();
-    var html = '<div class="smallLogoChan" style="background-image: url(\''
-        + App.api.img + 'logo/' + id + '.png\');"></div>';
+    var html = '<div class="smallLogoChan" style="background-image: url(//' + App.api.static + '/tv/logo/' + id + '.png);"></div>';
     if (chan.epg[0] && chan.epg[1]) {
         html += '<span class="epgnow">'
             + chan.title + '<br>'
@@ -1232,12 +1226,10 @@ App.player = {
     changeList: function (selected) {
         this.chans.list = App.components.Chans.currentList.slice();
         this.chans.category = App.components.Catalog.getCurrent();
-        console.log('chans list in player changed to :', this.chans.list);
         this.chans.selected = selected;
         this.load(this.chans.getCur());
     },
     load: function (chan) {
-        log(JSON.stringify(chan));
         var ratio = $.map(chan.ratio.split(':'), function (value) {
             return parseInt(value, 10);
         });
@@ -1251,7 +1243,7 @@ App.player = {
             this.player.height(window.innerHeight);
         }
         this.player.attr('src', chan.url);
-        App.db.lastChan(chan);
+        App.db.lastChan(App.components.Chans.getCurChanId());
     },
     next: function () {
         this.load(this.chans.switchNext());
@@ -1284,7 +1276,6 @@ App.controllers.FSPlayerController = {
     PAGE_DOWN: function () {
         App.player.prev();
         App.widgets.Appbar.render();
-
     },
     ENTER: function () {
         //show quick menu
@@ -1530,7 +1521,7 @@ App.controllers.PlaylistController = (function (window, document, undefined) {
     };
     PlaylistController.prototype.initWithChan = function () {
         App.widgets.Menu.render();
-        App.components.Chans.currentList = App.player.chans.list.slice()
+        App.components.Chans.currentList = App.player.chans.list.slice();
         App.widgets.ChansList.render();
         App.widgets.Appbar.render();
         $('#browseView').show();
