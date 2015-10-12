@@ -38,19 +38,24 @@ var App = {
     controllers: {},
     widgets: {},
     currentController: null,
+    elements: {
+        menu: document.getElementById('menu'),
+        chans: document.getElementById('chans'),
+        fullEpg: document.getElementById('fullEpg')
+    },
     initialize: function () {
         App.go("loading");
     },
     initializeEvents: function () {
-        var throttled = _.throttle(function (event) {
+        var throttled = throttle(function (event) {
             if (App.currentController[App.device.getKeyFunction(event)])
                 App.currentController[App.device.getKeyFunction(event)]();
         }, 50);
-        $(window).on('keydown', function (event) {
+        window.addEventListener('keydown', function (event) {
             event.preventDefault();
             throttled(event);
         });
-        window.onhashchange = function (event) {
+        window.addEventListener('hashchange', function (event) {
             //FIXME: make destroy fn for current controller
             if (App.currentController) {
                 App.currentController.destroy();
@@ -89,7 +94,7 @@ var App = {
                     console.log("default case controller");
                     break;
             }
-        };
+        });
     },
     start: function () {
         this.initializeEvents();
@@ -138,10 +143,7 @@ App.helpers = {};
 App.helpers.Clock = {
     initClock: function () {
         var updateClock = function () {
-            var date = new Date(),
-                html = '';
-            html += date.getHours() + ' ' + '<span id="timeDivid">:</span> ' + this.getMinutes();
-            $('#clockContainer').html(html);
+            document.getElementById('clockContainer').innerHTML = new Date().getHours() + ' : ' + this.getMinutes();
         };
         updateClock.apply(this);
         setInterval(updateClock.bind(this), 10000);
@@ -182,7 +184,7 @@ App.controllers.LoadingController = (function () {
         };
         this.init = function () {
             //$('#loading').show();
-            $.getJSON('//' + App.api.data, function (data) {
+            loadJSON('//' + App.api.data, function (data) {
                 App.components.Chans.init(data);
             });
             /* WebSockets (only for WebOs. Draft protocol in NetCast) */
@@ -427,6 +429,7 @@ App.components.Chans = (function () {
             this.setSelectedIndex(App.player.chans.selected);
         }
     }
+
     ChansModel.prototype = new Model();
     ChansModel.prototype.getCurChanId = function () {
         return this.currentList[this.getSelectedIndex()];
@@ -560,7 +563,7 @@ App.components.Epg = {
         var self = this;
         var all = App.components.Chans.all;
         var timeNow = Math.floor(new Date().getTime() / 1000);
-        $.getJSON('//' + App.api.api + '/epg/' + chanId + '/now?next=1', function (res) {
+        loadJSON('//' + App.api.api + '/epg/' + chanId + '/now?next=1', function (res) {
             if (res.length) {
                 console.log('nextUpd for chan=', chanId, res[0].start !== all[chanId].epg[0].start);
                 if (res[0].start !== all[chanId].epg[0].start) {
@@ -609,6 +612,7 @@ App.widgets.Menu = {
         }
     },
     active: false,
+    menuEntities: [],
     init: function () {
     },
     up: function () {
@@ -627,36 +631,44 @@ App.widgets.Menu = {
     },
     /**
      *    @description notify observer widgets about change active state
+     *    TODO: Test
      */
     notify: function () {
         if (this.active) {
-            $('#chans').hide();
-            $('#fullEpg').hide();
+            showNode(App.elements.chans);
+            showNode(App.elements.fullEpg);
         } else {
-            $('#chans').show();
-            $('#fullEpg').show();
+            hideNode(App.elements.chans);
+            hideNode(App.elements.fullEpg);
         }
     },
     render: function () {
-        var html = '';
+        var menuEntities = this.menuEntities = [];
+        removeChildren(App.elements.menu);
         this.model.all.forEach(function (cur, ind) {
-            html += '<div class=menuentity data-id=' + cur.id + ' tabindex=' + ind
-                + ' style="background-image: url(./assets/icons/' + cur.id + '.png);""></div>';
+            var entity = document.createElement('div');
+            entity.className = 'menuentity';
+            entity.dataset.id = cur.id;
+            entity.tabIndex = ind;
+            entity.style.backgroundImage = cssUrl('./assets/icons/' + cur.id + '.png');
+            menuEntities.push(entity);
+            App.elements.menu.appendChild(entity);
         });
-        $('#menu').html(html);
     },
-
     highlight: function (args) {
-        var all = 'spotlight highlight';
-        if (args && args.prev) {
-            $('#menu .menuentity[tabindex=' + args.prev + ']').removeClass(all);
-        }
-        else {
-            $('#menu .menuentity').removeClass(all);
-        }
-        this.active
-            ? $('.menuentity[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all)
-            : $('.menuentity[tabindex=' + this.model.getSelectedIndex() + ']').addClass('highlight');
+        var self = this;
+        this.menuEntities.forEach(function (entity) {
+            if ((args && entity.tabIndex == args.prev) || !args) {
+                entity.classList.remove('highlight');
+                entity.classList.remove('spotlight');
+            }
+            if (entity.tabIndex == self.model.getSelectedIndex()) {
+                entity.classList.add('highlight');
+                if (self.active) {
+                    entity.classList.add('spotlight');
+                }
+            }
+        });
     },
     enter: function () {
         App.currentController.RIGHT();
@@ -709,6 +721,7 @@ App.widgets.Catalog = {
     },
     //spotlight
     active: false,
+    catalogEntities: [],
     init: function () {
     },
     up: function () {
@@ -735,14 +748,15 @@ App.widgets.Catalog = {
         App.currentController.RIGHT();
     },
     notify: function () {
+        var menu = document.getElementById('menu');
         if (this.active) {
             // App.widgets.ChansList подвинуть
-            $('#menu').addClass('open');
+            menu.classList.add('open');
             this.render();
             this.highlightTitle();
             this.scrollToCur();
         } else {
-            $('#menu').removeClass('open');
+            menu.classList.remove('open');
             //сбросить значение
             this.highlightTitle({});
             //hide all, show images
@@ -750,61 +764,101 @@ App.widgets.Catalog = {
         }
     },
     render: function () {
+        var self = this;
 
-        var html = '';
-        html += '<div id="playlistsTitle" class="catalogTitles">Списки</div>';
+        function createEntity(index, title) {
+            var catalogEntity = document.createElement('div');
+            catalogEntity.className = 'catalogEntity';
+            catalogEntity.tabIndex = index;
+            catalogEntity.innerHTML = title;
+            return catalogEntity;
+        }
+
+        var playlistsTitle = document.createElement('div'),
+            genresTitle = document.createElement('div'),
+            settingsTitle = document.createElement('div'),
+            playlists = [],
+            genres = [],
+            settings = [];
+
+        playlistsTitle.id = 'playlistsTitle';
+        genresTitle.id = 'genresTitle';
+        settingsTitle.id = 'settingsTitle';
+        playlistsTitle.className = genresTitle.className = settingsTitle.className = 'catalogTitles';
+        playlistsTitle.innerHTML = 'Списки';
+        genresTitle.innerHTML = 'Жанры';
+        settingsTitle.innerHTML = 'Настройки';
+
+        self.catalogEntities = [];
+
         this.model.currentList.forEach(function (cur, ind) {
-            if (cur.type === 'playlist') {
-                html += '<div class=catalogEntity tabindex=' + ind + '>' + cur.title + '</div>';
+            var entity = createEntity(ind, cur.title);
+            self.catalogEntities.push(entity);
+            switch (cur.type) {
+                case 'playlist':
+                    playlists.push(entity);
+                    break;
+                case 'genre':
+                    genres.push(entity);
+                    break;
+                case 'setting':
+                    settings.push(entity);
+                    break;
             }
         });
-        html += '<div id="genresTitle" class="catalogTitles">Жанры</div>';
-        this.model.currentList.forEach(function (cur, ind) {
-            if (cur.type === 'genre') {
-                html += '<div class=catalogEntity tabindex=' + ind + '>' + cur.title + '</div>';
-            }
+
+        removeChildren(App.elements.menu);
+
+        App.elements.menu.appendChild(playlistsTitle);
+        playlists.forEach(function (catalogEntity) {
+            App.elements.menu.appendChild(catalogEntity);
         });
-        html += '<div id="settingsTitle" class="catalogTitles">Настройки</div>';
-        $('#menu').html(html);
+
+        App.elements.menu.appendChild(genresTitle);
+        genres.forEach(function (catalogEntity) {
+            App.elements.menu.appendChild(catalogEntity);
+        });
+
+        App.elements.menu.appendChild(settingsTitle);
+        settings.forEach(function (catalogEntity) {
+            App.elements.menu.appendChild(catalogEntity);
+        });
     },
-
     highlight: function (args) {
-        var all = 'spotlight highlight';
-        if (args && args.prev) {
-            $('#menu .catalogEntity[tabindex=' + args.prev + ']').removeClass(all);
-        }
-        else {
-            $('#menu .catalogEntity').removeClass(all);
-        }
-        this.active
-            ? $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() + ']').addClass(all)
-            : $('.catalogEntity[tabindex=' + this.model.getSelectedIndex() + ']').addClass('highlight');
-
+        var self = this;
+        this.catalogEntities.forEach(function (entity) {
+            if ((args && entity.tabIndex == args.prev) || !args) {
+                entity.classList.remove('highlight');
+                entity.classList.remove('spotlight');
+            }
+            if (entity.tabIndex == self.model.getSelectedIndex()) {
+                entity.classList.add('highlight');
+                if (self.active) {
+                    entity.classList.add('spotlight');
+                }
+            }
+        });
     },
     scrollToCur: function () {
         var ind = this.model.getSelectedIndex();
-        var elem = $('.catalogEntity[tabindex=' + ind + ']');
-        var height = elem.outerHeight();
-        $('#menu').scrollTop(height * ind - 2 * height);
-        console.log('scrollTOp:', height * ind - 2 * height)
-
+        this.catalogEntities.forEach(function (entity) {
+            if (entity.tabIndex == ind) {
+                var height = entity.offsetHeight;
+                App.elements.menu.scrollTop = height * ind - 2 * height;
+            }
+        });
     },
     notifyWithDelay: (function (window, document, undefined) {
         var dTimeout;
-
         function notifyWithDelay(delay) {
             var self = this;
-
             window.clearTimeout(dTimeout);
             dTimeout = window.setTimeout(function () {
                 PubSub.publish(self.model.title + "/notifyWithDelay")
             }, delay);
         }
-
         return notifyWithDelay;
-
     })(window, document),
-
     identifyNearestNeighbor: function (prevWidget) {
         if (prevWidget === App.widgets.Menu) {
             var menuItem = App.components.Menu.getSelectedItem();
@@ -813,7 +867,6 @@ App.widgets.Catalog = {
     },
     highlightTitle: (function (window, document, undefined) {
         var curType; // playlist, genre, setting
-
         function highlightTitle(type) {
             //сбросить текущий тип (ипользуем при закрытии вкладки)
             if (type !== undefined) {
@@ -839,9 +892,7 @@ App.widgets.Catalog = {
                         break;
                 }
             }
-
         }
-
         return highlightTitle;
     })(window, document)
 
@@ -974,8 +1025,6 @@ App.widgets.ChansList = {
         var html = '';
         var self = this;
         var list = newList ? newList : this.model.currentList;
-        // console.log('now model = ', model);
-
         list.forEach(function (curId, index) {
             // {App.components.Chans.all[0]}
             var chan = App.components.Chans.getChanById(curId);
@@ -990,8 +1039,7 @@ App.widgets.ChansList = {
             }
             html += '<div class="chan" tabindex=' + index + " data-id= " + curId + '>'
                 + '<div class="logochan">'
-                + '<div style="width:100%; height:100%;">'
-                + '<div class="chanPic" style="background-image:url(//' + App.api.static + "/tv/logo/" + curId + ".png" + ')"></div></div>';
+                + '<div class="chanPic" style="background-image:url(//' + App.api.static + "/tv/logo/" + curId + ".png" + ')"></div>';
             if (self.model.isFav(curId)) {
                 html += '<div class="favstar"></div>'
             }
@@ -1002,9 +1050,8 @@ App.widgets.ChansList = {
             ;
             html += '</div>';
             html += '<div class="previewchan">'
-                + '<div style="width:100%; height:100%;">'
-                + '<div class="chanPreview" style="background-image:url(//' + App.api.edge + '/tv/' + curId + '.jpg' + ')"></div></div></div>';
-            //+ '<img class="chanPreview" src="http://kirito.la.net.ua/tv/' + curId + '.jpg"></img></div></div>';
+                    //+ '<div class="chanPreview" /*style="background-image:url(//' + App.api.edge + '/tv/sprite_web_lanet.jpg' + ')"*/></div></div>';
+                + '<img class="chanPreview" src="http://kirito.la.net.ua/tv/' + curId + '.jpg"></img></div>';
             html += '</div>';
         });
         $('#chans').html(html);
