@@ -85,7 +85,7 @@ body {
     background-repeat: no-repeat;
 }
 
-span.epgnow, span.epgnext {
+span.epgNow, span.epgNext {
     display: block;
     color: white;
     width: 312px;
@@ -97,7 +97,7 @@ span.epgnow, span.epgnext {
     overflow: hidden;
 }
 
-span.epgnext {
+span.epgNext {
     margin-left: 100px;
 }
 
@@ -241,7 +241,7 @@ span.epgnext {
     height: 590px;
     overflow: hidden;
     float: left;
-    background-color: rgba(38, 50, 56, 1);
+    background-color: rgba(38, 50, 56, .7);
     opacity: .9;
     box-shadow: 0 3px 6px 0 rgba(32, 32, 32, 0.16);
     /*transition: all 300ms ease-out 0s;*/
@@ -250,6 +250,10 @@ span.epgnext {
 #chans.withCatalog {
     left: 0;
     opacity: .87;
+}
+
+#chans.active {
+    background-color: rgba(38, 50, 56, 1);
 }
 
 .chan {
@@ -265,7 +269,7 @@ span.epgnext {
     background: no-repeat center;
 }
 
-.logochan {
+.logoChan {
     position: relative;
     width: 144px;
     margin: 0 24px 0 24px;
@@ -276,7 +280,7 @@ span.epgnext {
     background-size: 100% 100%;
 }
 
-.previewchan {
+.previewChan {
     position: relative;
     width: 144px;
     margin: 0 24px 0 24px;
@@ -302,7 +306,7 @@ span.epgnext {
     /*background-size: 100% 100%;*/
 }
 
-.favstar {
+.favStar {
     /*display: none;*/
     position: absolute;
     right: 8px;
@@ -312,14 +316,14 @@ span.epgnext {
     background-image: url('../assets/icons/star.png');
 }
 
-.programcontent {
+.programContent {
     position: relative;
     /*height: 112px;*/
     float: left;
     width: 355px;
 }
 
-.timestart {
+.timeStart {
     position: absolute;
     right: -56px;
     top: 0;
@@ -329,7 +333,7 @@ span.epgnext {
     /*font-size: 14px;*/
 }
 
-.titleprog {
+.titleProg {
     color: rgba(255, 255, 255, .77);
     font-size: 20px;
     /*line-height: 29px;*/
@@ -342,7 +346,7 @@ span.epgnext {
     text-align: left;
 }
 
-.textprog {
+.textProg {
     height: 50px;
     color: rgba(255, 255, 255, .32);
     overflow: hidden;
@@ -379,15 +383,15 @@ span.epgnext {
     background-color: rgb(96, 125, 139);
 }
 
-.spotlight .timestart {
+.spotlight .timeStart {
     color: rgba(255, 255, 255, .7);
 }
 
-.spotlight .titleprog {
+.spotlight .titleProg {
     color: rgba(255, 255, 255, 1);
 }
 
-.spotlight .textprog {
+.spotlight .textProg {
     color: rgba(255, 255, 255, .7);
 }
 

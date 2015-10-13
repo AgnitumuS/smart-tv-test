@@ -1,8 +1,8 @@
 /**
  * @description Load JSON via XHR with callback
  * @param url {String} URL of JSON
- * @param success {Function=} Optional callback on success, data object as a parameter
- * @param error {Function=} Optional callback on error, code and response text as parameters
+ * @param success {Function =} Optional callback on success, data object as a parameter
+ * @param error {Function =} Optional callback on error, code and response text as parameters
  */
 function loadJSON(url, success, error) {
     var request = new XMLHttpRequest();
@@ -45,7 +45,7 @@ function hideNode(node) {
 /**
  * @description Hide DOM node
  * @param node {HTMLElement} DOM node
- * @param display {String=} Optional CSS display value, default is 'block'
+ * @param display {String =} Optional CSS display value, default is 'block'
  * @return {HTMLElement | Boolean} Node or false
  */
 function showNode(node, display) {
@@ -66,6 +66,51 @@ function removeChildren(node) {
         while (node.firstChild) {
             node.removeChild(node.firstChild);
         }
+        return node;
+    } else { return false; }
+}
+
+/**
+ * @description Remove a class or list of classes from DOM node. Remove all classes if not specified
+ * @param node {HTMLElement} DOM node
+ * @param className {String | Array<String> =} Optional class name or a list of class names
+ * @return {HTMLElement | Boolean} Node or false
+ */
+function removeClass(node, className) {
+    switch (typeof className) {
+        case 'string':
+            className = [className];
+            break;
+        case 'undefined':
+            className = [];
+            if (node) {
+                node.classList.forEach(function (name) {
+                    className.push(name);
+                })
+            }
+    }
+    if (node) {
+        className.forEach(function (name) {
+            node.classList.remove(name);
+        });
+        return node;
+    } else { return false; }
+}
+
+/**
+ * @description Add a class or list of classes to DOM node
+ * @param node {HTMLElement} DOM node
+ * @param className {String | Array<String>} Class name or a list of class names
+ * @return {HTMLElement | Boolean} Node or false
+ */
+function addClass(node, className) {
+    if (typeof className == 'string') {
+        className = [className];
+    }
+    if (node) {
+        className.forEach(function (name) {
+            node.classList.add(name);
+        });
         return node;
     } else { return false; }
 }
