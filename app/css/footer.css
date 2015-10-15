@@ -1,0 +1,41 @@
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: rgba(0, 0, 0, 0.56);
+    color: white;
+}
+
+.yellow {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(255, 234, 0);
+    float: left;
+}
+
+.red {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(255, 61, 0);
+    float: left;
+}
+
+.green {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(100, 221, 23);
+    float: left;
+}
+
+.blue {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(41, 98, 255);
+    float: left;
+}

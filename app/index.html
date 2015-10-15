@@ -5,29 +5,35 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="description" content="LanetTV for WebOS"/>
     <meta charset="UTF-8"/>
-    <!--<link rel="stylesheet" type="text/css" href="./css/styleHD.css">-->
-    <link rel="stylesheet" type="text/css" href="http://10.10.17.26/app/css/styleHD.css">
+    <!--<link rel="stylesheet" type="text/css" href="./css/footer.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="./css/global.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="./css/menu.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="./css/nav.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="./css/quickmenu.css">-->
+    <link rel="stylesheet" type="text/css" href="http://10.10.17.26/app/css/footer.css">
+    <link rel="stylesheet" type="text/css" href="http://10.10.17.26/app/css/global.css">
+    <link rel="stylesheet" type="text/css" href="http://10.10.17.26/app/css/menu.css">
+    <link rel="stylesheet" type="text/css" href="http://10.10.17.26/app/css/nav.css">
+    <link rel="stylesheet" type="text/css" href="http://10.10.17.26/app/css/quickmenu.css">
     <script type="text/javascript" src="./js/jquery.js"></script>
     <!--<script type="text/javascript" src="./js/helpers.js"></script>-->
     <script type="text/javascript" src="http://10.10.17.26/app/js/helpers.js"></script>
 </head>
 <body>
-<video id="iPlayer" autoplay></video>
+<video id="player" autoplay></video>
 <div id="nav">
-    <div id="aniLogo"></div>
-    <span id='LanetTvTitle'>Ланет TV</span>
-    <div id="smallEpgContainer"></div>
+    <img id="logo" src="./assets/logotv.png"/>
+    <div id="lanetTvTitle">Ланет TV</div>
+    <div id="currentChannelInfo"></div>
     <div id="clockContainer"></div>
 </div>
 <div id="browseView">
     <div id="menu"></div>
     <div id="chans"></div>
-    <div id="hint">
-        <div id="hintparent">
-            <div class="hintbut">
-                <div class="yellow"></div>
-                <span>Избранное</span>
-            </div>
+    <div id="footer">
+        <div class="hint">
+            <div class="yellow"></div>
+            <span>Избранное</span>
         </div>
     </div>
 </div>

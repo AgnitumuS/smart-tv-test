@@ -1,24 +1,45 @@
 /**
- * @description Load JSON via XHR with callback
- * @param url {String} URL of JSON
- * @param success {Function =} Optional callback on success, data object as a parameter
- * @param error {Function =} Optional callback on error, code and response text as parameters
+ * @description Load data via GET XHR with callback
+ * @param url {String} Request URL
+ * @param success {Function =} Optional callback on success, response body string passed as a parameter
+ * @param error {Function =} Optional callback on error, object with status code and response body passed as a parameter
  */
-function loadJSON(url, success, error) {
+function getXHR(url, success, error) {
     var request = new XMLHttpRequest();
     success = typeof success == 'function' ? success : function () {};
     error = typeof error == 'function' ? error : function () {};
     request.onreadystatechange = function () {
         if (request.readyState == XMLHttpRequest.DONE) {
             if (request.status == 200) {
-                success(JSON.parse(request.responseText));
+                success(request.responseText);
             } else {
-                error(request.status, request.responseText);
+                error({
+                    status: request.status,
+                    body: request.responseText
+                });
             }
         }
     };
     request.open('GET', url, true);
     request.send();
+}
+
+/**
+ * @description Load JSON via GET XHR with callback
+ * @param url {String} Request URL
+ * @param success {Function =} Optional callback on success, data object is passed as a parameter
+ * @param error {Function =} Optional callback on error, exception passed as a first parameter, object with status code
+ * and response body is passed as a second parameter in case of XHR error
+ */
+function getJSON(url, success, error) {
+    success = typeof success == 'function' ? success : function () {};
+    error = typeof error == 'function' ? error : function () {};
+    getXHR(url,
+        function (body) {
+            try { success(JSON.parse(body)); }
+            catch (exception) { error(exception)}
+        }, function (xhrError) { error(new XMLHttpRequestException, xhrError) }
+    )
 }
 
 /**
@@ -52,6 +73,32 @@ function showNode(node, display) {
     if (node) {
         display = display ? display : 'block';
         node.style.display = display;
+        return node;
+    } else { return false; }
+}
+
+/**
+ * @description Set CSS node width
+ * @param node {HTMLElement} DOM node
+ * @param width {Number} New width in pixels
+ * @return {HTMLElement | Boolean} Node or false
+ */
+function setPixelNodeWidth(node, width) {
+    if (node && typeof width == 'number') {
+        node.style.width = width.toString() + 'px';
+        return node;
+    } else { return false; }
+}
+
+/**
+ * @description Set CSS node height
+ * @param node {HTMLElement} DOM node
+ * @param height {Number} New height in pixels
+ * @return {HTMLElement | Boolean} Node or false
+ */
+function setPixelNodeHeight(node, height) {
+    if (node && typeof height == 'number') {
+        node.style.height = height.toString() + 'px';
         return node;
     } else { return false; }
 }

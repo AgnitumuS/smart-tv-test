@@ -1,0 +1,50 @@
+/*@font-face {*/
+    /*font-family: 'Roboto';*/
+    /*/!*font-style: normal;*!/*/
+    /*/!*font-weight: 400;*!/*/
+    /*src: url('../assets/fonts/roboto-regular.woff')*/
+/*}*/
+
+@font-face {
+    font-family: 'Roboto';
+    font-weight: normal;
+    font-style: normal;
+    src: url('../assets/fonts/roboto-condensed-regular.woff')
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    font-family: 'Roboto', sans-serif;
+}
+
+video {
+    background-color: #000;
+}
+
+#player {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#debug {
+    position: absolute;
+    bottom: 0;
+    height: 100px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .6);
+    padding: 0;
+    border: none;
+    color: white;
+    z-index: 500;
+    overflow: auto;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}

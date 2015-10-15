@@ -1,0 +1,88 @@
+#quickMenuView {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.75);
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    /*z-index: 10;*/
+    top: 0;
+    left: 0;
+}
+
+#quickMenu {
+    height: 300px;
+    width: 300px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -150px;
+}
+
+#top, #right, #bottom, #left {
+    width: 100px;
+    height: 100px;
+    -webkit-transform: rotateZ(45deg);
+    background-color: #0098AF;
+    z-index: 30;
+}
+
+#center {
+    width: 80px;
+    height: 80px;
+    border-radius: 100px;
+    background-color: #00080A;
+    z-index: 40;
+}
+
+#top {
+    position: absolute;
+    left: 100px;
+    top: 27px;
+    border-radius: 30px 0;
+    background-color: #B6B6B6;
+}
+
+#left {
+    position: absolute;
+    top: 100px;
+    left: 27px;
+    border-radius: 0 30px;
+}
+
+#bottom {
+    position: absolute;
+    left: 100px;
+    bottom: 27px;
+    border-radius: 30px 0;
+    background-color: #B6B6B6;
+}
+
+#right {
+    position: absolute;
+    top: 100px;
+    right: 27px;
+    border-radius: 0 30px;
+    background-color: #B6B6B6;
+}
+
+#center {
+    position: absolute;
+    left: 110px;
+    top: 110px;
+}
+
+#center img {
+    margin: 33px;
+}
+
+#top img, #left img, #right img {
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    margin: 40px;
+}
+
+#bottom img {
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}

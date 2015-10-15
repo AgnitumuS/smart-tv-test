@@ -8,6 +8,23 @@ function log(message) {
     }
 }
 
+var nativeConsole = window.console;
+
+window.console = {
+    error: function (msg) {
+        log(msg);
+        nativeConsole.log(msg);
+    },
+    warn: function (msg) {
+        log(msg);
+        nativeConsole.log(msg);
+    },
+    log: function (msg) {
+        log(msg);
+        nativeConsole.log(msg);
+    }
+};
+
 /* Singleton Notify widgets about changing in models */
 var PubSub = {
     topics: {},
@@ -43,12 +60,13 @@ var App = {
     },
     initializeEvents: function () {
         var throttled = throttle(function (event) {
-            if (App.currentController[App.device.getKeyFunction(event)])
-                App.currentController[App.device.getKeyFunction(event)]();
+            App.currentController[App.device.getKeyFunction(event)]();
         }, 50);
         window.addEventListener('keydown', function (event) {
-            event.preventDefault();
-            throttled(event);
+            if (App.currentController[App.device.getKeyFunction(event)]) {
+                event.preventDefault();
+                throttled(event);
+            }
         });
         window.addEventListener('hashchange', function (event) {
             //FIXME: make destroy fn for current controller
@@ -65,8 +83,8 @@ var App = {
                  App.currentController = App.controllers.loginController;
                  break;
                  */
-                case '#fsplayer':
-                    App.currentController = App.controllers.FSPlayerController;
+                case '#player':
+                    App.currentController = App.controllers.PlayerController;
                     App.currentController.init();
                     break;
 
@@ -179,7 +197,7 @@ App.controllers.LoadingController = (function () {
         };
         this.init = function () {
             //$('#loading').show();
-            loadJSON('//' + App.api.data, function (data) {
+            getJSON('//' + App.api.data, function (data) {
                 App.components.Chans.init(data);
             });
             /* WebSockets (only for WebOs. Draft protocol in NetCast) */
@@ -217,7 +235,7 @@ App.controllers.LoadingController = (function () {
             }
             if (this.isReady) {
                 //$('#loading').hide();
-                App.go('fsplayer');
+                App.go('player');
             }
         }
     }
@@ -558,7 +576,7 @@ App.components.Epg = {
         var self = this,
             all = App.components.Chans.all,
             timeNow = Math.floor(new Date().getTime() / 1000);
-        loadJSON('//' + App.api.api + '/epg/' + chanId + '/now?next=1', function (res) {
+        getJSON('//' + App.api.api + '/epg/' + chanId + '/now?next=1', function (res) {
             if (res.length) {
                 console.log('nextUpd for chan=', chanId, res[0].start !== all[chanId].epg[0].start);
                 if (res[0].start !== all[chanId].epg[0].start) {
@@ -619,7 +637,7 @@ App.widgets.Menu = {
     left: function () {
         App.components.Chans.resetChanges();
         App.components.Catalog.resetChanges();
-        App.go('fsplayer');
+        App.go('player');
     },
     right: function () {
         ListController.right.call(App.currentController);
@@ -1065,7 +1083,7 @@ App.widgets.ChansList = {
     enter: function () {
         App.player.changeList(this.model.getSelectedIndex());
         hideNode(document.getElementById('browseView'));
-        App.go('fsplayer');
+        App.go('player');
     },
     yellow: function () {
         this.model.toggleFavChan(this.model.getCurChanId());
@@ -1130,37 +1148,58 @@ App.widgets.Appbar.render = function () {
     var self = App.widgets.Appbar,
         id = self.model.getCurChanId(),
         chan = self.model.getCurChan(),
-        smallEpgContainerEl = document.getElementById('smallEpgContainer'),
-        smallLogoChanEl = document.createElement('div'),
-        epgNowEl = document.createElement('span'),
-        epgNextEl = document.createElement('span');
-    removeChildren(smallEpgContainerEl);
-    smallEpgContainerEl.appendChild(epgNowEl);
+        currentChannelInfoEl = document.getElementById('currentChannelInfo'),
+        currentChanLogoEl = document.createElement('img'),
+        currentEpgColumnEl = document.createElement('div'),
+        nextEpgColumnEl = document.createElement('div'),
+        currentChanTitleEl = document.createElement('div'),
+        epgNowEl = document.createElement('div'),
+        epgNextTitleEl = document.createElement('div'),
+        epgNextEl = document.createElement('div');
+
+    removeChildren(currentChannelInfoEl);
     showNode(document.getElementById('nav'));
-    smallLogoChanEl.className = 'smallLogoChan';
-    smallLogoChanEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
-    smallEpgContainerEl.appendChild(smallLogoChanEl);
-    //var html = '<div class="smallLogoChan" style="background-image: url(//' + App.api.static + '/tv/logo/' + id + '.png);"></div>';
+
+    currentChanLogoEl.className = 'currentChanLogo';
+    currentEpgColumnEl.className = 'currentEpgColumn';
+    currentChanTitleEl.className = 'currentChanTitle';
+    epgNowEl.className = 'epgNow';
+    nextEpgColumnEl.className = 'nextEpgColumn';
+    epgNextTitleEl.className = 'epgNextTitle';
+    epgNextEl.className = 'epgNext';
+
+    //currentChanLogoEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
+    currentChanLogoEl.src = '//' + App.api.static + '/tv/logo/' + id + '.png';
+    currentChannelInfoEl.appendChild(currentChanLogoEl);
+
+    currentChanTitleEl.innerHTML = chan.title;
+    currentEpgColumnEl.appendChild(currentChanTitleEl);
+
+    epgNextTitleEl.innerHTML = 'Далее';
+    nextEpgColumnEl.appendChild(epgNextTitleEl);
+
     if (chan.epg[0] && chan.epg[1]) {
-        epgNowEl.className = 'epgNow';
-        epgNextEl.className = 'epgNext';
-        epgNowEl.innerHTML = chan.title + ' \\n ' + chan.epg[0].title;
-        smallEpgContainerEl.appendChild(epgNowEl);
-        epgNextEl.innerHTML = 'Далее' + ' \\n ' + chan.epg[1].title;
-        smallEpgContainerEl.appendChild(epgNextEl);
+        epgNowEl.innerHTML = chan.epg[0].title;
+        currentEpgColumnEl.appendChild(epgNowEl);
+        currentChannelInfoEl.appendChild(currentEpgColumnEl);
+
+        epgNextEl.innerHTML = chan.epg[1].title;
+        nextEpgColumnEl.appendChild(epgNextEl);
+        currentChannelInfoEl.appendChild(nextEpgColumnEl);
     } else {
-        epgNowEl.innerHTML = chan.title + ' \\n ' + 'Прямой эфир';
-        smallEpgContainerEl.appendChild(epgNowEl);
+        epgNowEl.innerHTML = 'Прямой эфир';
+        currentEpgColumnEl.appendChild(epgNowEl);
+        currentChannelInfoEl.appendChild(currentEpgColumnEl);
     }
-    clearTimeout(this.dTimeout);
-    if (App.currentController !== App.controllers.FSPlayerController) {
+    //clearTimeout(this.dTimeout);
+    if (App.currentController !== App.controllers.PlayerController) {
         return;
     }
-    this.dTimeout = setTimeout(
-        function () {
-            $('#nav').hide();
-        }, 3000
-    );
+    //this.dTimeout = setTimeout(
+    //    function () {
+    //        hideNode(document.getElementById('nav'));
+    //    }, 3000
+    //);
 };
 
 // App.widgets.FullEpg = {
@@ -1181,7 +1220,7 @@ App.widgets.Appbar.render = function () {
 // 	},
 // 	right : function () {
 // 		// ListController.right.call(App.currentController);
-// 		App.go('fsplayer');
+// 		App.go('player');
 // 	},
 // 	scrollToCur : function (args) {
 // 		var ind = this.model.getSelectedIndex(),
@@ -1250,7 +1289,7 @@ App.widgets.Appbar.render = function () {
 
 
 App.player = {
-    player: $('#iPlayer'),
+    player: document.getElementById('player'),
     chans: {
         list: [],
         category: {},
@@ -1289,14 +1328,9 @@ App.player = {
         });
         var real = window.innerWidth / window.innerHeight;
         var orig = ratio[0] / ratio[1];
-        if (real > orig) {
-            this.player.width((ratio[1] / ratio[0]) * window.innerWidth);
-            this.player.height(window.innerHeight);
-        } else {
-            this.player.width((ratio[0] / ratio[1]) * window.innerHeight);
-            this.player.height(window.innerHeight);
-        }
-        this.player.attr('src', chan.url);
+        setPixelNodeWidth(this.player, (real > orig ? ratio[1] / ratio[0] : orig) * window.innerWidth);
+        setPixelNodeHeight(this.player, window.innerHeight);
+        this.player.src = chan.url;
         App.db.lastChan(App.components.Chans.getCurChanId());
     },
     next: function () {
@@ -1311,7 +1345,7 @@ App.player = {
 
 App.widgets.FS = {};
 
-App.controllers.FSPlayerController = {
+App.controllers.PlayerController = {
     init: function () {
         App.widgets.Appbar.render();
     },
@@ -1370,7 +1404,7 @@ App.controllers.QuickMenuController = {
         if (this.visible) {
             $('#quickMenuView').hide();
             this.visible = false;
-            App.go('fsplayer');
+            App.go('player');
         } else {
             $('#quickMenuView').show();
             this.visible = true;

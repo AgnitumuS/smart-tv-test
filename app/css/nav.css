@@ -1,0 +1,84 @@
+#nav {
+    position: fixed;
+    z-index: 5;
+    color: white;
+    height: 40px;
+    left: 0;
+    right: 0;
+    padding: 16px 16px;
+    background: #607d8b;
+    box-shadow: 50px 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    opacity: 0.95;
+}
+
+#nav > * {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+#logo {
+    /*height: 26px;*/
+    /*left: 52px;*/
+    /*position: relative;*/
+    /*top: 0px;*/
+    /*margin-left: 15px;*/
+    /*margin-right: 15px;*/
+    /*margin-top: 10px;*/
+    width: 40px;
+    height: 40px;
+}
+
+#lanetTvTitle {
+    margin-left: 20px;
+    font-size: 20px;
+}
+
+#currentChannelInfo {
+    /*width: auto;*/
+    /*height: 100%;*/
+    /*background-color: rgba(0,0,0,0.56);*/
+}
+
+#currentChannelInfo {
+    vertical-align: middle;
+    height: 48px;
+}
+
+#currentChannelInfo > * {
+    display: inline;
+    vertical-align: top;
+    height: 48px;
+    float: left;
+}
+
+.currentChanLogo {
+    height: 56px;
+}
+
+.currentEpgColumn, .nextEpgColumn {
+    margin-right: 90px;
+    max-height: 64px;
+}
+
+.epgNow, .epgNext, .currentChanTitle, .epgNextTitle {
+    /*display: inline-block;*/
+    /*width: 300px;*/
+    /*margin-left: 35px;*/
+    /*float: left;*/
+    /*height: 65px;*/
+    /*line-height: 30px;*/
+    max-width: 300px;
+    /*overflow: hidden;*/
+}
+
+.epgNext {
+    /*margin-left: 100px;*/
+}
+
+#clockContainer {
+    /*float: right;*/
+    font-size: 20px;
+    opacity: 0.9;
+}
