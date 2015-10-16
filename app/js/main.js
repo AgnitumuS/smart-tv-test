@@ -1008,8 +1008,11 @@ App.widgets.ChansList = {
         this.chanEntities = [];
         removeChildren(chansEl);
         list.forEach(function (curId, index) {
-            var chan = App.components.Chans.getChanById(curId),
-                epg = chan.epg[0] || {
+            var chan = App.components.Chans.getChanById(curId);
+            if (!chan) {
+                return;
+            }
+            var epg = chan.epg[0] || {
                         start: '',
                         title: 'Прямой эфир.',
                         text: ''
@@ -1148,11 +1151,11 @@ App.widgets.Appbar.render = function () {
     showNode(document.getElementById('nav'));
 
     currentChanLogoEl.className = 'currentChanLogo';
-    currentEpgColumnEl.className = 'currentEpgColumn';
-    currentChanTitleEl.className = 'currentChanTitle';
+    currentEpgColumnEl.className = 'epgColumn';
+    currentChanTitleEl.className = 'bold';
     epgNowEl.className = 'epgNow';
-    nextEpgColumnEl.className = 'nextEpgColumn';
-    epgNextTitleEl.className = 'epgNextTitle';
+    nextEpgColumnEl.className = 'epgColumn';
+    epgNextTitleEl.className = 'bold';
     epgNextEl.className = 'epgNext';
 
     //currentChanLogoEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
@@ -1162,7 +1165,7 @@ App.widgets.Appbar.render = function () {
     currentChanTitleEl.innerHTML = chan.title;
     currentEpgColumnEl.appendChild(currentChanTitleEl);
 
-    epgNextTitleEl.innerHTML = 'Далее';
+    epgNextTitleEl.innerHTML = 'Далее:';
     nextEpgColumnEl.appendChild(epgNextTitleEl);
 
     if (chan.epg[0] && chan.epg[1]) {
@@ -1564,8 +1567,6 @@ function DefaultController() {
         }
         this.activeWidget.highlight();
     };
-
-
 }
 
 App.controllers.PlaylistController = (function (window, document) {

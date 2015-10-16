@@ -14,16 +14,38 @@
     src: url('../assets/fonts/roboto-condensed-regular.woff')
 }
 
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 200;
+    font-stretch: condensed;
+    src: url('../assets/fonts/roboto-condensed-light.woff')
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: bold;
+    font-stretch: condensed;
+    src: url('../assets/fonts/roboto-condensed-bold.woff')
+}
+
 body {
     margin: 0;
     padding: 0;
-    background: #000;
+    background-color: #000;
     font-family: 'Roboto', sans-serif;
     font-stretch: condensed;
 }
 
 video {
-    background-color: #000;
+    background: #000;
+}
+
+#background {
+    position: fixed;
+    width: 100%;
+    height: 100%;
 }
 
 #player {

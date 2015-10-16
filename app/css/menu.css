@@ -1,9 +1,9 @@
 #browseView {
     display: none;
     position: absolute;
-    height: 655px;
+    height: 647px;
     width: 100%;
-    top: 64px;
+    top: 72px;
     background: rgba(0, 0, 0, 0.75);
 }
 
@@ -311,4 +311,37 @@
     /*padding-top: 23px;*/
     /*padding-bottom: 23px;*/
     margin-bottom: 46px;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 59px;
+    background: rgba(0, 0, 0, 0.56);
+    color: white;
+}
+
+.button {
+    width: 30px;
+    height: 18px;
+    border-radius: 2px;
+    float: left;
+}
+
+.yellow {
+    background-color: rgb(255, 234, 0);
+}
+
+.red {
+    background-color: rgb(255, 61, 0);
+}
+
+.green {
+    background-color: rgb(100, 221, 23);
+}
+
+.blue {
+    background-color: rgb(41, 98, 255);
 }
