@@ -1,14 +1,16 @@
-/*@font-face {*/
-    /*font-family: 'Roboto';*/
-    /*/!*font-style: normal;*!/*/
-    /*/!*font-weight: 400;*!/*/
-    /*src: url('../assets/fonts/roboto-regular.woff')*/
-/*}*/
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    src: url('../assets/fonts/roboto-regular.woff')
+}
 
 @font-face {
     font-family: 'Roboto';
-    font-weight: normal;
     font-style: normal;
+    font-weight: normal;
+    font-stretch: condensed;
     src: url('../assets/fonts/roboto-condensed-regular.woff')
 }
 
@@ -17,6 +19,7 @@ body {
     padding: 0;
     background: #000;
     font-family: 'Roboto', sans-serif;
+    font-stretch: condensed;
 }
 
 video {

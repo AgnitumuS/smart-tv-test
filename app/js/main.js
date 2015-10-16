@@ -1,27 +1,15 @@
-function log(message) {
-    var el = document.getElementById('debug');
-    if (el) {
-        el.value += message + '\n';
-        el.scrollTop = el.scrollHeight;
-    } else {
-        console.log(message);
-    }
-}
-
-var nativeConsole = window.console;
-
-window.console = {
-    error: function (msg) {
-        log(msg);
-        nativeConsole.log(msg);
+var debug = {
+    el: document.getElementById('debug'),
+    log: function (message) {
+        if (this.el) {
+            this.el.value += message + '\n';
+            this.el.scrollTop = this.el.scrollHeight;
+        } else {
+            console.log(message);
+        }
     },
-    warn: function (msg) {
-        log(msg);
-        nativeConsole.log(msg);
-    },
-    log: function (msg) {
-        log(msg);
-        nativeConsole.log(msg);
+    toggle: function (state) {
+        toggleNode(this.el, state);
     }
 };
 
@@ -37,7 +25,7 @@ var PubSub = {
     publish: function (topic, args) {
         console.log("published topic : " + topic, 'with args:', args || '{empty}');
         if (this.topics[topic]) {
-            this.topics[topic].forEach(function (cur, ind) {
+            this.topics[topic].forEach(function (cur) {
                 cur.handleEvent(topic, args);
             })
         }
@@ -68,7 +56,7 @@ var App = {
                 throttled(event);
             }
         });
-        window.addEventListener('hashchange', function (event) {
+        window.addEventListener('hashchange', function () {
             //FIXME: make destroy fn for current controller
             if (App.currentController) {
                 App.currentController.destroy();
@@ -196,7 +184,7 @@ App.controllers.LoadingController = (function () {
             chans: false
         };
         this.init = function () {
-            //$('#loading').show();
+            //showNode(document.getElementById('loading'));
             getJSON('//' + App.api.data, function (data) {
                 App.components.Chans.init(data);
             });
@@ -234,7 +222,7 @@ App.controllers.LoadingController = (function () {
                     break;
             }
             if (this.isReady) {
-                //$('#loading').hide();
+                //hideNode(document.getElementById('loading'));
                 App.go('player');
             }
         }
@@ -254,6 +242,7 @@ function Model() {
             callback.call(this);
         }
     };
+    this.currentList = [];
     // this.selectedIndex = -1;
     this.getSelectedIndex = function () {
         return this.selectedIndex;
@@ -354,7 +343,7 @@ App.components.Genres = (function () {
     return new Genres();
 })();
 
-App.components.Catalog = (function (window, document, undefined) {
+App.components.Catalog = (function () {
     function Catalog() {
         this.selectedIndex = 1;
         this.title = "Catalog";
@@ -365,11 +354,11 @@ App.components.Catalog = (function (window, document, undefined) {
             //take genres
             App.components.Genres.changeList(res.classList);
             // create full list
-            App.components.Playlists.all.forEach(function (cur, ind) {
+            App.components.Playlists.all.forEach(function (cur) {
                 this.all.push(cur);
             }, this);
 
-            App.components.Genres.all.forEach(function (cur, ind) {
+            App.components.Genres.all.forEach(function (cur) {
                 this.all.push(cur);
             }, this);
             this.currentList = this.all;
@@ -461,8 +450,8 @@ App.components.Chans = (function () {
         return index != -1 ? index : undefined;
     };
     ChansModel.prototype.getChansByGenre = function (id) {
-        var self = this;
-        return this.rating.filter(function (el, ind) {
+
+        return this.rating.filter(function (el) {
             if (this.all[el].epg.length !== 0) {
                 // +1 avoiding "без жанра"
                 return this.all[el].epg[0].class === (id + 1);
@@ -557,7 +546,7 @@ App.components.Epg = {
             timeNow = Math.floor(new Date().getTime() / 1000);
 
         if (order && all) {
-            order.forEach(function (cur, ind) {
+            order.forEach(function (cur) {
                 if (all[cur].epg.length) {
                     if (all[cur].epg[0].stop > timeNow) {
                         //console.log('timeout = ', Math.floor((all[cur].epg[0].stop - timeNow + 5) / 60), 'min, chan=', cur);
@@ -643,8 +632,7 @@ App.widgets.Menu = {
         ListController.right.call(App.currentController);
     },
     /**
-     *    @description notify observer widgets about change active state
-     *    TODO: Test
+     * @description notify observer widgets about change active state
      */
     notify: function () {
         var chans = document.getElementById('chans'),
@@ -708,8 +696,7 @@ App.widgets.Menu.controller = (function () {
     return new Controller(App.widgets.Menu);
 })();
 App.widgets.Menu.controller.handleEvent = function (topic, args) {
-    var self = this,
-        model = self.widget.model;
+    var self = this;
     switch (topic) {
         case App.components.Menu.title + '/changeSelectedIndex' :
             self.widget.highlight(args);
@@ -863,7 +850,7 @@ App.widgets.Catalog = {
             }
         });
     },
-    notifyWithDelay: (function (window, document, undefined) {
+    notifyWithDelay: (function (window) {
         var dTimeout;
 
         function notifyWithDelay(delay) {
@@ -1191,15 +1178,15 @@ App.widgets.Appbar.render = function () {
         currentEpgColumnEl.appendChild(epgNowEl);
         currentChannelInfoEl.appendChild(currentEpgColumnEl);
     }
-    //clearTimeout(this.dTimeout);
+    clearTimeout(this.dTimeout);
     if (App.currentController !== App.controllers.PlayerController) {
         return;
     }
-    //this.dTimeout = setTimeout(
-    //    function () {
-    //        hideNode(document.getElementById('nav'));
-    //    }, 3000
-    //);
+    this.dTimeout = setTimeout(
+        function () {
+            hideNode(document.getElementById('nav'));
+        }, 3000
+    );
 };
 
 // App.widgets.FullEpg = {
@@ -1323,7 +1310,7 @@ App.player = {
         this.load(this.chans.getCur());
     },
     load: function (chan) {
-        var ratio = $.map(chan.ratio.split(':'), function (value) {
+        var ratio = mapArray(chan['ratio'].split(':'), function (value) {
             return parseInt(value, 10);
         });
         var real = window.innerWidth / window.innerHeight;
@@ -1355,7 +1342,7 @@ App.controllers.PlayerController = {
         window.location.reload();
     },
     BLUE: function () {
-        $('#debug').toggle();
+        debug.toggle();
     },
     PAGE_UP: function () {
         App.player.next();
@@ -1387,8 +1374,7 @@ App.controllers.PlayerController = {
 App.controllers.QuickMenuController = {
     visible: false,
     init: function () {
-        //show quickMenu widget
-        $('#quickMenuView').show();
+        showNode(document.getElementById('quickMenuView'));
         App.widgets.Appbar.render();
         this.visible = true;
     },
@@ -1398,20 +1384,13 @@ App.controllers.QuickMenuController = {
         window.location.reload();
     },
     BLUE: function () {
-        $('#debug').toggle();
+        debug.toggle();
     },
     ENTER: function () {
-        if (this.visible) {
-            $('#quickMenuView').hide();
-            this.visible = false;
-            App.go('player');
-        } else {
-            $('#quickMenuView').show();
-            this.visible = true;
-        }
+        this.visible = getComputedStyle(toggleNode(document.getElementById('quickMenuView')))['display'] != 'none';
     },
     LEFT: function () {
-        $('#quickMenuView').hide();
+        hideNode(document.getElementById('quickMenuView'));
         App.go('playlist?chan');
     },
     UP: function () {
@@ -1422,8 +1401,7 @@ App.controllers.QuickMenuController = {
     }
 };
 
-var ListController = (function (window, document, undefined) {
-
+var ListController = (function () {
     var up = function () {
         if (this.activeWidget.model.hasElem(this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x)) {
             this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x);
@@ -1431,7 +1409,6 @@ var ListController = (function (window, document, undefined) {
             if (this.activeWidget.scrollToCur) {
                 this.activeWidget.scrollToCur();
             }
-
         } else {
             // switch to upNeighbor
             changeWidgetByDirection.call(this, 'UP');
@@ -1535,7 +1512,7 @@ function DefaultController() {
         window.location.reload();
     };
     this.BLUE = function () {
-        $('#debug').toggle();
+        debug.toggle();
     };
     this.UP = function () {
         if (typeof this.activeWidget.up === 'function') {
@@ -1591,8 +1568,7 @@ function DefaultController() {
 
 }
 
-App.controllers.PlaylistController = (function (window, document, undefined) {
-
+App.controllers.PlaylistController = (function (window, document) {
     function PlaylistController() {
         this.activeWidget = {};
     }
@@ -1603,7 +1579,7 @@ App.controllers.PlaylistController = (function (window, document, undefined) {
         App.widgets.ChansList.render();
         App.widgets.Appbar.render();
 
-        $('#browseView').show();
+        showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.Menu);
         //FIXME: change from manual to mediator: scrollToCur in init PlaylistController
     };
@@ -1612,11 +1588,11 @@ App.controllers.PlaylistController = (function (window, document, undefined) {
         App.components.Chans.currentList = App.player.chans.list.slice();
         App.widgets.ChansList.render();
         App.widgets.Appbar.render();
-        $('#browseView').show();
+        showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.ChansList);
     };
     PlaylistController.prototype.destroy = function () {
-        $('#browseView').hide();
+        hideNode(document.getElementById('browseView'));
     };
 
     return new PlaylistController();

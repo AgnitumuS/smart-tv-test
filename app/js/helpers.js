@@ -78,6 +78,25 @@ function showNode(node, display) {
 }
 
 /**
+ * @description Toggle DOM node
+ * @param node {HTMLElement} DOM node
+ * @param state {Boolean =} Optional force element state
+ * @param display {String =} Optional CSS display value in case of showing element, default is 'block'
+ * @return {HTMLElement | Boolean} Node or false
+ */
+function toggleNode(node, state, display) {
+    if (node) {
+        if (state !== false || state !== true)
+            state = getComputedStyle(node).getPropertyValue('display') == 'none';
+        if (state == false)
+            hideNode(node);
+        else if (state == true)
+            showNode(node, display);
+        return node;
+    } else { return false; }
+}
+
+/**
  * @description Set CSS node width
  * @param node {HTMLElement} DOM node
  * @param width {Number} New width in pixels
@@ -196,4 +215,17 @@ function throttle(func, wait) {
         }
         return result;
     };
+}
+/**
+ * @description Loop through array and execute passed function for each
+ * @param array {Array} Target array
+ * @param func {Function} Value processing function
+ * @return {Array} Result array
+ */
+function mapArray(array, func) {
+    var ret = [];
+    array.forEach(function (value) {
+        ret.push(func(value));
+    });
+    return ret;
 }
