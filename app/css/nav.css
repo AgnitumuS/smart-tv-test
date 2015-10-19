@@ -26,6 +26,11 @@
     height: 40px;
 }
 
+.currentChanLogo {
+    width: 64px;
+    height: 48px;
+}
+
 #lanetTvTitle {
     margin-left: 26px;
 }

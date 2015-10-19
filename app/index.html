@@ -5,13 +5,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="description" content="LanetTV for WebOS"/>
     <meta charset="UTF-8"/>
-    <base href="http://10.10.17.26/app/" target="_blank">
-    <link rel="stylesheet" type="text/css" href="./css/footer.css">
+    <base href="http://10.10.17.26/app/"/>
     <link rel="stylesheet" type="text/css" href="./css/global.css">
     <link rel="stylesheet" type="text/css" href="./css/menu.css">
     <link rel="stylesheet" type="text/css" href="./css/nav.css">
     <link rel="stylesheet" type="text/css" href="./css/quickmenu.css">
     <script type="text/javascript" src="./js/helpers.js"></script>
+    <script type="text/javascript" src="./js/time.js"></script>
 </head>
 <body>
 <video id="background"></video>
@@ -26,8 +26,18 @@
     <div id="menu"></div>
     <div id="chans"></div>
     <div id="footer">
-        <div class="yellow button"></div>
-        <span>Избранное</span>
+        <div class="hint">
+            <div class="yellow button"></div>
+            В избранное
+        </div>
+        <div class="hint">
+            <div class="red button"></div>
+            Reload
+        </div>
+        <div class="hint">
+            <div class="blue button"></div>
+            Debug
+        </div>
     </div>
 </div>
 <div id="quickMenuView">
@@ -35,13 +45,13 @@
         <div id="center">
             <img src="assets/icons/ic_close_white_24dp.png">
         </div>
-        <div id="top">
+        <div id="top" class="disabled">
             <img src="assets/icons/ic_equilizer_white_24dp.png">
         </div>
-        <div id="right">
+        <div id="right" class="disabled">
             <img src="assets/icons/ic_share_white_24dp.png">
         </div>
-        <div id="bottom">
+        <div id="bottom" class="disabled">
             <img src="assets/icons/ic_play_arrow_white_24dp.png" style="margin-left: 38px; margin-top: 50px;">
             <img src="assets/icons/ic_pause_white_24dp.png" style="margin-left: -1px; margin-bottom: 8px;">
         </div>

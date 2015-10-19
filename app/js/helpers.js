@@ -229,3 +229,16 @@ function mapArray(array, func) {
     });
     return ret;
 }
+
+/**
+ * @description Pad a number with zeroes or custom symbols
+ * @param number {Number} Source number
+ * @param length {Number} Required length
+ * @param symbol {String =} Optional padding symbol, default is 0
+ * @return {String} Result string
+ */
+function pad(number, length, symbol) {
+    symbol = symbol || '0';
+    var str = number.toString();
+    return str.length >= length ? str : new Array(length - str.length + 1).join(symbol) + str;
+}

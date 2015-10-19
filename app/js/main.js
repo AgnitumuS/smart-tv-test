@@ -32,6 +32,11 @@ var PubSub = {
     }
 };
 
+function updateClock() {
+    var localTime = Time.getLocalTime();
+    document.getElementById('clockContainer').innerHTML = pad(localTime.hours, 2) + ' : ' + pad(localTime.minutes, 2);
+}
+
 var App = {
     api: {
         api: 'api.lanet.tv',
@@ -45,6 +50,11 @@ var App = {
     currentController: null,
     initialize: function () {
         App.go("loading");
+        Time.updateOffset(function () {
+            updateClock();
+        });
+        setInterval(function () {Time.updateOffset()}, 3600000);
+        setInterval(updateClock, 10000);
     },
     initializeEvents: function () {
         var throttled = throttle(function (event) {
@@ -57,7 +67,6 @@ var App = {
             }
         });
         window.addEventListener('hashchange', function () {
-            //FIXME: make destroy fn for current controller
             if (App.currentController) {
                 App.currentController.destroy();
             }
@@ -139,40 +148,6 @@ App.db = {
         }
     }
 };
-
-App.helpers = {};
-App.helpers.Clock = {
-    initClock: function () {
-        var updateClock = function () {
-            document.getElementById('clockContainer').innerHTML = new Date().getHours() + ' : ' + this.getMinutes();
-        };
-        updateClock.apply(this);
-        setInterval(updateClock.bind(this), 10000);
-    },
-    /**
-     * @describe Convert UTC time to readable {String} format hh:mm
-     * @param utcTime
-     */
-    convertTime: function (utcTime) {
-        if (utcTime) {
-            var date = new Date(utcTime * 1000);
-            return date.getHours() + ":"
-                + this.getMinutes(utcTime);
-        } else {
-            return ''
-        }
-    },
-    getMinutes: function (utcTime) {
-        var date;
-        if (!utcTime) {
-            date = new Date();
-        } else {
-            date = new Date(utcTime * 1000);
-        }
-        return ( (date.getMinutes().toString().length) == 1 ? '0' + date.getMinutes() : date.getMinutes());
-    }
-};
-
 
 /**
  * @module Loading Controller
@@ -421,9 +396,7 @@ App.components.Chans = (function () {
             self.favorites = App.db.get('favChans') || [];
             self.currentList = self.rating;
             self.setSelectedIndex(this.getIndexById(App.db.lastChan()) || 0);
-            //init Catalog(take playlists , genres, tags alltogether)
             App.components.Catalog.init(res);
-            App.helpers.Clock.initClock();
             PubSub.publish(self.title + '/init');
         };
         this.resetChanges = function () {
@@ -452,7 +425,7 @@ App.components.Chans = (function () {
     ChansModel.prototype.getChansByGenre = function (id) {
 
         return this.rating.filter(function (el) {
-            if (this.all[el].epg.length !== 0) {
+            if (this.all[el] && this.all[el].epg.length !== 0) {
                 // +1 avoiding "без жанра"
                 return this.all[el].epg[0].class === (id + 1);
             } else {
@@ -996,28 +969,23 @@ App.widgets.ChansList = {
             }
         });
     },
-    /**
-     * @description - Change view of chans list
-     */
     render: function (newList) {
         var self = this,
             chansEl = document.getElementById('chans'),
-            list = newList ? newList : this.model.currentList,
-            favStarEl = document.createElement('div');
-        favStarEl.className = 'favStar';
+            list = newList ? newList : this.model.currentList;
         this.chanEntities = [];
         removeChildren(chansEl);
         list.forEach(function (curId, index) {
             var chan = App.components.Chans.getChanById(curId);
-            if (!chan) {
+            if (!chan)
                 return;
-            }
             var epg = chan.epg[0] || {
                         start: '',
                         title: 'Прямой эфир.',
                         text: ''
                     },
-                startTime = epg.start ? App.helpers.Clock.convertTime(epg.start) : '',
+                startTimeObj = Time.getLocalTime(parseInt(epg.start) * 1000),
+                startTime = epg.start ? pad(startTimeObj.hours, 2) + ' : ' + pad(startTimeObj.minutes, 2) : '',
                 chanEntity = document.createElement('div'),
                 logoChanEl = document.createElement('div'),
                 chanPicEl = document.createElement('div'),
@@ -1026,7 +994,8 @@ App.widgets.ChansList = {
                 titleProgEl = document.createElement('div'),
                 textProgEl = document.createElement('div'),
                 previewChanEl = document.createElement('div'),
-                chanPreviewEl = document.createElement('div');
+                chanPreviewEl = document.createElement('div'),
+                favStarEl = document.createElement('div');
 
             chanEntity.className = 'chan';
             logoChanEl.className = 'logoChan';
@@ -1037,6 +1006,7 @@ App.widgets.ChansList = {
             textProgEl.className = 'textProg';
             previewChanEl.className = 'previewChan';
             chanPreviewEl.className = 'chanPreview';
+            favStarEl.className = 'favStar';
 
             chanEntity.tabIndex = index;
             chanEntity.dataset.id = curId;
@@ -1044,11 +1014,9 @@ App.widgets.ChansList = {
             chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + curId + '.png');
 
             logoChanEl.appendChild(chanPicEl);
+            if (self.model.isFav(curId))
+                logoChanEl.appendChild(favStarEl);
             chanEntity.appendChild(logoChanEl);
-
-            if (self.model.isFav(curId)) {
-                chanEntity.appendChild(favStarEl);
-            }
 
             timeStartEl.innerHTML = startTime;
             titleProgEl.innerHTML = epg.title;
@@ -1069,7 +1037,64 @@ App.widgets.ChansList = {
         this.highlight();
         this.scrollToCur();
     },
+    renderChan: function (id) {
+        var self = this,
+            chan = App.components.Chans.getChanById(id);
+        this.chanEntities.forEach(function (chanEntity, index) {
+            if (chanEntity.dataset.id != id || !chan) {
+                return;
+            }
+            removeChildren(chanEntity);
+            var epg = chan.epg[0] || {
+                        start: '',
+                        title: 'Прямой эфир.',
+                        text: ''
+                    },
+                startTimeObj = Time.getLocalTime(parseInt(epg.start) * 1000),
+                startTime = epg.start ? pad(startTimeObj.hours, 2) + ' : ' + pad(startTimeObj.minutes, 2) : '',
+                logoChanEl = document.createElement('div'),
+                chanPicEl = document.createElement('div'),
+                programContentEl = document.createElement('div'),
+                timeStartEl = document.createElement('div'),
+                titleProgEl = document.createElement('div'),
+                textProgEl = document.createElement('div'),
+                previewChanEl = document.createElement('div'),
+                chanPreviewEl = document.createElement('div'),
+                favStarEl = document.createElement('div');
 
+            logoChanEl.className = 'logoChan';
+            chanPicEl.className = 'chanPic';
+            programContentEl.className = 'programContent';
+            timeStartEl.className = 'timeStart';
+            titleProgEl.className = 'titleProg';
+            textProgEl.className = 'textProg';
+            previewChanEl.className = 'previewChan';
+            chanPreviewEl.className = 'chanPreview';
+            favStarEl.className = 'favStar';
+
+            chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
+
+            logoChanEl.appendChild(chanPicEl);
+            if (self.model.isFav(id))
+                logoChanEl.appendChild(favStarEl);
+            chanEntity.appendChild(logoChanEl);
+
+            timeStartEl.innerHTML = startTime;
+            titleProgEl.innerHTML = epg.title;
+            textProgEl.innerHTML = epg.text;
+
+            programContentEl.appendChild(timeStartEl);
+            programContentEl.appendChild(titleProgEl);
+            programContentEl.appendChild(textProgEl);
+            chanEntity.appendChild(programContentEl);
+
+            chanPreviewEl.style.backgroundImage = cssUrl('//' + App.api.edge + '/tv/_' + id + '.jpg');
+            previewChanEl.appendChild(chanPreviewEl);
+            chanEntity.appendChild(previewChanEl);
+
+            self.chanEntities[index] = chanEntity;
+        });
+    },
     enter: function () {
         App.player.changeList(this.model.getSelectedIndex());
         hideNode(document.getElementById('browseView'));
@@ -1305,6 +1330,13 @@ App.player = {
         }
     },
     init: function () {
+        var self = this;
+        this.player.addEventListener('ended', function () {
+            self.player.play()
+        });
+        this.player.addEventListener('stalled', function () {
+            self.player.play()
+        });
     },
     changeList: function (selected) {
         this.chans.list = App.components.Chans.currentList.slice();
@@ -1408,7 +1440,6 @@ var ListController = (function () {
     var up = function () {
         if (this.activeWidget.model.hasElem(this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x)) {
             this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x);
-            // FIXME: change manual using to mediator in scrollTop
             if (this.activeWidget.scrollToCur) {
                 this.activeWidget.scrollToCur();
             }
@@ -1432,7 +1463,6 @@ var ListController = (function () {
     var down = function () {
         if (this.activeWidget.model.hasElem(this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x)) {
             this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x);
-            // FIXME: change manual using to mediator in scrollTop
             if (this.activeWidget.scrollToCur) {
                 this.activeWidget.scrollToCur();
             }
@@ -1550,7 +1580,6 @@ function DefaultController() {
     this.setActiveWidget = function (widget) {
         if (this.activeWidget) {
             this.activeWidget.active = false;
-            //FIXME: notify must present in all widgets
 
             if (this.activeWidget.notify) {
                 this.activeWidget.notify();
@@ -1561,7 +1590,6 @@ function DefaultController() {
         }
         this.activeWidget = widget;
         this.activeWidget.active = true;
-        //FIXME: notify must present in all widgets
         if (this.activeWidget.notify) {
             this.activeWidget.notify();
         }
@@ -1582,13 +1610,16 @@ App.controllers.PlaylistController = (function (window, document) {
 
         showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.Menu);
-        //FIXME: change from manual to mediator: scrollToCur in init PlaylistController
     };
     PlaylistController.prototype.initWithChan = function () {
         App.widgets.Menu.render();
         App.components.Chans.currentList = App.player.chans.list.slice();
         App.widgets.ChansList.render();
         App.widgets.Appbar.render();
+        var menuHeight = (window.innerHeight - 72 * 2).toString() + 'px';
+        document.getElementById('browseView').style.height = menuHeight;
+        document.getElementById('menu').style.height = menuHeight;
+        document.getElementById('chans').style.height = menuHeight;
         showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.ChansList);
     };
@@ -1628,8 +1659,9 @@ App.device = {
         '403': 'RED',
         '82': 'RED', // R
         '404': 'GREEN',
+        '71': 'GREEN', // G
         '405': 'YELLOW',
-        '67': 'YELLOW', // C
+        '89': 'YELLOW', // Y
         '406': 'BLUE',
         '66': 'BLUE'// B
     },

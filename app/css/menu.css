@@ -4,12 +4,12 @@
     height: 647px;
     width: 100%;
     top: 72px;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.56);
 }
 
 #menu {
     width: 70px;
-    height: 590px;
+    /*height: 590px;*/
     overflow: hidden;
     float: left;
     opacity: 0.95;
@@ -125,7 +125,7 @@
     position: relative;
     /*left:-265px;*/
     width: 816px;
-    height: 590px;
+    /*height: 590px;*/
     overflow: hidden;
     float: left;
     background-color: rgba(38, 50, 56, .7);
@@ -189,18 +189,16 @@
     height: 100%;
     width: 100%;
     background: no-repeat center;
-    background-size: cover;
-    /*background-size: 100% 100%;*/
 }
 
 .favStar {
     /*display: none;*/
     position: absolute;
-    right: 8px;
-    top: 8px;
-    height: 24px;
-    width: 24px;
-    background-image: url('../assets/icons/star.png');
+    right: 0;
+    top: 0;
+    height: 16px;
+    width: 16px;
+    background-image: url('../assets/icons/star-16x16.png');
 }
 
 .programContent {
@@ -300,7 +298,7 @@
 #fullEpg {
     width: 128px;
     background-color: rgb(84, 110, 122);
-    height: 590px;
+    /*height: 590px;*/
     overflow: hidden;
     float: left;
 }
@@ -318,9 +316,20 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 59px;
-    background: rgba(0, 0, 0, 0.56);
+    height: 20px;
+    background: rgba(0, 0, 0, 0.75);
     color: white;
+    vertical-align: middle;
+    line-height: 18px;
+    font-weight: bold;
+    padding: 26px 72px;
+}
+
+#footer .hint {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 18px;
+    margin-right: 40px;
 }
 
 .button {
@@ -328,6 +337,7 @@
     height: 18px;
     border-radius: 2px;
     float: left;
+    margin-right: 18px;
 }
 
 .yellow {
