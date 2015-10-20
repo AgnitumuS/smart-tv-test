@@ -32,29 +32,25 @@ var PubSub = {
     }
 };
 
-function updateClock() {
-    var localTime = Time.getLocalTime();
-    document.getElementById('clockContainer').innerHTML = pad(localTime.hours, 2) + ' : ' + pad(localTime.minutes, 2);
-}
-
 var App = {
     api: {
         api: 'api.lanet.tv',
         static: 'static.lanet.ua',
         data: 'data.lanet.tv'
     },
-    pack: "",
+    pack: '',
     socket: {},
     controllers: {},
     widgets: {},
     currentController: null,
     initialize: function () {
+        var self = this;
         App.go("loading");
         Time.updateOffset(function () {
-            updateClock();
+            self.updateClock();
         });
         setInterval(function () {Time.updateOffset()}, 3600000);
-        setInterval(updateClock, 10000);
+        setInterval(function () {self.updateClock()}, 10000);
     },
     initializeEvents: function () {
         var throttled = throttle(function (event) {
@@ -110,13 +106,13 @@ var App = {
         this.initializeEvents();
         this.initialize();
     },
-
-    /**
-     * @description Routing between controllers
-     */
     go: function (hash) {
         window.location.hash = '#' + hash;
         PubSub.publish("location.hash/changed", hash);
+    },
+    updateClock: function () {
+        var localTime = Time.getLocalTime();
+        document.getElementById('clockContainer').innerHTML = pad(localTime.hours, 2) + ' : ' + pad(localTime.minutes, 2);
     }
 };
 
@@ -1607,7 +1603,6 @@ App.controllers.PlaylistController = (function (window, document) {
         App.widgets.Menu.render();
         App.widgets.ChansList.render();
         App.widgets.Appbar.render();
-
         showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.Menu);
     };
@@ -1616,10 +1611,7 @@ App.controllers.PlaylistController = (function (window, document) {
         App.components.Chans.currentList = App.player.chans.list.slice();
         App.widgets.ChansList.render();
         App.widgets.Appbar.render();
-        var menuHeight = (window.innerHeight - 72 * 2).toString() + 'px';
-        document.getElementById('browseView').style.height = menuHeight;
-        document.getElementById('menu').style.height = menuHeight;
-        document.getElementById('chans').style.height = menuHeight;
+        document.getElementById('browseView').style.height = (window.innerHeight - 72 * 2).toString() + 'px';
         showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.ChansList);
     };
@@ -1657,12 +1649,16 @@ App.device = {
         '57': 'NUM9',
 
         '403': 'RED',
+        '193': 'RED',
         '82': 'RED', // R
         '404': 'GREEN',
+        '194': 'GREEN',
         '71': 'GREEN', // G
         '405': 'YELLOW',
+        '195': 'YELLOW',
         '89': 'YELLOW', // Y
         '406': 'BLUE',
+        '196': 'BLUE',
         '66': 'BLUE'// B
     },
     getKeyFunction: function (event) {

@@ -9,7 +9,7 @@
 
 #menu {
     width: 70px;
-    /*height: 590px;*/
+    height: inherit;
     overflow: hidden;
     float: left;
     opacity: 0.95;
@@ -125,7 +125,7 @@
     position: relative;
     /*left:-265px;*/
     width: 816px;
-    /*height: 590px;*/
+    height: inherit;
     overflow: hidden;
     float: left;
     background-color: rgba(38, 50, 56, .7);
