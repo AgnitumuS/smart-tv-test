@@ -22,7 +22,10 @@
 #top, #right, #bottom, #left {
     width: 100px;
     height: 100px;
-    -webkit-transform: rotateZ(45deg);
+    -webkit-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    transform: rotate(45deg);
     background: rgba(96, 125, 139, .9);
     z-index: 30;
 }
@@ -79,11 +82,15 @@
 
 #top img, #left img, #right img {
     -webkit-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
     transform: rotate(-45deg);
     margin: 40px;
 }
 
 #bottom img {
     -webkit-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
     transform: rotate(-45deg);
 }
