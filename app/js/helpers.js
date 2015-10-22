@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @description Load data via GET XHR with callback
  * @param url {String} Request URL

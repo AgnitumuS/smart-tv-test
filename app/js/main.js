@@ -1,3 +1,4 @@
+"use strict";
 var debug = {
     el: document.getElementById('debug'),
     log: function (message) {
@@ -1150,13 +1151,13 @@ PubSub.subscribe(App.components.Chans.title + '/addFavChan', App.widgets.ChansLi
 PubSub.subscribe(App.components.Chans.title + '/rmFavChan', App.widgets.ChansList.controller);
 PubSub.subscribe(App.components.Epg.title + '/upd_epg', App.widgets.ChansList.controller);
 
-App.widgets.Appbar = {
+App.widgets.AppBar = {
     model: App.components.Chans,
     dTimeout: undefined
 };
 
-App.widgets.Appbar.render = function () {
-    var self = App.widgets.Appbar,
+App.widgets.AppBar.render = function () {
+    var self = App.widgets.AppBar,
         id = self.model.getCurChanId(),
         chan = self.model.getCurChan(),
         currentChannelInfoEl = document.getElementById('currentChannelInfo'),
@@ -1169,7 +1170,7 @@ App.widgets.Appbar.render = function () {
         epgNextEl = document.createElement('div');
 
     removeChildren(currentChannelInfoEl);
-    showNode(document.getElementById('nav'));
+    showNode(document.getElementById('appBar'));
 
     currentChanLogoEl.className = 'currentChanLogo';
     currentEpgColumnEl.className = 'epgColumn';
@@ -1186,10 +1187,9 @@ App.widgets.Appbar.render = function () {
     currentChanTitleEl.innerHTML = chan.title;
     currentEpgColumnEl.appendChild(currentChanTitleEl);
 
-    epgNextTitleEl.innerHTML = 'Далее:';
-    nextEpgColumnEl.appendChild(epgNextTitleEl);
-
     if (chan.epg[0] && chan.epg[1]) {
+        epgNextTitleEl.innerHTML = Time.remainingTime(chan.epg[1].start) + ':';
+        nextEpgColumnEl.appendChild(epgNextTitleEl);
         epgNowEl.innerHTML = chan.epg[0].title;
         currentEpgColumnEl.appendChild(epgNowEl);
         currentChannelInfoEl.appendChild(currentEpgColumnEl);
@@ -1208,7 +1208,7 @@ App.widgets.Appbar.render = function () {
     }
     this.dTimeout = setTimeout(
         function () {
-            hideNode(document.getElementById('nav'));
+            hideNode(document.getElementById('appBar'));
         }, 3000
     );
 };
@@ -1365,7 +1365,7 @@ App.widgets.FS = {};
 
 App.controllers.PlayerController = {
     init: function () {
-        App.widgets.Appbar.render();
+        App.widgets.AppBar.render();
     },
     destroy: function () {
     },
@@ -1377,18 +1377,16 @@ App.controllers.PlayerController = {
     },
     PAGE_UP: function () {
         App.player.next();
-        App.widgets.Appbar.render();
+        App.widgets.AppBar.render();
     },
     PAGE_DOWN: function () {
         App.player.prev();
-        App.widgets.Appbar.render();
+        App.widgets.AppBar.render();
     },
     ENTER: function () {
-        //show quick menu
         App.go('quickMenu');
     },
     LEFT: function () {
-
     },
     UP: function () {
 
@@ -1406,7 +1404,7 @@ App.controllers.QuickMenuController = {
     visible: false,
     init: function () {
         showNode(document.getElementById('quickMenuView'));
-        App.widgets.Appbar.render();
+        App.widgets.AppBar.render();
         this.visible = true;
     },
     destroy: function () {
@@ -1419,6 +1417,7 @@ App.controllers.QuickMenuController = {
     },
     ENTER: function () {
         this.visible = getComputedStyle(toggleNode(document.getElementById('quickMenuView')))['display'] != 'none';
+        App.go('player');
     },
     LEFT: function () {
         hideNode(document.getElementById('quickMenuView'));
@@ -1602,7 +1601,7 @@ App.controllers.PlaylistController = (function (window, document) {
     PlaylistController.prototype.init = function () {
         App.widgets.Menu.render();
         App.widgets.ChansList.render();
-        App.widgets.Appbar.render();
+        App.widgets.AppBar.render();
         showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.Menu);
     };
@@ -1610,7 +1609,7 @@ App.controllers.PlaylistController = (function (window, document) {
         App.widgets.Menu.render();
         App.components.Chans.currentList = App.player.chans.list.slice();
         App.widgets.ChansList.render();
-        App.widgets.Appbar.render();
+        App.widgets.AppBar.render();
         document.getElementById('browseView').style.height = (window.innerHeight - 72 * 2).toString() + 'px';
         showNode(document.getElementById('browseView'));
         this.setActiveWidget.call(this, App.widgets.ChansList);

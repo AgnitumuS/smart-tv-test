@@ -106,13 +106,11 @@
 
 #chans {
     position: relative;
-    /*left:-265px;*/
     width: 816px;
     height: inherit;
     overflow: hidden;
     float: left;
     background-color: rgba(38, 50, 56, .7);
-    opacity: .9;
     box-shadow: 0 3px 6px 0 rgba(32, 32, 32, 0.16);
     /*transition: all 300ms ease-out 0s;*/
 }
@@ -129,11 +127,8 @@
 .chan {
     width: 100%;
     height: 102px;
-    /*	margin-bottom: 8px;
-        margin-top: 8px;*/
     padding-top: 8px;
     padding-bottom: 8px;
-    /*opacity: 0.54;*/
     color: black;
     background-size: 80%;
     background: no-repeat center;
@@ -294,13 +289,13 @@
     margin-bottom: 46px;
 }
 
-#footer {
+#legend {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     height: 20px;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.84);
     color: white;
     vertical-align: middle;
     line-height: 18px;
@@ -308,7 +303,7 @@
     padding: 26px 72px;
 }
 
-#footer .hint {
+#legend .hint {
     display: inline-block;
     vertical-align: middle;
     line-height: 18px;
