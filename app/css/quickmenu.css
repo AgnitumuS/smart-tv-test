@@ -80,17 +80,10 @@
     margin: 33px;
 }
 
-#top img, #left img, #right img {
+#top img, #left img, #right img, #bottom img {
     -webkit-transform: rotate(-45deg);
     -o-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);
     transform: rotate(-45deg);
     margin: 40px;
-}
-
-#bottom img {
-    -webkit-transform: rotate(-45deg);
-    -o-transform: rotate(-45deg);
-    -moz-transform: rotate(-45deg);
-    transform: rotate(-45deg);
 }

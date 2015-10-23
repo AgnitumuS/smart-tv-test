@@ -72,11 +72,6 @@ var App = {
                     App.currentController = App.controllers.LoadingController;
                     App.currentController.init();
                     break;
-                /*
-                 case '#login' :
-                 App.currentController = App.controllers.loginController;
-                 break;
-                 */
                 case '#player':
                     App.currentController = App.controllers.PlayerController;
                     App.currentController.init();
@@ -109,7 +104,6 @@ var App = {
     },
     go: function (hash) {
         window.location.hash = '#' + hash;
-        PubSub.publish("location.hash/changed", hash);
     },
     updateClock: function () {
         var localTime = Time.getLocalTime();
@@ -194,7 +188,6 @@ App.controllers.LoadingController = (function () {
                     break;
             }
             if (this.isReady) {
-                //hideNode(document.getElementById('loading'));
                 App.go('player');
             }
         }
@@ -327,6 +320,7 @@ App.components.Catalog = (function () {
             App.components.Genres.changeList(res.classList);
             // create full list
             App.components.Playlists.all.forEach(function (cur) {
+                console.log(cur);
                 this.all.push(cur);
             }, this);
 
@@ -972,8 +966,8 @@ App.widgets.ChansList = {
             list = newList ? newList : this.model.currentList;
         this.chanEntities = [];
         removeChildren(chansEl);
-        list.forEach(function (curId, index) {
-            var chan = App.components.Chans.getChanById(curId);
+        list.forEach(function (id, index) {
+            var chan = App.components.Chans.getChanById(id);
             if (!chan)
                 return;
             var epg = chan.epg[0] || {
@@ -992,7 +986,8 @@ App.widgets.ChansList = {
                 textProgEl = document.createElement('div'),
                 previewChanEl = document.createElement('div'),
                 chanPreviewEl = document.createElement('div'),
-                favStarEl = document.createElement('div');
+                favStarEl = document.createElement('div'),
+                activeChanEl = document.createElement('div');
 
             chanEntity.className = 'chan';
             logoChanEl.className = 'logoChan';
@@ -1004,15 +999,18 @@ App.widgets.ChansList = {
             previewChanEl.className = 'previewChan';
             chanPreviewEl.className = 'chanPreview';
             favStarEl.className = 'favStar';
+            activeChanEl.className = 'activeChan';
 
             chanEntity.tabIndex = index;
-            chanEntity.dataset.id = curId;
+            chanEntity.dataset.id = id;
 
-            chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + curId + '.png');
+            chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
 
             logoChanEl.appendChild(chanPicEl);
-            if (self.model.isFav(curId))
+            if (self.model.isFav(id))
                 logoChanEl.appendChild(favStarEl);
+            if (App.player.chans.getCurId() == id)
+                logoChanEl.appendChild(activeChanEl);
             chanEntity.appendChild(logoChanEl);
 
             timeStartEl.innerHTML = startTime;
@@ -1024,7 +1022,7 @@ App.widgets.ChansList = {
             programContentEl.appendChild(textProgEl);
             chanEntity.appendChild(programContentEl);
 
-            chanPreviewEl.style.backgroundImage = cssUrl('//' + App.api.edge + '/tv/_' + curId + '.jpg');
+            chanPreviewEl.style.backgroundImage = cssUrl('//' + App.api.edge + '/tv/_' + id + '.jpg');
             previewChanEl.appendChild(chanPreviewEl);
             chanEntity.appendChild(previewChanEl);
 
@@ -1057,7 +1055,8 @@ App.widgets.ChansList = {
                 textProgEl = document.createElement('div'),
                 previewChanEl = document.createElement('div'),
                 chanPreviewEl = document.createElement('div'),
-                favStarEl = document.createElement('div');
+                favStarEl = document.createElement('div'),
+                activeChanEl = document.createElement('div');
 
             logoChanEl.className = 'logoChan';
             chanPicEl.className = 'chanPic';
@@ -1068,12 +1067,15 @@ App.widgets.ChansList = {
             previewChanEl.className = 'previewChan';
             chanPreviewEl.className = 'chanPreview';
             favStarEl.className = 'favStar';
+            activeChanEl.className = 'activeChan';
 
             chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
 
             logoChanEl.appendChild(chanPicEl);
             if (self.model.isFav(id))
                 logoChanEl.appendChild(favStarEl);
+            if (App.player.chans.getCurId() == id)
+                logoChanEl.appendChild(activeChanEl);
             chanEntity.appendChild(logoChanEl);
 
             timeStartEl.innerHTML = startTime;
@@ -1323,6 +1325,9 @@ App.player = {
         },
         getCur: function () {
             return App.components.Chans.getChanById(this.list[this.selected])
+        },
+        getCurId: function () {
+            return this.list[this.selected]
         }
     },
     init: function () {

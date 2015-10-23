@@ -7,7 +7,7 @@
     right: 0;
     padding: 16px 16px;
     background: rgba(96, 125, 139, .95);
-    box-shadow: 50px 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    /*box-shadow: 50px 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);*/
     overflow: hidden;
     font-size: 24px;
     clear: both;
