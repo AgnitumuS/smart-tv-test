@@ -42,6 +42,10 @@ video {
     background: #000;
 }
 
+.bold {
+    font-weight: bold;
+}
+
 #background {
     position: fixed;
     width: 100%;
@@ -68,6 +72,15 @@ video {
     color: white;
     z-index: 500;
     overflow: auto;
+}
+
+#grid {
+    position: fixed;
+    background: url('../assets/grid-8-16.png');
+    width: 100%;
+    height: 100%;
+    opacity: .5;
+    z-index: 400;
 }
 
 ::-webkit-scrollbar {

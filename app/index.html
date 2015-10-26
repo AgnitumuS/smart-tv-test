@@ -18,7 +18,7 @@
 <video id="player" autoplay></video>
 <div id="appBar">
     <img id="logo" src="./assets/logotv.png"/>
-    <div id="lanetTvTitle">Ланет TV</div>
+    <div id="lanetTvTitle">Ланет <span class="bold">TV</span></div>
     <div id="currentChannelInfo"></div>
     <span id="clockContainer"></span>
 </div>
@@ -27,12 +27,16 @@
     <div id="chans"></div>
     <div id="legend">
         <div class="hint">
-            <div class="yellow button"></div>
-            В избранное
+            <div class="red button"></div>
+            Сетка
         </div>
         <div class="hint">
-            <div class="red button"></div>
-            Reload
+            <div class="green button"></div>
+            Перезагрузка
+        </div>
+        <div class="hint">
+            <div class="yellow button"></div>
+            В избранное
         </div>
         <div class="hint">
             <div class="blue button"></div>
@@ -43,21 +47,22 @@
 <div id="quickMenuView">
     <div id="quickMenu">
         <div id="center">
-            <img src="assets/icons/ic_close_white_24dp.png">
         </div>
-        <div id="top" class="disabled">
+        <div id="top">
             <img src="assets/icons/ic_equilizer_white_24dp.png">
         </div>
-        <div id="right" class="disabled">
+        <div id="right">
             <img src="assets/icons/ic_share_white_24dp.png">
         </div>
-        <div id="bottom" class="disabled">
+        <div id="bottom">
             <img src="assets/icons/ic_play_pause_arrow_white_24dp.png">
         </div>
         <div id="left">
             <img src="assets/icons/ic_menu_white_24dp.png">
         </div>
     </div>
+</div>
+<div id="grid" style="display: none;">
 </div>
 <textarea id="debug" title="debug" readonly style="display: none;"></textarea>
 <script type="text/javascript" src="./js/main.js"></script>

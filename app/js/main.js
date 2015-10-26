@@ -1176,10 +1176,10 @@ App.widgets.AppBar.render = function () {
 
     currentChanLogoEl.className = 'currentChanLogo';
     currentEpgColumnEl.className = 'epgColumn';
-    currentChanTitleEl.className = 'bold';
+    currentChanTitleEl.className = 'currentChanTitle';
     epgNowEl.className = 'epgNow';
     nextEpgColumnEl.className = 'epgColumn';
-    epgNextTitleEl.className = 'bold';
+    epgNextTitleEl.className = 'epgNextTitle';
     epgNextEl.className = 'epgNext';
 
     //currentChanLogoEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
@@ -1375,6 +1375,9 @@ App.controllers.PlayerController = {
     destroy: function () {
     },
     RED: function () {
+        toggleNode(document.getElementById('grid'));
+    },
+    GREEN: function() {
         window.location.reload();
     },
     BLUE: function () {
@@ -1415,6 +1418,9 @@ App.controllers.QuickMenuController = {
     destroy: function () {
     },
     RED: function () {
+        toggleNode(document.getElementById('grid'));
+    },
+    GREEN: function() {
         window.location.reload();
     },
     BLUE: function () {
@@ -1542,6 +1548,9 @@ var ListController = (function () {
 
 function DefaultController() {
     this.RED = function () {
+        toggleNode(document.getElementById('grid'));
+    };
+    this.GREEN = function () {
         window.location.reload();
     };
     this.BLUE = function () {
