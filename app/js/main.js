@@ -24,7 +24,6 @@ var PubSub = {
         this.topics[topic].push(observer);
     },
     publish: function (topic, args) {
-        console.log("published topic : " + topic, 'with args:', args || '{empty}');
         if (this.topics[topic]) {
             this.topics[topic].forEach(function (cur) {
                 cur.handleEvent(topic, args);
@@ -93,7 +92,6 @@ var App = {
                     App.currentController.init();
                     break;
                 default:
-                    console.log("default case controller");
                     break;
             }
         });
@@ -150,32 +148,14 @@ App.controllers.LoadingController = (function () {
             chans: false
         };
         this.init = function () {
-            //showNode(document.getElementById('loading'));
             getJSON('//' + App.api.data, function (data) {
                 App.components.Chans.init(data);
             });
-            /* WebSockets (only for WebOs. Draft protocol in NetCast) */
-            /*
-             App.socket = new SocketAPI('ws://' + App.api.data, { key: 'test', lang: 'ru' });
-             debug('created socket');
-             App.socket.on('connect', function(data){
-             App.components.Chans.init(data);
-             debug('ws connected');
-             })
-             App.socket.on('upd_epg', function  (data) {
-             App.components.Chans.updEpg(data);
-             debug('ws upd_epg')
-             })
-             App.socket.on('rating', function  (data) {
-             App.components.Chans.changeRating(data);
-             })
-             */
-            /*	WebSockets */
         };
         this.destroy = function () {
         };
         this.isReady = function () {
-            return (this.loaded.chans && this.loaded.genres );
+            return (this.loaded.chans);
         };
         this.handleEvent = function (topic) {
             switch (topic) {
@@ -320,7 +300,6 @@ App.components.Catalog = (function () {
             App.components.Genres.changeList(res.classList);
             // create full list
             App.components.Playlists.all.forEach(function (cur) {
-                console.log(cur);
                 this.all.push(cur);
             }, this);
 
@@ -338,7 +317,6 @@ App.components.Catalog = (function () {
         //switch according to player info
         this.resetChanges = function () {
             var ind = this.currentList.indexOf(App.player.chans.category);
-            console.log('resetting category ');
             this.setSelectedIndex(ind);
         };
         //get first element in list with type
@@ -379,7 +357,6 @@ App.components.Chans = (function () {
         this.init = function (res) {
             var self = this;
             self.all = res.list;
-            //Init api refs
             App.pack = res.pack;
             App.api.edge = res.edge;
             self.order = res.sort.order.slice();
@@ -417,7 +394,6 @@ App.components.Chans = (function () {
 
         return this.rating.filter(function (el) {
             if (this.all[el] && this.all[el].epg.length !== 0) {
-                // +1 avoiding "без жанра"
                 return this.all[el].epg[0].class === (id + 1);
             } else {
                 return false;
@@ -455,21 +431,17 @@ App.components.Chans = (function () {
                 throw 'Err';
                 break;
         }
-        console.log('genListByCategory returned list:', list);
         return list;
     };
     ChansModel.prototype.changeCurList = function (list) {
         this.currentList = list.slice(0);
     };
-    //Event from ws
     ChansModel.prototype.updEpg = function (data) {
         this.all[data.id].epg = data.epg;
-        console.log('upd_epg event ws');
     };
 
     ChansModel.prototype.changeRating = function (data) {
         this.rating = data;
-        console.log("ws rating changed");
     };
 
     ChansModel.prototype.toggleFavChan = function (id) {
@@ -513,7 +485,6 @@ App.components.Epg = {
             order.forEach(function (cur) {
                 if (all[cur].epg.length) {
                     if (all[cur].epg[0].stop > timeNow) {
-                        //console.log('timeout = ', Math.floor((all[cur].epg[0].stop - timeNow + 5) / 60), 'min, chan=', cur);
                         setTimeout(
                             function () {
                                 self.nextUpdEpg(cur);
@@ -531,7 +502,6 @@ App.components.Epg = {
             timeNow = Math.floor(new Date().getTime() / 1000);
         getJSON('//' + App.api.api + '/epg/' + chanId + '/now?next=1', function (res) {
             if (res.length) {
-                console.log('nextUpd for chan=', chanId, res[0].start !== all[chanId].epg[0].start);
                 if (res[0].start !== all[chanId].epg[0].start) {
                     all[chanId].epg = res;
                     PubSub.publish(self.title + '/upd_epg', chanId);
@@ -594,20 +564,6 @@ App.widgets.Menu = {
     },
     right: function () {
         ListController.right.call(App.currentController);
-    },
-    /**
-     * @description notify observer widgets about change active state
-     */
-    notify: function () {
-        var chans = document.getElementById('chans'),
-            fullEpg = document.getElementById('fullEpg');
-        if (this.active) {
-            showNode(chans);
-            showNode(fullEpg);
-        } else {
-            hideNode(chans);
-            hideNode(fullEpg);
-        }
     },
     render: function () {
         var menu = document.getElementById('menu'),
@@ -839,13 +795,11 @@ App.widgets.Catalog = {
             genresTitle = document.getElementById('genresTitle');
 
         function highlightTitle(type) {
-            //сбросить текущий тип (ипользуем при закрытии вкладки)
             if (type !== undefined) {
                 curType = type;
                 return;
             }
             var item = App.components.Catalog.getSelectedItem();
-            console.log(curType);
             if (item.type !== curType) {
                 switch (item.type) {
                     case 'playlist':
@@ -1377,7 +1331,7 @@ App.controllers.PlayerController = {
     RED: function () {
         toggleNode(document.getElementById('grid'));
     },
-    GREEN: function() {
+    GREEN: function () {
         window.location.reload();
     },
     BLUE: function () {
@@ -1420,7 +1374,7 @@ App.controllers.QuickMenuController = {
     RED: function () {
         toggleNode(document.getElementById('grid'));
     },
-    GREEN: function() {
+    GREEN: function () {
         window.location.reload();
     },
     BLUE: function () {
@@ -1446,21 +1400,17 @@ var ListController = (function () {
     var up = function () {
         if (this.activeWidget.model.hasElem(this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x)) {
             this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() - this.activeWidget.grid.x);
-            if (this.activeWidget.scrollToCur) {
+            if (typeof this.activeWidget.scrollToCur == 'function')
                 this.activeWidget.scrollToCur();
-            }
         } else {
-            // switch to upNeighbor
             changeWidgetByDirection.call(this, 'UP');
         }
     };
 
     var right = function () {
         if (( this.activeWidget.model.getSelectedIndex() + 1) % this.activeWidget.grid.x !== 0) {
-            // selected next model.id
-            if (this.activeWidget.model.hasElem(this.activeWidget.model.getSelectedIndex() + 1)) {
+            if (this.activeWidget.model.hasElem(this.activeWidget.model.getSelectedIndex() + 1))
                 this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() + 1);
-            }
         } else {
             changeWidgetByDirection.call(this, 'RIGHT');
         }
@@ -1469,7 +1419,7 @@ var ListController = (function () {
     var down = function () {
         if (this.activeWidget.model.hasElem(this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x)) {
             this.activeWidget.model.setSelectedIndex(this.activeWidget.model.getSelectedIndex() + this.activeWidget.grid.x);
-            if (this.activeWidget.scrollToCur) {
+            if (typeof this.activeWidget.scrollToCur == 'function') {
                 this.activeWidget.scrollToCur();
             }
         } else {
@@ -1478,19 +1428,14 @@ var ListController = (function () {
     };
 
     var left = function () {
-        if ((( this.activeWidget.model.getSelectedIndex() - 1) % this.activeWidget.grid.x) !== 0) {
-            //select prec model.id in matrix
-        } else {
-
+        if (((this.activeWidget.model.getSelectedIndex() - 1) % this.activeWidget.grid.x) == 0) {
             changeWidgetByDirection.call(this, 'LEFT');
         }
-
     };
 
     var changeWidgetByDirection = function (orient) {
         var witch = {};
         if (orient) {
-
             switch (orient) {
                 case 'UP':
                     if (typeof this.activeWidget.neighbors.up === 'function') {
@@ -1500,6 +1445,7 @@ var ListController = (function () {
                 case 'RIGHT':
                     if (typeof this.activeWidget.neighbors.right === 'function') {
                         witch = this.activeWidget.neighbors.right();
+                        this.activeWidget.neighbors.right();
                     }
                     break;
                 case 'DOWN':
@@ -1517,33 +1463,23 @@ var ListController = (function () {
                     break;
             }
             if (Object.getOwnPropertyNames(witch).length !== 0 && witch.model.currentList.length) {
-
-                // identify nearest index, witch will be active
-                if (typeof witch.identifyNearestNeighbor === 'function') {
+                if (typeof witch.identifyNearestNeighbor === 'function')
                     witch.identifyNearestNeighbor(this.activeWidget);
-                }
-
                 this.setActiveWidget(witch);
-                console.log('changeWidgetByDirection to : ', witch);
                 return true;
             } else {
-                //
                 return false;
             }
-        }
-        else {
+        } else {
             throw 'Illegal changeWidgetByDirection usage (without orient)';
         }
     };
-
-    //facade
     return {
         up: up,
         down: down,
         left: left,
         right: right
     }
-
 })(window, document);
 
 function DefaultController() {
@@ -1589,19 +1525,15 @@ function DefaultController() {
     this.setActiveWidget = function (widget) {
         if (this.activeWidget) {
             this.activeWidget.active = false;
-
-            if (this.activeWidget.notify) {
+            if (this.activeWidget.notify)
                 this.activeWidget.notify();
-            }
-            if (this.activeWidget.highlight) {
+            if (this.activeWidget.highlight)
                 this.activeWidget.highlight();
-            }
         }
         this.activeWidget = widget;
         this.activeWidget.active = true;
-        if (this.activeWidget.notify) {
+        if (this.activeWidget.notify)
             this.activeWidget.notify();
-        }
         this.activeWidget.highlight();
     };
 }
