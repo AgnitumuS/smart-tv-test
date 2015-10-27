@@ -42,7 +42,9 @@ var Time = {
     remainingTime: function (till) {
         var difference = till - Math.ceil(new Date().getTime() / 1000),
             string;
-        if (difference < 60) { // Less than a minute
+        if (difference < 0) { // In the past
+            string = 'Далее';
+        } else if (difference < 60) { // Less than a minute
             string = 'Через несколько секунд';
         } else if (difference > 21600) { // More than 6 hours
             var localStartTime = this.getLocalTime(till * 1000),
