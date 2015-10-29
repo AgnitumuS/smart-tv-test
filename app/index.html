@@ -14,9 +14,9 @@
 </head>
 <body>
 <video id="background" src="./assets/black.mp4" autoplay loop></video>
-<video id="player" autoplay></video>
+<video id="player" src="./assets/h264.mp4" autoplay loop></video>
 <div id="appBar">
-    <img id="logo" src="./assets/logotv.png"/>
+    <img id="logo" src="./assets/logotv_40.png"/>
     <div id="lanetTvTitle">Ланет <span class="bold">TV</span></div>
     <div id="currentChannelInfo"></div>
     <span id="clockContainer"></span>
@@ -48,22 +48,27 @@
         <div id="center">
         </div>
         <div id="top">
-            <img src="assets/icons/ic_equilizer_white_24dp.png">
+            <img src="assets/icons/ic_equalizer_white_24px.svg">
         </div>
         <div id="right">
-            <img src="assets/icons/ic_share_white_24dp.png">
+            <img src="assets/icons/ic_share_white_24px.svg">
         </div>
         <div id="bottom">
-            <img src="assets/icons/ic_play_pause_arrow_white_24dp.png">
+            <img src="assets/icons/ic_play+pause_white_24px.svg">
         </div>
         <div id="left">
-            <img src="assets/icons/ic_menu_white_24dp.png">
+            <img src="assets/icons/ic_menu_white_24px.svg">
         </div>
     </div>
 </div>
 <div id="grid" style="display: none;">
 </div>
 <textarea id="debug" title="debug" readonly style="display: none;"></textarea>
+<object type="application/x-netcast-info"
+        id="device"
+        width="0"
+        height="0">
+</object>
 <script type="text/javascript" src="./js/main.js"></script>
 </body>
 </html>

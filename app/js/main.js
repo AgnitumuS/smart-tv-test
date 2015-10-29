@@ -571,10 +571,9 @@ App.widgets.Menu = {
         removeChildren(menu);
         this.model.all.forEach(function (cur, ind) {
             var entity = document.createElement('div');
-            entity.className = 'menuentity';
+            entity.className = 'menuEntity';
             entity.dataset.id = cur.id;
             entity.tabIndex = ind;
-            entity.style.backgroundImage = cssUrl('./assets/icons/' + cur.id + '.png');
             menuEntities.push(entity);
             menu.appendChild(entity);
         });
@@ -854,7 +853,7 @@ PubSub.subscribe(App.components.Catalog.title + '/changeSelectedIndex', App.widg
 
 App.widgets.ChansList = {
     model: App.components.Chans,
-    visibleItemCount: 5,
+    visibleItemCount: 6,
     grid: {x: 1, y: 1},
     list: [],
     neighbors: {
@@ -896,7 +895,7 @@ App.widgets.ChansList = {
         this.chanEntities.forEach(function (entity) {
             if (entity.tabIndex == ind) {
                 var height = entity.offsetHeight;
-                chans.scrollTop = height * ind - 2 * height;
+                chans.scrollTop = height * ind - 3 * height;
             }
         });
     },
@@ -958,7 +957,7 @@ App.widgets.ChansList = {
             chanEntity.tabIndex = index;
             chanEntity.dataset.id = id;
 
-            chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
+            chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo_144x72/' + id + '.png');
 
             logoChanEl.appendChild(chanPicEl);
             if (self.model.isFav(id))
@@ -1023,7 +1022,7 @@ App.widgets.ChansList = {
             favStarEl.className = 'favStar';
             activeChanEl.className = 'activeChan';
 
-            chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
+            chanPicEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo_144x72/' + id + '.png');
 
             logoChanEl.appendChild(chanPicEl);
             if (self.model.isFav(id))
@@ -1301,13 +1300,16 @@ App.player = {
     },
     load: function (chan) {
         var ratio = mapArray(chan['ratio'].split(':'), function (value) {
-            return parseInt(value, 10);
-        });
-        var real = window.innerWidth / window.innerHeight;
-        var orig = ratio[0] / ratio[1];
-        setPixelNodeWidth(this.player, (real > orig ? ratio[1] / ratio[0] : orig) * window.innerWidth);
-        setPixelNodeHeight(this.player, window.innerHeight);
-        this.player.src = chan.url;
+                return parseInt(value, 10);
+            }),
+            resolution = calcResolution(ratio, [window.innerWidth, window.innerHeight]);
+        console.log(resolution[0], resolution[1]);
+        setPixelNodeWidth(this.player, resolution[0]);
+        setPixelNodeHeight(this.player, resolution[1]);
+        if (this.player.canPlayType('application/x-mpegURL'))
+            this.player.src = chan.url;
+        else
+            this.player.muted = true;
         App.db.lastChan(App.components.Chans.getCurChanId());
     },
     next: function () {
@@ -1612,3 +1614,11 @@ App.device = {
 };
 
 App.start();
+
+setInterval(function() {
+    if(window.NetCastGetUsedMemorySize) {
+        //debug.log(window.NetCastGetUsedMemorySize());
+        var device = document.getElementById("device");
+        debug.log(device.modelName);
+    }
+}, 1000);

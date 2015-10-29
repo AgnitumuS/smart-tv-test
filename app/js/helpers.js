@@ -243,3 +243,18 @@ function pad(number, length, symbol) {
     var str = number.toString();
     return str.length >= length ? str : new Array(length - str.length + 1).join(symbol) + str;
 }
+
+/**
+ * @description Calculate maximum resolution based on aspect ratio
+ * @param ratio {Array<Number>} Aspect ratio
+ * @param res {Array<Number>} Maximum resolution
+ * @return {Array<Number>} [width, height]
+ */
+function calcResolution(ratio, res) {
+    if (!res)
+        res = [window.innerWidth, window.innerHeight];
+    return [
+        res[0] / res[1] > ratio[0] / ratio[1] ? Math.ceil((ratio[1] / ratio[0]) * res[0]) : res[0],
+        res[0] / res[1] < ratio[0] / ratio[1] ? Math.ceil((ratio[1] / ratio[0]) * res[0]) : res[1]
+    ];
+}

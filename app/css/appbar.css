@@ -50,26 +50,29 @@
 
 .epgColumn {
     margin-left: 22px;
-    margin-right: 78px;
+    margin-right: 64px;
     max-height: 64px;
 }
 
 .epgNow, .epgNext, .currentChanTitle, .epgNextTitle {
     max-width: 300px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .currentChanTitle, .epgNextTitle {
     font-size: 16px;
     line-height: 16px;
+    font-stretch: normal;
+    opacity: .7;
 }
 
 .epgNow, .epgNext {
-    font-weight: bold;
     font-size: 20px;
     vertical-align: bottom;
 }
 
 #clockContainer {
     float: right;
-    font-weight: bold;
 }
