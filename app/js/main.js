@@ -1136,7 +1136,7 @@ App.widgets.AppBar.render = function () {
     epgNextEl.className = 'epgNext';
 
     //currentChanLogoEl.style.backgroundImage = cssUrl('//' + App.api.static + '/tv/logo/' + id + '.png');
-    currentChanLogoEl.src = '//' + App.api.static + '/tv/logo/' + id + '.png';
+    currentChanLogoEl.src = '//' + App.api.static + '/tv/logo_144x72/' + id + '.png';
     currentChannelInfoEl.appendChild(currentChanLogoEl);
 
     currentChanTitleEl.innerHTML = chan.title;
@@ -1615,10 +1615,8 @@ App.device = {
 
 App.start();
 
-setInterval(function() {
-    if(window.NetCastGetUsedMemorySize) {
-        //debug.log(window.NetCastGetUsedMemorySize());
-        var device = document.getElementById("device");
-        debug.log(device.modelName);
-    }
-}, 1000);
+//setInterval(function() {
+//    if(window.NetCastGetUsedMemorySize) {
+//        debug.log(window.NetCastGetUsedMemorySize());
+//    }
+//}, 1000);

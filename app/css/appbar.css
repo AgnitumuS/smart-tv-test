@@ -17,7 +17,7 @@
     overflow: hidden;
     vertical-align: top;
     float: left;
-    line-height: 40px;
+    line-height: 36px;
 }
 
 #logo {
@@ -25,13 +25,8 @@
     height: 40px;
 }
 
-.currentChanLogo {
-    width: 64px;
-    height: 48px;
-}
-
 #lanetTvTitle {
-    margin-left: 26px;
+    margin-left: 16px;
     width: 96px;
 }
 
@@ -43,15 +38,19 @@
 #currentChannelInfo > * {
     display: inline;
     vertical-align: top;
-    height: 48px;
     float: left;
     font-size: 16px;
+}
+
+.currentChanLogo {
+    width: 80px;
+    height: 40px;
 }
 
 .epgColumn {
     margin-left: 22px;
     margin-right: 64px;
-    max-height: 64px;
+    height: 40px;
 }
 
 .epgNow, .epgNext, .currentChanTitle, .epgNextTitle {

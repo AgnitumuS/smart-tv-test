@@ -4,7 +4,7 @@
     height: 100%;
     width: 100%;
     top: 0;
-    background: rgba(0, 0, 0, 0.56);
+    background: rgba(0, 0, 0, .56);
     padding: 72px 0;
 }
 
@@ -136,7 +136,7 @@
     height: inherit;
     overflow: hidden;
     float: left;
-    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16),0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
     z-index: 10;
     background-color: #455A64;
 }
