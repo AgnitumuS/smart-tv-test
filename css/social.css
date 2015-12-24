@@ -1,0 +1,48 @@
+#social {
+    display: none;
+    position: absolute;
+    width: 456px;
+    top: 72px;
+    right: 0;
+    bottom: 0;
+    padding: 0 0;
+    z-index: 20;
+}
+
+#social > .auth {
+    height: 100%;
+    width: inherit;
+    overflow: hidden;
+    float: right;
+    background: rgba(96, 125, 139, .87);
+    text-align: center;
+    font-size: 48px;
+    position: relative;
+}
+
+#social > .auth > .main {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#social > .auth > .main > .hint > a {
+    color: #fff;
+    font-size: 16px;
+}
+
+#social > .reset {
+    position: absolute;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    width: 96px;
+    height: 8px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 8px;
+    padding: 22px 24px;
+    background-color: #607d8b;
+    margin: auto;
+    cursor: pointer;
+}

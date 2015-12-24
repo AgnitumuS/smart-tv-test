@@ -1,5 +1,3 @@
 *.ipk
 *.zip
-*.sublime-project
-*.sublime-workspace
 .idea/
