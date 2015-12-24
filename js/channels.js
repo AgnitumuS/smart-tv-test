@@ -35,7 +35,7 @@ lanet_tv.Channel = function (channel) {
             epg_description.innerHTML = channel["epg"]["now"]["description"];
             epg_time_end.innerHTML = Time.asObject(channel["epg"]["now"]["end"]).getHhMm();
             var progress = calcProgress(channel["epg"]["now"]["begin"], channel["epg"]["now"]["end"]);
-            if (progress) {
+            if (progress != undefined) {
                 element.classList.add('progress');
                 epg_time_line_value.style.width = progress + '%';
             } else {

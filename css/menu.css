@@ -98,6 +98,16 @@
     opacity: 1;
 }
 
+/*
+#menu > .list > .channel.selected {
+    background-color: #3d4f58;
+}
+
+#menu > .list > .channel.current {
+    background-color: #00ACC1;
+}
+*/
+
 #menu > .list > .channel.selected {
     background-color: rgb(89, 108, 116);
 }
@@ -106,9 +116,11 @@
     background-color: rgb(0, 172, 193);
 }
 
-/*#menu > .list > .channel.current.selected {*/
-    /*background-color: rgb(0, 188, 212);*/
-/*}*/
+/*
+#menu > .list > .channel.current.selected {
+    background-color: #00BCD4;
+}
+*/
 
 #menu > .list > .channel > .main {
     position: relative;

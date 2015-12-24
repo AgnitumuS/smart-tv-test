@@ -16,7 +16,7 @@ lanet_tv.Social = (function () {
                 auth.className = 'auth';
                 main.className = 'main';
                 reset.className = 'reset';
-                hint.innerHTML = '<a target="blank" href="https://auth.lanet.tv/test">https://auth.lanet.tv/test</a>';
+                hint.innerHTML = '<a target="_blank" href="https://auth.lanet.tv/test">https://auth.lanet.tv/test</a>';
                 hint.className = 'hint';
                 reset.innerHTML = 'RED/A - Reset';
                 userpic = '';
