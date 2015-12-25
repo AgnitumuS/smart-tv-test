@@ -172,9 +172,9 @@ video, #player {
 
 #grid {
     position: fixed;
-    /*background: url('../assets/grid-8-16.png');*/
+    background: url('../assets/grid-8-16.png');
     /*background: url('../assets/overlay_full_list.png');*/
-    background: url('../assets/overlay_root_collapsed.png');
+    /*background: url('../assets/overlay_root_collapsed.png');*/
     width: 100%;
     height: 100%;
     z-index: 100;
