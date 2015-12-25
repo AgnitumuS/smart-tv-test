@@ -17,8 +17,6 @@ lanet_tv.Channel = function (channel) {
         data = {},
         calcProgress = function (begin, end) {
             var progress = Math.round((Time.getTimestamp() - begin) / (end - begin) * 100);
-            if (element.classList.contains('current'))
-                console.log(progress, Time.getTimestamp(), begin, end);
             return (progress < Infinity && progress >= 0) ? progress : undefined;
         },
         update = function (channel) {

@@ -20,7 +20,7 @@ lanet_tv.Player = (function () {
                     onload();
                 }
                 if (e == 'error') {
-                    console.error('player error', data);
+                    //console.error('player error', data);
                     onload();
                 }
             };
