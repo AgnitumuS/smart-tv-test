@@ -15,12 +15,12 @@ lanet_tv.AppBar = (function () {
             channel_info_next_remaining = document.createElement('span'),
             channel_info_next_content = document.createElement('div'),
             userpic = document.createElement('img'),
+            title = document.createElement('div'),
+            title_secondary = document.createElement('span'),
+            title_primary = document.createElement('span'),
+            channel_info = document.createElement('div'),
             timeout = 0,
             createElement = function () {
-                var title = document.createElement('div'),
-                    title_secondary = document.createElement('span'),
-                    title_primary = document.createElement('span'),
-                    channel_info = document.createElement('div');
                 app_bar.id = 'app_bar';
                 title.className = 'title';
                 title_secondary.className = 'secondary';
@@ -33,7 +33,6 @@ lanet_tv.AppBar = (function () {
                 channel_info_now_content.className = channel_info_next_content.className = 'content';
                 userpic.className = 'userpic';
                 title_secondary.innerHTML = 'Ланет.TV';
-                title_primary.innerHTML = '/ONAIR';
                 title.appendChild(title_secondary);
                 title.appendChild(title_primary);
                 channel_info.appendChild(channel_info_logo);
@@ -105,6 +104,15 @@ lanet_tv.AppBar = (function () {
             },
             setUserpic: function (src) {
                 userpic.src = src;
+            },
+            setTitle: function(title) {
+                title_primary.innerHTML = title;
+            },
+            hideTitle: function () {
+                Helpers.hideNode(title);
+            },
+            showTitle: function () {
+                Helpers.showNode(title);
             }
         };
     }

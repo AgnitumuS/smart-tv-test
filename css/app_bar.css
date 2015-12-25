@@ -4,7 +4,7 @@
     height: 40px;
     left: 0;
     right: 0;
-    padding: 16px 32px 16px 16px;
+    padding: 16px 32px 16px 72px;
     background: rgba(96, 125, 139, .95) url('../assets/logotv_40.png') no-repeat 16px;
     font-size: 24px;
     display: none;
@@ -24,9 +24,9 @@
 }
 
 #app_bar > .title {
-    margin-left: 56px;
     float: left;
-    width: 200px;
+    width: 216px;
+    display: none;
 }
 
 #app_bar > .title > span.secondary {
@@ -35,7 +35,6 @@
 }
 
 #app_bar > .channel_info {
-    margin-left: 16px;
     line-height: normal;
 }
 
@@ -53,13 +52,12 @@
 }
 
 #app_bar > .channel_info > .logo {
-    width: 80px;
+    width: 92px;
     height: 40px;
-    margin: 0 44px;
+    margin: 0 50px;
 }
 
 #app_bar > .channel_info > .column {
-    margin-left: 24px;
     margin-right: 64px;
 }
 

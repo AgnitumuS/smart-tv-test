@@ -2,7 +2,7 @@ lanet_tv.Player = (function () {
     var instance;
 
     function init() {
-        var body = document.getElementsByTagName('body')[0], player;
+        var body = document.getElementsByTagName('body')[0], player, current;
         if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android/g)) {
             player = document.getElementById('player');
             player.setSource = function (src, ratio) {
@@ -31,15 +31,18 @@ lanet_tv.Player = (function () {
             });
             player.className = 'flash';
             player.setSource = function (src, ratio) {
-                var data = {
-                    url: src,
-                    scale: ratio.join(':'),
-                    volume: 1
-                }, self = this;
-                if (loaded) {
-                    this.set(data)
-                } else onload = function () {
-                    self.set(data)
+                if (current != src) {
+                    var data = {
+                        url: src,
+                        scale: ratio.join(':'),
+                        volume: 1
+                    }, self = this;
+                    if (loaded) {
+                        this.set(data)
+                    } else onload = function () {
+                        self.set(data)
+                    };
+                    current = src;
                 }
             };
             player.id = 'player';

@@ -123,7 +123,7 @@ lanet_tv.Channels = (function () {
             setCurrent: function (channel) {
                 if (channels[current]) {
                     channels[current].element.classList.remove('current');
-                    channels[current].preview.src = channel.data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp();
+                    channels[current].preview.src = channels[current].data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp();
                 }
                 current = channel.data['id'];
                 channels[current].preview.src = channel.data['preview'] + '?timestamp=' + this.getPreviewTimestamp();

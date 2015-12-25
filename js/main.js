@@ -43,10 +43,11 @@ var api = lanet_tv.Api.getInstance(),
         player.play(channel);
         app_bar.setChannel(channel);
         storage.set('last_channel', channel.data['id']);
-        showPlayer()
+        //showPlayer()
     },
     expandMenu = function () {
         menu.expand();
+        app_bar.showTitle();
         controller.setKeyFunctions({
             'RIGHT': function () {
                 collapseMenu()
@@ -64,6 +65,7 @@ var api = lanet_tv.Api.getInstance(),
     },
     collapseMenu = function () {
         menu.collapse();
+        app_bar.hideTitle();
         controller.setKeyFunctions({
             'UP': function () {
                 menu.selectPreviousChannel()
@@ -156,6 +158,7 @@ var api = lanet_tv.Api.getInstance(),
         })
     };
 api.getData(function () {
+    app_bar.setTitle('/ONAIR');
     setChannels();
     setInterval(function () {
         update();
@@ -176,6 +179,7 @@ api.getData(function () {
     });
     channel = storage.get('last_channel') ? channels.getChannelById(storage.get('last_channel')) : channels.getChannelByNumber();
     playChannel(channel);
+    showPlayer();
     menu.setChannels(channels.getChannels());
 });
 Helpers.hideNode(document.getElementById('loading'));
