@@ -6,7 +6,7 @@ lanet_tv.Channel = function (channel) {
         program = document.createElement('div'),
         epg_title = document.createElement('div'),
         epg_time = document.createElement('div'),
-        epg_time_start = document.createElement('div'),
+        epg_time_end = document.createElement('div'),
         epg_time_line = document.createElement('div'),
         epg_time_line_value = document.createElement('div'),
         epg_tags = document.createElement('div'),
@@ -17,7 +17,7 @@ lanet_tv.Channel = function (channel) {
         data = {},
         calcProgress = function (begin, end) {
             var progress = Math.round((Time.getTimestamp() - begin) / (end - begin) * 100);
-            return (progress < Infinity && progress > 0) ? progress : undefined;
+            return (progress < Infinity && progress >= 0) ? progress : undefined;
         },
         update = function (channel) {
             var is_current = channels.getCurrent() && channels.getCurrent().data['id'] == channel['id'];
@@ -31,7 +31,7 @@ lanet_tv.Channel = function (channel) {
             epg_title.innerHTML = channel["epg"]["now"]["title"];
             epg_tags.innerHTML = channel["epg"]["now"]["tags"].join(' ');
             epg_description.innerHTML = channel["epg"]["now"]["description"];
-            epg_time_start.innerHTML = Time.asObject(channel["epg"]["now"]["begin"] * 1000).getHhMm();
+            epg_time_end.innerHTML = Time.asObject(channel["epg"]["now"]["end"]).getHhMm();
             var progress = calcProgress(channel["epg"]["now"]["begin"], channel["epg"]["now"]["end"]);
             if (progress !== undefined) {
                 element.classList.add('progress');
@@ -50,7 +50,7 @@ lanet_tv.Channel = function (channel) {
     epg_tags.className = 'tags';
     epg_description.className = 'description';
     epg_time.className = 'time';
-    epg_time_start.className = 'start';
+    epg_time_end.className = 'end';
     epg_time_line.className = 'line';
     epg_time_line_value.className = 'value';
     preview.className = 'preview';
@@ -61,7 +61,7 @@ lanet_tv.Channel = function (channel) {
     main.appendChild(logo);
     element.appendChild(main);
     program.appendChild(epg_title);
-    epg_time.appendChild(epg_time_start);
+    epg_time.appendChild(epg_time_end);
     program.appendChild(epg_tags);
     program.appendChild(epg_description);
     epg_time_line.appendChild(epg_time_line_value);
@@ -82,7 +82,7 @@ lanet_tv.Channels = (function () {
     var instance;
 
     function init() {
-        var channels = [], visible = [], current = 0, ctv_order = [], timestamp = Time.getTimestamp().toString();
+        var channels = [], current = 0, ctv_order = [], timestamp = Time.getTimestamp().toString();
         setInterval(function () {
             var local_timestamp = Time.getTimestamp().toString(), images = [];
             channels.forEach(function (channel) {
@@ -121,7 +121,7 @@ lanet_tv.Channels = (function () {
             setCurrent: function (channel) {
                 if (channels[current]) {
                     channels[current].element.classList.remove('current');
-                    channels[current].preview.src = channel.data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp();
+                    channels[current].preview.src = channels[current].data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp();
                 }
                 current = channel.data['id'];
                 channels[current].preview.src = channel.data['preview'] + '?timestamp=' + this.getPreviewTimestamp();

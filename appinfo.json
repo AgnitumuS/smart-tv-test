@@ -1,11 +1,11 @@
 {
-  "id": "tv.lanet.smarttv.lge",
+  "id": "tv.lanet.smart",
   "version": "0.0.1",
-  "vendor": "Lanet LLC",
+  "vendor": "Lanet",
   "type": "web",
   "main": "index.html",
   "title": "Lanet TV",
-  "icon": "assets/logotv.png",
-  "largeIcon": "assets/logotv.png",
+  "icon": "assets/logotv_80.png",
+  "largeIcon": "assets/logotv_130.png",
   "uiRevision": 2
 }

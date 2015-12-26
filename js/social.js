@@ -12,7 +12,6 @@ lanet_tv.Social = (function () {
             userpic, requests = [], pin, pin_timeout, pin_check_url, open = false,
             onUserpicChange = function (userpic) { },
             createElement = function () {
-                console.log('createElement');
                 social.id = 'social';
                 auth.className = 'auth';
                 main.className = 'main';

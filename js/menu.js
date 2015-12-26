@@ -146,9 +146,6 @@ lanet_tv.Menu = (function () {
                 current_limits.max = current_limits.min + visible.visible;
                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
                     current_channel_list.push(full_channel_list[counter]);
-                    //if (full_channel_list[counter].element.classList.contains('current'))
-                    //    selected_channel = counter;
-                    //else
                     list.appendChild(full_channel_list[counter].element);
                 }
                 current_channel_list[selected_channel].element.classList.add('selected');
@@ -162,9 +159,6 @@ lanet_tv.Menu = (function () {
                 current_limits.max = current_limits.min + visible.visible;
                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
                     current_channel_list.push(full_channel_list[counter]);
-                    //if (full_channel_list[counter].element.classList.contains('current'))
-                    //    selected_channel = counter;
-                    //else
                     list.appendChild(full_channel_list[counter].element);
                 }
                 selected_channel = current_channel_list.length - (visible.extra ? 2 : 1);
