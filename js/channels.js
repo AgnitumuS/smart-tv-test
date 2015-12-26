@@ -16,7 +16,7 @@ lanet_tv.Channel = function (channel) {
         number = document.createElement('div'),
         data = {},
         calcProgress = function (begin, end) {
-            var progress = Math.round((Time.unixTimestamp() - begin) / (end - begin) * 100);
+            var progress = Math.round((Time.getTimestamp() - begin) / (end - begin) * 100);
             return (progress < Infinity && progress > 0) ? progress : undefined;
         },
         update = function (channel) {
@@ -82,9 +82,9 @@ lanet_tv.Channels = (function () {
     var instance;
 
     function init() {
-        var channels = [], visible = [], current = 0, ctv_order = [], timestamp = Time.unixTimestamp().toString();
+        var channels = [], visible = [], current = 0, ctv_order = [], timestamp = Time.getTimestamp().toString();
         setInterval(function () {
-            var local_timestamp = Time.unixTimestamp().toString(), images = [];
+            var local_timestamp = Time.getTimestamp().toString(), images = [];
             channels.forEach(function (channel) {
                 images.push(channel.data['preview_bg'] + '?timestamp=' + local_timestamp);
             });
