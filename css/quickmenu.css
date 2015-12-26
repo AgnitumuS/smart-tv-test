@@ -1,0 +1,103 @@
+#quickMenuView {
+    display: none;
+    background-color: rgba(0, 0, 0, .5);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+}
+
+#quickMenu {
+    height: 260px;
+    width: 300px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#quickMenu img {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#center {
+    background: url('../assets/icons/ic_close_white_24px.svg') no-repeat center;
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#top, #right, #bottom, #left {
+    width: 140px;
+    height: 100px;
+    position: absolute;
+    margin: auto;
+}
+
+#top:before, #right:before, #bottom:before, #left:before {
+    content: "";
+    display: block;
+    width: 140px;
+    height: 100px;
+    background: url("../assets/quickmenu_item_bg.png");
+}
+
+#quickMenu .disabled {
+    opacity: .3;
+}
+
+#top {
+    top: 0;
+    right: 0;
+    left: 0;
+}
+
+#right:before {
+    -webkit-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+#right {
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#bottom:before {
+    -webkit-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+#bottom {
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#left:before {
+    -webkit-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    transform: rotate(270deg);
+}
+
+#left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+}

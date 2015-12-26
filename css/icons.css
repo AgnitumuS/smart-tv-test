@@ -1,0 +1,52 @@
+.icon:before {
+    content: '';
+    display: block;
+    background: no-repeat center;
+    width: 72px;
+    height: 72px;
+    float: left;
+}
+
+.icon.selection:before {
+    background-image: url('../assets/icons/ic_checkbox_multiple_marked_white_36px.svg');
+}
+
+.icon.view_list:before {
+    background-image: url('../assets/icons/ic_view_list_white_36px.svg');
+}
+
+.icon.genres:before {
+    background-image: url('../assets/icons/ic_genres_white_36px.svg');
+}
+
+.icon.tags:before {
+    background-image: url('../assets/icons/ic_tag_multiple_white_36dp.png');
+}
+
+.icon.settings:before {
+    background-image: url('../assets/icons/ic_settings_white_36px.svg');
+}
+
+.icon.like:before {
+    background-image: url('../assets/icons/ic_favorite_white_24px.svg');
+}
+
+.icon.like.red:before {
+    background-image: url('../assets/icons/ic_favorite_red_24px.svg');
+}
+
+.icon.pip:before {
+    background-image: url('../assets/icons/ic_picture_in_picture_white_24px.svg');
+}
+
+.icon.pip.green:before {
+    background-image: url('../assets/icons/ic_picture_in_picture_green_24px.svg');
+}
+
+.icon.star:before {
+    background-image: url('../assets/icons/ic_star_yellow_24px.svg');
+}
+
+.icon.bookmark:before {
+    background-image: url('../assets/icons/ic_bookmark_blue_24px.svg');
+}
