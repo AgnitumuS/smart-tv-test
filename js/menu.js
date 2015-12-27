@@ -84,15 +84,19 @@ lanet_tv.Menu = (function () {
                             category_element.classList.toggle('expanded')
                     });
                     category_content.classList.add('content');
-                    category.items.forEach(function(item) {
+                    root.appendChild(category_element);
+                    var children = [];
+                    category.items.forEach(function (item) {
                         var category_item = document.createElement('div');
                         category_item.classList.add('item');
                         category_item.innerHTML = item.name;
-                        category_content.appendChild(category_item);
+                        root.appendChild(category_item);
+                        children.push(category_item);
                     });
-                    category_element.appendChild(category_content);
-                    category_list.push(category_element);
-                    root.appendChild(category_element)
+                    category_list.push({
+                        element: category_element,
+                        children: children
+                    });
                 });
                 hints.forEach(function (hint) {
                     var item = document.createElement('div');
@@ -193,7 +197,7 @@ lanet_tv.Menu = (function () {
             collapse: function () {
                 menu.classList.remove('expanded');
                 if (category_list[selected_category])
-                    category_list[selected_category].classList.remove('selected');
+                    category_list[selected_category].element.classList.remove('selected');
             },
             setChannels: function (channels) {
                 full_channel_list = channels;
@@ -232,22 +236,26 @@ lanet_tv.Menu = (function () {
             selectNextCategory: function () {
                 if (selected_category + 1 < category_list.length) {
                     if (category_list[selected_category])
-                        category_list[selected_category].classList.remove('selected');
+                        category_list[selected_category].element.classList.remove('selected');
                     selected_category++;
-                    category_list[selected_category].classList.add('selected');
+                    category_list[selected_category].element.classList.add('selected');
                 }
             },
             selectPreviousCategory: function () {
                 if (selected_category - 1 >= 0) {
                     if (category_list[selected_category])
-                        category_list[selected_category].classList.remove('selected');
+                        category_list[selected_category].element.classList.remove('selected');
                     selected_category--;
-                    category_list[selected_category].classList.add('selected');
+                    category_list[selected_category].element.classList.add('selected');
                 }
             },
             toggleSelectedCategory: function () {
-                if (category_list[selected_category])
-                    category_list[selected_category].classList.toggle('expanded');
+                if (category_list[selected_category]) {
+                    category_list[selected_category].element.classList.toggle('expanded');
+                    category_list[selected_category].children.forEach(function (item) {
+                        Helpers.toggleNode(item);
+                    })
+                }
             }
         };
     }
