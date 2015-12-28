@@ -53,10 +53,10 @@ var api = lanet_tv.Api.getInstance(),
                 collapseMenu()
             },
             'UP': function () {
-                menu.selectPreviousCategory();
+                menu.selectPreviousItem();
             },
             'DOWN': function () {
-                menu.selectNextCategory();
+                menu.selectNextItem();
             },
             'ENTER': function () {
                 menu.toggleSelectedCategory();
@@ -185,6 +185,8 @@ api.getData(function () {
     playChannel(channel);
     showPlayer();
     menu.setChannels(channels.getChannels());
+    menu.setGenres(api.getGenres());
+    menu.setTags(api.getTags());
 });
 Helpers.hideNode(document.getElementById('loading'));
 if (document.readyState === 'complete') {

@@ -8,7 +8,7 @@ lanet_tv.Menu = (function () {
             list = document.createElement('div'),
             footer = document.createElement('div'),
             clock = document.createElement('div'),
-            menu_items = [],
+            menu_items,
             full_channel_list = [],
             current_channel_list = [],
             selected_channel,
@@ -36,13 +36,13 @@ lanet_tv.Menu = (function () {
                     color: 'blue',
                     name: 'Смотреть позже'
                 }
-            ], categories = [
-                {
+            ], categories = {
+                choice: {
                     icon: 'selection',
                     name: 'Мой выбор',
                     items: []
                 },
-                {
+                lists: {
                     icon: 'view_list',
                     name: 'Списки',
                     items: [{
@@ -51,56 +51,29 @@ lanet_tv.Menu = (function () {
                         name: 'Все'
                     }]
                 },
-                {
+                genres: {
                     icon: 'genres',
                     name: 'Жанры',
                     items: []
                 },
-                {
+                tags: {
                     icon: 'tags',
                     name: 'Теги',
                     items: []
                 },
-                {
+                settings: {
                     icon: 'settings',
                     name: 'Настройки',
                     items: []
                 }
-            ],
+            },
             createElement = function () {
                 menu.id = 'menu';
                 root.className = 'root';
                 list.className = 'list';
                 footer.className = 'footer';
                 clock.className = 'clock';
-                categories.forEach(function (category) {
-                    var category_element = document.createElement('div'),
-                        category_content = document.createElement('div');
-                    // IE does not support class list multi-add
-                    category_element.classList.add('category');
-                    category_element.classList.add('icon');
-                    category_element.classList.add(category.icon);
-                    category_element.innerHTML = category.name;
-                    category_element.addEventListener('click', function () {
-                        if (menu.classList.contains('expanded'))
-                            category_element.classList.toggle('expanded')
-                    });
-                    category_content.classList.add('content');
-                    root.appendChild(category_element);
-                    var children = [];
-                    category.items.forEach(function (item) {
-                        var category_item = document.createElement('div');
-                        category_item.classList.add('item');
-                        category_item.classList.add('hidden');
-                        category_item.innerHTML = item.name;
-                        root.appendChild(category_item);
-                        children.push(category_item);
-                    });
-                    menu_items.push({
-                        element: category_element,
-                        children: children
-                    });
-                });
+                renderRoot();
                 hints.forEach(function (hint) {
                     var item = document.createElement('div');
                     // IE does not support class list multi-add
@@ -116,6 +89,38 @@ lanet_tv.Menu = (function () {
                 footer.appendChild(clock);
                 menu.appendChild(footer);
                 return menu;
+            },
+            renderRoot = function () {
+                menu_items = [];
+                selected_menu_item = -1;
+                Helpers.removeChildren(root);
+                for (var cat_id in categories) {
+                    if (categories.hasOwnProperty(cat_id)) {
+                        var category_element = document.createElement('div'),
+                            category_content = document.createElement('div');
+                        category_element.classList.add('category');
+                        category_element.classList.add('icon');
+                        category_element.classList.add(categories[cat_id].icon);
+                        category_element.innerHTML = categories[cat_id].name;
+                        category_content.classList.add('content');
+                        root.appendChild(category_element);
+                        var children = [];
+                        for (var item_id in categories[cat_id].items) {
+                            if (categories[cat_id].items.hasOwnProperty(item_id)) {
+                                var category_item = document.createElement('div');
+                                category_item.classList.add('item');
+                                category_item.classList.add('hidden');
+                                category_item.innerHTML = categories[cat_id].items[item_id].name;
+                                root.appendChild(category_item);
+                                children.push(category_item);
+                            }
+                        }
+                        menu_items.push({
+                            element: category_element,
+                            children: children
+                        });
+                    }
+                }
             },
             setClock = function (time) {
                 clock.innerHTML = time;
@@ -185,17 +190,15 @@ lanet_tv.Menu = (function () {
                 clock_update_interval = setInterval(function () {
                     setClock(Time.asObject().getHhMm());
                 }, 1000);
-                //Helpers.showNode(menu);
             },
             hide: function () {
                 menu.style.visibility = 'hidden';
                 clearInterval(clock_update_interval);
-                //Helpers.hideNode(menu);
             },
             expand: function () {
                 menu.classList.add('expanded');
                 selected_menu_item = -1;
-                this.selectNextCategory();
+                this.selectNextItem();
             },
             collapse: function () {
                 menu.classList.remove('expanded');
@@ -204,7 +207,6 @@ lanet_tv.Menu = (function () {
             },
             setChannels: function (channels) {
                 full_channel_list = channels;
-                //renderNextPage();
             },
             selectNextChannel: function () {
                 if (current_limits.max > full_channel_list.length - 1) {
@@ -236,21 +238,25 @@ lanet_tv.Menu = (function () {
             getSelectedChannel: function () {
                 return current_channel_list[selected_channel]
             },
-            selectNextCategory: function () {
+            selectNextItem: function () {
                 if (selected_menu_item + 1 < menu_items.length) {
                     if (menu_items[selected_menu_item])
                         menu_items[selected_menu_item].element.classList.remove('selected');
                     selected_menu_item++;
                     menu_items[selected_menu_item].element.classList.add('selected');
                 }
+                if (root.offsetHeight < menu_items[selected_menu_item].element.offsetTop + menu_items[selected_menu_item].element.offsetHeight)
+                    root.scrollTop += menu_items[selected_menu_item].element.offsetHeight;
             },
-            selectPreviousCategory: function () {
+            selectPreviousItem: function () {
                 if (selected_menu_item - 1 >= 0) {
                     if (menu_items[selected_menu_item])
                         menu_items[selected_menu_item].element.classList.remove('selected');
                     selected_menu_item--;
                     menu_items[selected_menu_item].element.classList.add('selected');
                 }
+                if (root.scrollTop > menu_items[selected_menu_item].element.offsetTop)
+                    root.scrollTop -= menu_items[selected_menu_item].element.offsetHeight;
             },
             toggleSelectedCategory: function () {
                 if (menu_items[selected_menu_item]) {
@@ -263,14 +269,30 @@ lanet_tv.Menu = (function () {
                         });
                     });
                     if (menu_items[selected_menu_item].element.classList.contains('expanded')) {
-                        menu_items.splice(selected_menu_item, menu_items[selected_menu_item].children.length);
+                        menu_items.splice(selected_menu_item + 1, menu_items[selected_menu_item].children.length);
                     } else {
                         menu_items.splice.apply(menu_items, [selected_menu_item + 1, 0].concat(children));
                     }
-                    console.warn(selected_menu_item);
-                    console.warn(menu_items);
                     menu_items[selected_menu_item].element.classList.toggle('expanded');
                 }
+            },
+            setGenres: function (genres) {
+                categories['genres'].items = [];
+                genres.forEach(function (genre) {
+                    categories['genres'].items.push({
+                        name: genre
+                    })
+                });
+                renderRoot();
+            },
+            setTags: function (tags) {
+                categories['tags'].items = [];
+                tags.forEach(function (tag) {
+                    categories['tags'].items.push({
+                        name: tag
+                    })
+                });
+                renderRoot();
             }
         };
     }
