@@ -25,7 +25,7 @@
     left: 288px;
 }
 
-#menu > .root > .category {
+#menu > .root > .category, #menu > .root > .item {
     font-family: "roboto_condensedlight", sans-serif;
     width: 288px;
     height: 64px;
@@ -37,7 +37,27 @@
     opacity: .7;
 }
 
-#menu.expanded > .root > .category.selected {
+#menu > .root > .item {
+    font-family: "roboto_condensedregular", sans-serif;
+    width: 288px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 20px;
+    vertical-align: middle;
+    clear: both;
+    position: relative;
+    opacity: .7;
+}
+
+#menu > .root > .item.hidden {
+    display: none;
+}
+
+#menu > .root > .item {
+    padding-left: 72px;
+}
+
+#menu.expanded > .root > .category.selected, #menu.expanded > .root > .item.selected {
     opacity: 1;
     background-color: rgba(255, 255, 255, .15);
 }
@@ -315,108 +335,4 @@
     font-size: 24px;
     right: 16px;
     color: white;
-}
-
-.menuTitle {
-    display: none;
-    float: left;
-    height: 50px;
-    line-height: 50px;
-    padding-left: 16px;
-
-}
-
-.menuIcon {
-    display: block;
-    float: left;
-    background: no-repeat center;
-    height: 50px;
-    width: 80px;
-    color: white;
-}
-
-.menuEntity {
-    float: left;
-    height: 56px;
-    width: 100%;
-    background: no-repeat center;
-}
-
-.menuEntity[data-id='playlists'] {
-    background-image: url('../assets/icons/ic_view_list_white_36px.svg');
-}
-
-.menuEntity[data-id='genres'] {
-    background-image: url('../assets/icons/ic_genres_white_36px.svg');
-}
-
-.menuEntity[data-id='settings'] {
-    background-image: url('../assets/icons/ic_settings_white_36px.svg');
-}
-
-.catalogTitles:before {
-    content: '';
-    float: left;
-    display: block;
-    height: 48px;
-    width: 72px;
-    font-size: 24px;
-    background: no-repeat center;
-}
-
-.catalogTitles {
-    color: white;
-    display: block;
-    height: 48px;
-    font-size: 24px;
-    line-height: 48px;
-    vertical-align: middle;
-}
-
-#playlistsTitle:before {
-    background-image: url('../assets/icons/ic_view_list_white_36px.svg');
-}
-
-#genresTitle:before {
-    background-image: url('../assets/icons/ic_genres_white_36px.svg');
-}
-
-#settingsTitle:before {
-    background-image: url('../assets/icons/ic_settings_white_36px.svg');
-}
-
-.catalogEntity {
-    display: block;
-    height: 48px;
-    padding-left: 72px;
-    font-size: 20px;
-    color: white;
-    line-height: 48px;
-}
-
-.catalogEntity.spotlight {
-    background-color: #00ACC1;
-}
-
-.catalogTitles.highlight {
-    color: white;
-}
-
-.menuEntity {
-    display: block;
-    height: 64px;
-    color: white;
-}
-
-.catalogEntity:first-letter {
-    text-transform: uppercase
-}
-
-.cat, .subcat {
-    display: block;
-    font-size: 16px;
-    padding-left: 24px;
-    line-height: 48px;
-    color: white;
-    margin-bottom: 30px;
 }

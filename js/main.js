@@ -53,10 +53,10 @@ var api = lanet_tv.Api.getInstance(),
                 collapseMenu()
             },
             'UP': function () {
-                menu.selectPreviousCategory();
+                menu.selectPreviousItem();
             },
             'DOWN': function () {
-                menu.selectNextCategory();
+                menu.selectNextItem();
             },
             'ENTER': function () {
                 menu.toggleSelectedCategory();
@@ -141,16 +141,20 @@ var api = lanet_tv.Api.getInstance(),
                 showMenu()
             },
             'UP': function () {
-                playChannel(channels.getNext())
+                playChannel(channels.getNext());
+                app_bar.show(2000);
             },
             'DOWN': function () {
-                playChannel(channels.getPrevious())
+                playChannel(channels.getPrevious());
+                app_bar.show(2000);
             },
             'CH_UP': function () {
-                playChannel(channels.getNext())
+                playChannel(channels.getNext());
+                app_bar.show(2000);
             },
             'CH_DOWN': function () {
-                playChannel(channels.getPrevious())
+                playChannel(channels.getPrevious());
+                app_bar.show(2000);
             },
             'ENTER': function () {
                 showMenu()

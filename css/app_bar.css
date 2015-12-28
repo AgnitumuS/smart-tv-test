@@ -36,6 +36,7 @@
 
 #app_bar > .channel_info {
     line-height: normal;
+    overflow: hidden;
 }
 
 #app_bar > .channel_info > * {
@@ -58,6 +59,8 @@
 }
 
 #app_bar > .channel_info > .column {
+    position: relative;
+    top: -4px;
     margin-right: 64px;
 }
 
@@ -106,8 +109,9 @@
 #app_bar > .userpic {
     width: 40px;
     height: 40px;
+    position: absolute;
+    right: 16px;
     background-image: url('../assets/icons/ic_account_circle_white_24px.svg');
     background-size: 100% 100%;
-    float: right;
     border-radius: 50%;
 }
