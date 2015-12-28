@@ -185,6 +185,8 @@ api.getData(function () {
     playChannel(channel);
     showPlayer();
     menu.setChannels(channels.getChannels());
+    menu.setGenres(api.getGenres());
+    menu.setTags(api.getTags());
 });
 Helpers.hideNode(document.getElementById('loading'));
 if (document.readyState === 'complete') {
