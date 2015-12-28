@@ -262,8 +262,6 @@ lanet_tv.Menu = (function () {
                     } else {
                         menu_items.splice.apply(menu_items, [selected_menu_item + 1, 0].concat(children));
                     }
-                    console.warn(selected_menu_item);
-                    console.warn(menu_items);
                     menu_items[selected_menu_item].element.classList.toggle('expanded');
                 }
             }
