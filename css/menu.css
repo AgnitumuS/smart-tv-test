@@ -25,7 +25,7 @@
     left: 288px;
 }
 
-#menu > .root > .category {
+#menu > .root > .category, #menu > .root > .item {
     font-family: "roboto_condensedlight", sans-serif;
     width: 288px;
     height: 64px;
@@ -37,7 +37,15 @@
     opacity: .7;
 }
 
-#menu.expanded > .root > .category.selected {
+#menu > .root > .item.hidden {
+    display: none;
+}
+
+#menu > .root > .item {
+    padding-left: 72px;
+}
+
+#menu.expanded > .root > .category.selected, #menu.expanded > .root > .item.selected {
     opacity: 1;
     background-color: rgba(255, 255, 255, .15);
 }

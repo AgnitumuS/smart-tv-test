@@ -34,6 +34,14 @@ lanet_tv.Api = (function () {
             getOffset: function() {
                 return data['time_offset']
             },
+            getGenres: function () {
+                console.log('getGenres', data['classList']);
+                return data['classList'];
+            },
+            getTags: function() {
+                console.log('getTags', data['tagList']);
+                return data['tagList'];
+            },
             parseChannels: function () {
                 var channels = [];
                 for (var channel in data['list']) {
