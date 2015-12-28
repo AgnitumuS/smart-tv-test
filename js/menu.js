@@ -90,7 +90,7 @@ lanet_tv.Menu = (function () {
                 menu.appendChild(footer);
                 return menu;
             },
-            renderRoot = function() {
+            renderRoot = function () {
                 menu_items = [];
                 selected_menu_item = -1;
                 Helpers.removeChildren(root);
@@ -245,6 +245,8 @@ lanet_tv.Menu = (function () {
                     selected_menu_item++;
                     menu_items[selected_menu_item].element.classList.add('selected');
                 }
+                if (root.offsetHeight < menu_items[selected_menu_item].element.offsetTop + menu_items[selected_menu_item].element.offsetHeight)
+                    root.scrollTop += menu_items[selected_menu_item].element.offsetHeight;
             },
             selectPreviousItem: function () {
                 if (selected_menu_item - 1 >= 0) {
@@ -253,6 +255,8 @@ lanet_tv.Menu = (function () {
                     selected_menu_item--;
                     menu_items[selected_menu_item].element.classList.add('selected');
                 }
+                if (root.scrollTop > menu_items[selected_menu_item].element.offsetTop)
+                    root.scrollTop -= menu_items[selected_menu_item].element.offsetHeight;
             },
             toggleSelectedCategory: function () {
                 if (menu_items[selected_menu_item]) {

@@ -271,6 +271,13 @@ Helpers.concatChildren = function (array) {
     return result;
 };
 
+/**
+ * @description Create an SWF object
+ * @param src {String} SWF file source
+ * @param attributes {Object =} Optional object attributes
+ * @param parameters {Object =} Optional SWF parameters
+ * @return {HTMLElement} SWF object
+ */
 Helpers.createSwfObject = function (src, attributes, parameters) {
     var i, object, div, obj, attr = attributes || {}, param = parameters || {}, paramEl;
     attr.type = 'application/x-shockwave-flash';
@@ -295,6 +302,10 @@ Helpers.createSwfObject = function (src, attributes, parameters) {
     return obj;
 };
 
+/**
+ * @description Load a n arbitrary JavaScript file (into head tag)
+ * @param source {String} JS file source
+ */
 Helpers.addScript = function (source) {
     var head = document.getElementsByTagName('head')[0];
     var element = document.createElement('script');
