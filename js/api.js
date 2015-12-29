@@ -25,21 +25,14 @@ lanet_tv.Api = (function () {
                 callback = callback || function (callback) { };
                 loaded ? callback(data) : loadData(callback);
             },
-            update: function (callback) {
-                loadData(callback)
-            },
-            getTimestamp: function () {
-                return data['timestamp']
-            },
-            getOffset: function() {
-                return data['time_offset']
-            },
-            getGenres: function () {
-                return data['classList'];
-            },
-            getTags: function() {
-                return data['tagList'];
-            },
+            update: function (callback) { loadData(callback) },
+            getTimestamp: function () { return data['timestamp'] },
+            getOffset: function () { return data['time_offset'] },
+            getGenres: function () { return data['classList']; },
+            getTags: function () { return data['tagList']; },
+            getLogoUrl: function (id) { return 'http://' + domains.stat + '/tv/logo/' + id.toString() + '.svg'; },
+            getPreviewBgUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '_bg.jpg'; },
+            getPreviewUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '.jpg'; },
             parseChannels: function () {
                 var channels = [];
                 for (var channel in data['list']) {
@@ -89,10 +82,7 @@ lanet_tv.Api = (function () {
                     }
                 }
                 return channels;
-            },
-            getLogoUrl: function (id) { return 'http://' + domains.stat + '/tv/logo/' + id.toString() + '.svg'; },
-            getPreviewBgUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '_bg.jpg'; },
-            getPreviewUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '.jpg'; }
+            }
         };
     }
 

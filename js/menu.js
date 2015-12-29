@@ -8,11 +8,12 @@ lanet_tv.Menu = (function () {
             list = document.createElement('div'),
             footer = document.createElement('div'),
             clock = document.createElement('div'),
-            menu_items,
+            root_menu_items = [],
+            current_root_menu_item,
+            current_root_menu_category,
             full_channel_list = [],
             current_channel_list = [],
             selected_channel,
-            selected_menu_item,
             current_limits = {min: 0, max: 0},
             clock_update_interval = 0,
             hints = [
@@ -38,33 +39,50 @@ lanet_tv.Menu = (function () {
                 }
             ], categories = {
                 choice: {
+                    category: 'choice',
                     icon: 'selection',
                     name: 'Мой выбор',
-                    items: []
+                    element: null,
+                    children: {}
                 },
                 lists: {
+                    category: 'lists',
                     icon: 'view_list',
                     name: 'Списки',
-                    items: [{
-                        name: 'Избранное'
-                    }, {
-                        name: 'Все'
-                    }]
+                    element: null,
+                    children: {
+                        0: {
+                            category: 'lists',
+                            element: null,
+                            name: 'Избранное'
+                        },
+                        1: {
+                            category: 'lists',
+                            element: null,
+                            name: 'Все'
+                        }
+                    }
                 },
                 genres: {
+                    category: 'genres',
                     icon: 'genres',
                     name: 'Жанры',
-                    items: []
+                    element: null,
+                    children: {}
                 },
                 tags: {
+                    category: 'tags',
                     icon: 'tags',
                     name: 'Теги',
-                    items: []
+                    element: null,
+                    children: {}
                 },
                 settings: {
+                    category: 'settings',
                     icon: 'settings',
                     name: 'Настройки',
-                    items: []
+                    element: null,
+                    children: {}
                 }
             },
             createElement = function () {
@@ -74,16 +92,17 @@ lanet_tv.Menu = (function () {
                 footer.className = 'footer';
                 clock.className = 'clock';
                 renderRoot();
-                hints.forEach(function (hint) {
-                    var item = document.createElement('div');
-                    // IE does not support class list multi-add
-                    item.classList.add('hint');
-                    item.classList.add('icon');
-                    item.classList.add(hint.color);
-                    item.classList.add(hint.icon);
-                    item.innerHTML = hint.name;
-                    footer.appendChild(item)
-                });
+                for (var hint in hints) {
+                    if (hints.hasOwnProperty(hint)) {
+                        var item = document.createElement('div');
+                        item.classList.add('hint');
+                        item.classList.add('icon');
+                        item.classList.add(hints[hint].color);
+                        item.classList.add(hints[hint].icon);
+                        item.innerHTML = hints[hint].name;
+                        footer.appendChild(item)
+                    }
+                }
                 menu.appendChild(root);
                 menu.appendChild(list);
                 footer.appendChild(clock);
@@ -91,55 +110,59 @@ lanet_tv.Menu = (function () {
                 return menu;
             },
             renderRoot = function () {
-                menu_items = [];
-                selected_menu_item = 0;
+                current_root_menu_item = 0;
+                root_menu_items = [];
+                current_root_menu_category = Object.keys(categories)[0];
                 Helpers.removeChildren(root);
                 for (var cat_id in categories) {
                     if (categories.hasOwnProperty(cat_id)) {
                         var category_element = document.createElement('div'),
-                            category_content = document.createElement('div');
+                            category;
                         category_element.classList.add('category');
                         category_element.classList.add('icon');
                         category_element.classList.add(categories[cat_id].icon);
+                        category_element.dataset['id'] = cat_id;
                         category_element.innerHTML = categories[cat_id].name;
-                        category_content.classList.add('content');
                         root.appendChild(category_element);
-                        var children = [];
-                        for (var item_id in categories[cat_id].items) {
-                            if (categories[cat_id].items.hasOwnProperty(item_id)) {
+                        categories[cat_id].element = category_element;
+                        for (var item_id in categories[cat_id].children) {
+                            if (categories[cat_id].children.hasOwnProperty(item_id)) {
                                 var category_item = document.createElement('div');
+                                category_item.dataset['category'] = cat_id;
                                 category_item.classList.add('item');
                                 category_item.classList.add('hidden');
-                                category_item.innerHTML = categories[cat_id].items[item_id].name;
+                                category_item.innerHTML = categories[cat_id].children[item_id].name;
                                 root.appendChild(category_item);
-                                children.push(category_item);
+                                categories[cat_id].children[item_id].element = category_item;
+                                //root_menu_items.push(categories[cat_id].children[item_id]);
                             }
                         }
-                        menu_items.push({
-                            element: category_element,
-                            children: children
-                        });
+                        root_menu_items.push(categories[cat_id]);
                     }
                 }
             },
-            setClock = function (time) {
-                clock.innerHTML = time;
+            selectCurrentRootItem = function () {
+                for (var item in root_menu_items)
+                    if (root_menu_items.hasOwnProperty(item))
+                        root_menu_items[item].element.classList.remove('selected');
+                current_root_menu_category = root_menu_items[current_root_menu_item].category;
+                root_menu_items[current_root_menu_item].element.classList.add('selected');
             },
-            visibleChannels = function () {
+            visibleListItems = function () {
                 var result = list.getBoundingClientRect().height / 104;
                 return {
                     visible: Math.floor(result),
                     extra: result % 1 !== 0
                 }
             },
-            renderCurrentPage = function () {
-                resetSelection();
+            renderCurrentListPage = function () {
+                resetListSelection();
                 Helpers.removeChildren(list);
                 var index = full_channel_list.indexOf(full_channel_list.filter(function (channel) {
                     return channel.element.classList.contains('current')
-                })[0]), counter, visible = visibleChannels(), page = Math.floor(index / visible.visible);
+                })[0]), counter, visible = visibleListItems(), page = Math.floor(index / visible.visible);
                 current_channel_list = [];
-                selected_channel = index - page * visibleChannels().visible;
+                selected_channel = index - page * visibleListItems().visible;
                 current_limits.min = visible.visible * page;
                 current_limits.max = current_limits.min + visible.visible;
                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
@@ -148,12 +171,12 @@ lanet_tv.Menu = (function () {
                 }
                 current_channel_list[selected_channel].element.classList.add('selected');
             },
-            renderNextPage = function () {
-                resetSelection();
+            renderNextListPage = function () {
+                resetListSelection();
                 selected_channel = 0;
                 Helpers.removeChildren(list);
                 current_channel_list = [];
-                var counter, visible = visibleChannels();
+                var counter, visible = visibleListItems();
                 current_limits.min = current_limits.max;
                 current_limits.max = current_limits.min + visible.visible;
                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
@@ -162,11 +185,11 @@ lanet_tv.Menu = (function () {
                 }
                 current_channel_list[selected_channel].element.classList.add('selected');
             },
-            renderPreviousPage = function () {
-                resetSelection();
+            renderPreviousListPage = function () {
+                resetListSelection();
                 Helpers.removeChildren(list);
                 current_channel_list = [];
-                var counter, visible = visibleChannels();
+                var counter, visible = visibleListItems();
                 current_limits.min = current_limits.min - visible.visible;
                 current_limits.max = current_limits.min + visible.visible;
                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
@@ -176,21 +199,15 @@ lanet_tv.Menu = (function () {
                 selected_channel = current_channel_list.length - (visible.extra ? 2 : 1);
                 current_channel_list[selected_channel].element.classList.add('selected');
             },
-            resetSelection = function () {
+            resetListSelection = function () {
                 if (current_channel_list[selected_channel])
                     current_channel_list[selected_channel].element.classList.remove('selected');
             },
-            selectCurrentItem = function () {
-                if (menu_items[selected_menu_item - 1])
-                    menu_items[selected_menu_item - 1].element.classList.remove('selected');
-                if (menu_items[selected_menu_item + 1])
-                    menu_items[selected_menu_item + 1].element.classList.remove('selected');
-                menu_items[selected_menu_item].element.classList.add('selected');
-            };
+            setClock = function (time) { clock.innerHTML = time; };
         body.appendChild(createElement());
         return {
             show: function () {
-                renderCurrentPage();
+                renderCurrentListPage();
                 setClock(Time.asObject().getHhMm());
                 menu.style.visibility = 'visible';
                 update();
@@ -204,31 +221,115 @@ lanet_tv.Menu = (function () {
             },
             expand: function () {
                 menu.classList.add('expanded');
-                //selected_menu_item = -1;
-                selectCurrentItem();
+                //current_root_menu_item = -1;
+                selectCurrentRootItem();
             },
             collapse: function () {
                 menu.classList.remove('expanded');
-                if (menu_items[selected_menu_item])
-                    menu_items[selected_menu_item].element.classList.remove('selected');
+                if (root_menu_items[current_root_menu_item])
+                    root_menu_items[current_root_menu_item].element.classList.remove('selected');
+            },
+            selectNextRootItem: function () {
+                if (current_root_menu_item + 1 < root_menu_items.length) {
+                    current_root_menu_item++;
+                    selectCurrentRootItem();
+                    if (root_menu_items[current_root_menu_item + 1] && root.scrollTop + root.offsetHeight <= root_menu_items[current_root_menu_item + 1].element.offsetTop)
+                        root.scrollTop = root_menu_items[current_root_menu_item + 1].element.offsetTop + root_menu_items[current_root_menu_item + 1].element.offsetHeight - root.offsetHeight;
+                }
+            },
+            selectPreviousRootItem: function () {
+                if (current_root_menu_item - 1 >= 0) {
+                    current_root_menu_item--;
+                    selectCurrentRootItem();
+                    if (root_menu_items[current_root_menu_item - 1] && root.scrollTop >= root_menu_items[current_root_menu_item - 1].element.offsetTop)
+                        root.scrollTop = root_menu_items[current_root_menu_item - 1].element.offsetTop;
+                }
+            },
+            expandRootCategory: function (category) {
+                var children = [];
+                for (var child in category.children) {
+                    if (category.children.hasOwnProperty(child)) {
+                        category.children[child].element.classList.remove('hidden');
+                        children.push(category.children[child]);
+                    }
+                }
+                root_menu_items.splice.apply(root_menu_items, [root_menu_items.indexOf(category) + 1, 0].concat(children));
+                category.element.classList.add('expanded');
+                current_root_menu_item = root_menu_items.indexOf(category);
+                selectCurrentRootItem();
+            },
+            collapseRootCategory: function (category) {
+                var children = [];
+                for (var child in category.children) {
+                    if (category.children.hasOwnProperty(child)) {
+                        category.children[child].element.classList.add('hidden');
+                        children.push(category.children[child]);
+                    }
+                }
+                root_menu_items.splice(root_menu_items.indexOf(category) + 1, Object.keys(category.children).length);
+                category.element.classList.remove('expanded');
+                current_root_menu_item = root_menu_items.indexOf(category);
+                selectCurrentRootItem();
+            },
+            collapseCurrentRootCategory: function () {
+                if (categories[current_root_menu_category]) {
+                    if (categories[current_root_menu_category].element.classList.contains('expanded')) {
+                        this.collapseRootCategory(categories[current_root_menu_category]);
+                    }
+                }
+            },
+            toggleSelectedRootCategory: function () {
+                if (categories[current_root_menu_category] && root_menu_items.indexOf(categories[current_root_menu_category]) == current_root_menu_item) {
+                    if (categories[current_root_menu_category].element.classList.contains('expanded')) {
+                        this.collapseRootCategory(categories[current_root_menu_category]);
+                    } else {
+                        this.expandRootCategory(categories[current_root_menu_category]);
+                    }
+                }
+            },
+            setGenres: function (genres) {
+                categories.genres.children = {};
+                for (var genre in genres) {
+                    if (genres.hasOwnProperty(genre)) {
+                        categories.genres.children[genre] = {
+                            category: 'genres',
+                            name: genres[genre],
+                            element: null
+                        }
+                    }
+                }
+                renderRoot();
+            },
+            setTags: function (tags) {
+                categories.tags.children = {};
+                for (var tag in tags) {
+                    if (tags.hasOwnProperty(tag)) {
+                        categories.tags.children[tag] = {
+                            category: 'tags',
+                            name: tags[tag],
+                            element: null
+                        }
+                    }
+                }
+                renderRoot();
             },
             setChannels: function (channels) {
                 full_channel_list = channels;
             },
             selectNextChannel: function () {
                 if (current_limits.max > full_channel_list.length - 1) {
-                    if (selected_channel + 1 < visibleChannels().visible - (current_limits.max - full_channel_list.length)) {
+                    if (selected_channel + 1 < visibleListItems().visible - (current_limits.max - full_channel_list.length)) {
                         current_channel_list[selected_channel].element.classList.remove('selected');
                         selected_channel++;
                         current_channel_list[selected_channel].element.classList.add('selected');
                     }
                 } else {
                     current_channel_list[selected_channel].element.classList.remove('selected');
-                    if (selected_channel < current_channel_list.length - (visibleChannels().extra ? 2 : 1)) {
+                    if (selected_channel < current_channel_list.length - (visibleListItems().extra ? 2 : 1)) {
                         selected_channel++;
                         current_channel_list[selected_channel].element.classList.add('selected');
                     } else {
-                        renderNextPage()
+                        renderNextListPage()
                     }
                 }
             },
@@ -239,63 +340,11 @@ lanet_tv.Menu = (function () {
                     selected_channel--;
                     current_channel_list[selected_channel].element.classList.add('selected');
                 } else if (current_limits.min > 0) {
-                    renderPreviousPage()
+                    renderPreviousListPage()
                 }
             },
             getSelectedChannel: function () {
                 return current_channel_list[selected_channel]
-            },
-            selectNextItem: function () {
-                if (selected_menu_item + 1 < menu_items.length) {
-                    selected_menu_item++;
-                    selectCurrentItem();
-                    if (menu_items[selected_menu_item + 1] && root.scrollTop + root.offsetHeight <= menu_items[selected_menu_item + 1].element.offsetTop)
-                        root.scrollTop = menu_items[selected_menu_item + 1].element.offsetTop + menu_items[selected_menu_item + 1].element.offsetHeight - root.offsetHeight;
-                }
-            },
-            selectPreviousItem: function () {
-                if (selected_menu_item - 1 >= 0) {
-                    selected_menu_item--;
-                    selectCurrentItem();
-                    if (menu_items[selected_menu_item - 1] && root.scrollTop >= menu_items[selected_menu_item - 1].element.offsetTop)
-                        root.scrollTop = menu_items[selected_menu_item - 1].element.offsetTop;
-                }
-            },
-            toggleSelectedCategory: function () {
-                if (menu_items[selected_menu_item]) {
-                    var children = [];
-                    menu_items[selected_menu_item].children.forEach(function (item) {
-                        item.classList.toggle('hidden');
-                        children.push({
-                            element: item,
-                            children: []
-                        });
-                    });
-                    if (menu_items[selected_menu_item].element.classList.contains('expanded')) {
-                        menu_items.splice(selected_menu_item + 1, menu_items[selected_menu_item].children.length);
-                    } else {
-                        menu_items.splice.apply(menu_items, [selected_menu_item + 1, 0].concat(children));
-                    }
-                    menu_items[selected_menu_item].element.classList.toggle('expanded');
-                }
-            },
-            setGenres: function (genres) {
-                categories['genres'].items = [];
-                genres.forEach(function (genre) {
-                    categories['genres'].items.push({
-                        name: genre
-                    })
-                });
-                renderRoot();
-            },
-            setTags: function (tags) {
-                categories['tags'].items = [];
-                tags.forEach(function (tag) {
-                    categories['tags'].items.push({
-                        name: tag
-                    })
-                });
-                renderRoot();
             }
         };
     }

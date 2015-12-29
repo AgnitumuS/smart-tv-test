@@ -53,13 +53,16 @@ var api = lanet_tv.Api.getInstance(),
                 collapseMenu()
             },
             'UP': function () {
-                menu.selectPreviousItem();
+                menu.selectPreviousRootItem();
             },
             'DOWN': function () {
-                menu.selectNextItem();
+                menu.selectNextRootItem();
+            },
+            'LEFT': function () {
+                menu.collapseCurrentRootCategory();
             },
             'ENTER': function () {
-                menu.toggleSelectedCategory();
+                menu.toggleSelectedRootCategory();
             }
         })
     },
