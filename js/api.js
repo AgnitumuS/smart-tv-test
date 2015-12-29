@@ -48,7 +48,8 @@ lanet_tv.Api = (function () {
                                 return parseInt(value);
                             }),
                             num: data['list'][channel]['n'],
-                            classID: -1,
+                            classID: 0,
+                            tags: [],
                             epg: {
                                 now: {
                                     begin: 0,
@@ -61,6 +62,9 @@ lanet_tv.Api = (function () {
                         };
                         if (data['list'][channel]['epg'][0]) {
                             channel_object['classID'] = data['list'][channel]['epg'][0]['class'];
+                            for (var tag in data['list'][channel]['epg'][0]['tags'])
+                                if (data['list'][channel]['epg'][0]['tags'].hasOwnProperty(tag) && data['tagList'].indexOf(data['list'][channel]['epg'][0]['tags'][tag]) > -1)
+                                    channel_object['tags'].push(data['tagList'].indexOf(data['list'][channel]['epg'][0]['tags'][tag]));
                             channel_object['epg']['now'] = {
                                 begin: data['list'][channel]['epg'][0]['start'],
                                 end: data['list'][channel]['epg'][0]['stop'],

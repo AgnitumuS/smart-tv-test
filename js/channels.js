@@ -103,11 +103,31 @@ lanet_tv.Channels = (function () {
                 ctv_order[channel['num']] = channel['id'];
             },
             getChannels: function () {
+                /*
                 var result = [];
                 ctv_order.forEach(function (id) {
                     result.push(channels[id])
                 });
-                return result;
+                */
+                return channels.filter(function (channel) {
+                    return true;
+                });
+            },
+            getByClass: function (classID) {
+                return channels.filter(function (channel) {
+                    return channel.data.classID == parseInt(classID);
+                });
+            },
+            getByTag: function (tag) {
+                return channels.filter(function (channel) {
+                    tag = parseInt(tag);
+                    return channel.data.tags.indexOf(tag) > -1;
+                });
+            },
+            getFavourite: function () {
+                return channels.filter(function (channel) {
+                    return channel.data.favourite;
+                });
             },
             getChannelByNumber: function (number) {
                 number = number || 1;
