@@ -6,9 +6,11 @@ lanet_tv.Social = (function () {
             social = document.createElement('div'),
             auth = document.createElement('div'),
             main = document.createElement('div'),
+            welcome = document.createElement('div'),
             hint = document.createElement('div'),
             reset = document.createElement('div'),
             storage = lanet_tv.Storage.getInstance(),
+            welcome_words = ['Hello,', 'Howdy,', 'Welcome,', 'Bonjour,', 'Buenos dias,', 'Shalom,'],
             userpic, requests = [], pin, pin_timeout, pin_check_url, open = false,
             onUserpicChange = function (userpic) { },
             createElement = function () {
@@ -16,9 +18,10 @@ lanet_tv.Social = (function () {
                 auth.className = 'auth';
                 main.className = 'main';
                 reset.className = 'reset';
+                welcome.className = 'welcome';
                 hint.innerHTML = '<a target="_blank" href="https://auth.lanet.tv/test">https://auth.lanet.tv/test</a>';
                 hint.className = 'hint';
-                reset.innerHTML = 'RED/A - Reset';
+                reset.innerHTML = 'RED/A - Log out';
                 userpic = '';
                 auth.appendChild(main);
                 social.appendChild(auth);
@@ -39,9 +42,12 @@ lanet_tv.Social = (function () {
             },
             saveAuth = function (data) {
                 Helpers.showNode(reset);
+                Helpers.removeChildren(main);
                 storage.set('token', data['token']);
                 storage.set('key', data['key']);
-                main.innerHTML = data['name'];
+                welcome.innerHTML = welcome_words[Math.floor(Math.random() * welcome_words.length)];
+                main.appendChild(welcome);
+                main.innerHTML += data['name'];
                 userpic = data['image'];
                 onUserpicChange(userpic);
             },
