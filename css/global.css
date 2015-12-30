@@ -4,6 +4,7 @@ body {
     background: #000;
     font-family: "roboto_condensedregular", sans-serif;
     color: #fff;
+    overflow: hidden;
 }
 
 video, #player {

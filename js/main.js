@@ -48,18 +48,42 @@ var api = lanet_tv.Api.getInstance(),
     expandMenu = function () {
         menu.expand();
         app_bar.showTitle();
+        menu.setItemSelectHandler(function (category, id) {
+            switch (category) {
+                case 'lists':
+                    switch (id) {
+                        case 'favourite':
+                            menu.setChannels(channels.getFavourite());
+                            break;
+                        default:
+                            menu.setChannels(channels.getChannels());
+                    }
+                    break;
+                case 'genres':
+                    menu.setChannels(channels.getByClass(id));
+                    break;
+                case 'tags':
+                    menu.setChannels(channels.getByTag(id));
+                    break;
+                default:
+                    console.warn('TODO: Unhandled item: ', [category, id])
+            }
+        });
         controller.setKeyFunctions({
             'RIGHT': function () {
                 collapseMenu()
             },
             'UP': function () {
-                menu.selectPreviousItem();
+                menu.selectPreviousRootItem();
             },
             'DOWN': function () {
-                menu.selectNextItem();
+                menu.selectNextRootItem();
+            },
+            'LEFT': function () {
+                menu.collapseCurrentRootCategory();
             },
             'ENTER': function () {
-                menu.toggleSelectedCategory();
+                menu.mainRootAction();
             }
         })
     },

@@ -25,21 +25,14 @@ lanet_tv.Api = (function () {
                 callback = callback || function (callback) { };
                 loaded ? callback(data) : loadData(callback);
             },
-            update: function (callback) {
-                loadData(callback)
-            },
-            getTimestamp: function () {
-                return data['timestamp']
-            },
-            getOffset: function() {
-                return data['time_offset']
-            },
-            getGenres: function () {
-                return data['classList'];
-            },
-            getTags: function() {
-                return data['tagList'];
-            },
+            update: function (callback) { loadData(callback) },
+            getTimestamp: function () { return data['timestamp'] },
+            getOffset: function () { return data['time_offset'] },
+            getGenres: function () { return data['classList']; },
+            getTags: function () { return data['tagList']; },
+            getLogoUrl: function (id) { return 'http://' + domains.stat + '/tv/logo/' + id.toString() + '.svg'; },
+            getPreviewBgUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '_bg.jpg'; },
+            getPreviewUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '.jpg'; },
             parseChannels: function () {
                 var channels = [];
                 for (var channel in data['list']) {
@@ -55,7 +48,8 @@ lanet_tv.Api = (function () {
                                 return parseInt(value);
                             }),
                             num: data['list'][channel]['n'],
-                            classID: -1,
+                            classID: 0,
+                            tags: [],
                             epg: {
                                 now: {
                                     begin: 0,
@@ -68,6 +62,9 @@ lanet_tv.Api = (function () {
                         };
                         if (data['list'][channel]['epg'][0]) {
                             channel_object['classID'] = data['list'][channel]['epg'][0]['class'];
+                            for (var tag in data['list'][channel]['epg'][0]['tags'])
+                                if (data['list'][channel]['epg'][0]['tags'].hasOwnProperty(tag) && data['tagList'].indexOf(data['list'][channel]['epg'][0]['tags'][tag]) > -1)
+                                    channel_object['tags'].push(data['tagList'].indexOf(data['list'][channel]['epg'][0]['tags'][tag]));
                             channel_object['epg']['now'] = {
                                 begin: data['list'][channel]['epg'][0]['start'],
                                 end: data['list'][channel]['epg'][0]['stop'],
@@ -89,10 +86,7 @@ lanet_tv.Api = (function () {
                     }
                 }
                 return channels;
-            },
-            getLogoUrl: function (id) { return 'http://' + domains.stat + '/tv/logo/' + id.toString() + '.svg'; },
-            getPreviewBgUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '_bg.jpg'; },
-            getPreviewUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '.jpg'; }
+            }
         };
     }
 

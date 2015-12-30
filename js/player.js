@@ -11,6 +11,21 @@ lanet_tv.Player = (function () {
                 player.height = resolution[1];
                 player.src = src + '|COMPONENT=HLS';
             };
+        /*
+        } else if (Hls.isSupported()) {
+            var hls = new Hls();
+            player = document.getElementById('player');
+            player.setSource = function (src, ratio) {
+                var resolution = Helpers.calcResolution(ratio);
+                player.width = resolution[0];
+                player.height = resolution[1];
+                hls.loadSource(src);
+                hls.attachMedia(player);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    player.play();
+                });
+            }
+        */
         } else {
             document.getElementById('player').remove();
             var loaded = false, onload = function () {};
