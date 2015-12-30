@@ -2,8 +2,9 @@ lanet_tv.Controller = (function () {
     var instance;
 
     function init() {
-        var functions = [], default_functions = [], keys = {};
+        var functions = [], default_functions = [], keys = {}, debug = document.getElementById('debug'), last_event = 0;
         window.addEventListener('keydown', function (event) {
+            last_event = new Date().getTime();
             if (keys[event.keyCode]) {
                 var func;
                 if (typeof functions[keys[event.keyCode]] === 'function') {
@@ -15,6 +16,7 @@ lanet_tv.Controller = (function () {
                     event.preventDefault();
                     Helpers.throttle(function () {
                         func();
+                        debug.innerHTML = String(new Date().getTime() - last_event) + "ms\n";
                     }, 50)();
                 }
             }

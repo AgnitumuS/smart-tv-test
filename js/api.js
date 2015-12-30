@@ -30,7 +30,7 @@ lanet_tv.Api = (function () {
             getOffset: function () { return data['time_offset'] },
             getGenres: function () { return data['classList']; },
             getTags: function () { return data['tagList']; },
-            getLogoUrl: function (id) { return 'http://' + domains.stat + '/tv/logo/' + id.toString() + '.svg'; },
+            getLogoUrl: function (id) { return 'http://' + domains.stat + '/tv/logo/' + id.toString() + '.png'; },
             getPreviewBgUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '_bg.jpg'; },
             getPreviewUrl: function (id) { return 'http://' + domains.edge + '/tv/_' + id.toString() + '.jpg'; },
             parseChannels: function () {

@@ -20,12 +20,12 @@ lanet_tv.Menu = (function () {
                 {
                     icon: 'like',
                     color: 'red',
-                    name: 'Лайк'
+                    name: 'Сетка'
                 },
                 {
                     icon: 'pip',
                     color: 'green',
-                    name: 'Картинка в картинке'
+                    name: 'Перезагрузка'
                 },
                 {
                     icon: 'star',
@@ -35,7 +35,7 @@ lanet_tv.Menu = (function () {
                 {
                     icon: 'bookmark',
                     color: 'blue',
-                    name: 'Смотреть позже'
+                    name: 'Отладочная информация'
                 }
             ], categories = {
                 choice: {

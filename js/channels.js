@@ -98,7 +98,7 @@ lanet_tv.Channels = (function () {
                     channels[channel['id']].update(channel);
                 else {
                     channels[channel['id']] = new lanet_tv.Channel(channel);
-                    new PreLoader([channel['logo']]);
+                    //new PreLoader([channel['logo']]);
                 }
                 ctv_order[channel['num']] = channel['id'];
             },
