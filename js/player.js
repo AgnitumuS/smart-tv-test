@@ -6,10 +6,12 @@ lanet_tv.Player = (function () {
         if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android/g)) {
             player = document.getElementById('player');
             player.setSource = function (src, ratio) {
+                if (navigator.userAgent.match(/SmartHub/g))
+                    src += '|COMPONENT=HLS';
                 var resolution = Helpers.calcResolution(ratio);
                 player.width = resolution[0];
                 player.height = resolution[1];
-                player.src = src + '|COMPONENT=HLS';
+                player.src = src;
             };
         /*
         } else if (Hls.isSupported()) {
