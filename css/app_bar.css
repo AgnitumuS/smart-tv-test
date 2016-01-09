@@ -5,7 +5,7 @@
     left: 0;
     right: 0;
     padding: 16px 32px 16px 72px;
-    background: rgba(96, 125, 139, .95) url('../assets/logotv_40.png') no-repeat 16px;
+    background: rgba(96, 125, 139, .95) url('../assets/logotv_no-outline_40.png') no-repeat 16px;
     font-size: 24px;
     display: none;
     overflow: hidden;
@@ -53,9 +53,9 @@
 }
 
 #app_bar > .channel_info > .logo {
-    width: 92px;
+    width: 80px;
     height: 40px;
-    margin: 0 50px;
+    margin: 0 56px;
 }
 
 #app_bar > .channel_info > .column {
@@ -111,7 +111,8 @@
     height: 40px;
     position: absolute;
     right: 16px;
-    background-image: url('../assets/icons/ic_account_circle_white_24px.svg');
+    /*background-image: url('../assets/icons/ic_account_circle_white_48px.svg');*/
+    background-image: url('../assets/icons/ic_account_circle_white_48px.png');
     background-size: 100% 100%;
     border-radius: 50%;
 }

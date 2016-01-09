@@ -53,33 +53,38 @@
     display: none;
 }
 
-#menu > .root > .item {
-    padding-left: 72px;
+#menu > .root > .item:before {
+    content: '';
+    display: block;
+    width: 72px;
+    height: inherit;
+    float: left;
+    background: no-repeat center;
 }
 
-#menu.expanded > .root > .category.selected, #menu.expanded > .root > .item.selected {
-    opacity: 1;
-    background-color: rgba(255, 255, 255, .15);
+#menu.expanded > .root > .item.current:before {
+    background-image: url('../assets/icons/ic_done_white_24px.png');
 }
 
 #menu > .root > .category:before {
     height: inherit;
 }
 
-#menu > .root > .category:after {
+#menu > .root > .category.expandable:after {
     content: '';
     display: block;
     width: 48px;
     height: inherit;
     float: right;
-    background: url('../assets/icons/chevron-down.svg') no-repeat center;
+    /*background: url('../assets/icons/chevron-down.svg') no-repeat center;*/
+    background: url('../assets/icons/chevron-down.png') no-repeat center;
     position: absolute;
     top: 0;
     right: 0;
 }
 
-#menu > .root > .category.expanded:after {
-    transform: rotateX(180deg);
+#menu > .root > .category.expandable.expanded:after {
+    background-image: url('../assets/icons/chevron-up.png');
 }
 
 #menu > .root > .category .content {
@@ -114,7 +119,7 @@
     opacity: .7;
 }
 
-#menu > .list > .channel.current > *, #menu > .list > .channel.selected > * {
+#menu > .list > .current > *, #menu:not(.expanded) > .list > .selected > * {
     opacity: 1;
 }
 
@@ -128,11 +133,20 @@
 }
 */
 
-#menu > .list > .channel.selected {
+
+
+
+#menu:not(.expanded) > .list > .selected:not(.current) {
     background-color: rgb(89, 108, 116);
 }
 
-#menu > .list > .channel.current {
+#menu.expanded > .root > .selected {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, .15);
+}
+
+#menu > .list > .current, #menu.expanded > .root > .current {
+    opacity: 1;
     background-color: rgb(0, 172, 193);
 }
 
@@ -162,7 +176,7 @@
     height: 56px;
 }
 
-#menu > .list > .channel.selected, #menu > .list > .channel.current {
+#menu > .list > .channel.selected, #menu > .list > .current {
     opacity: 1;
 }
 
@@ -173,7 +187,8 @@
     top: 0;
     height: 24px;
     width: 24px;
-    background: url('../assets/icons/ic_star_yellow_24px.svg') no-repeat center;
+    /*background: url('../assets/icons/ic_star_yellow_24px.svg') no-repeat center;*/
+    background: url('../assets/icons/ic_star_yellow_24px.png') no-repeat center;
 }
 
 #menu > .list > .channel.favourite .star {
