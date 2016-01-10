@@ -133,6 +133,8 @@ lanet_tv.Menu = (function () {
                             if (categories[cat_id].children.hasOwnProperty(item_id)) {
                                 var category_item = document.createElement('div');
                                 category_item.classList.add('item');
+                                if (cat_id == 'lists' && categories[cat_id].children[item_id].id == 'all')
+                                    category_item.classList.add('current');
                                 category_item.classList.add('hidden');
                                 category_item.innerHTML = categories[cat_id].children[item_id].name;
                                 root.appendChild(category_item);
