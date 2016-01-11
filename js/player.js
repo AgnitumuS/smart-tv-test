@@ -31,13 +31,12 @@ lanet_tv.Player = (function () {
         } else {
             document.getElementById('player').remove();
             var loaded = false, onload = function () {};
-            window.onPlayerEvent = function (e, data) {
+            window.onPlayerEvent = function (e) {
                 if (e == 'ready') {
                     loaded = true;
                     onload();
                 }
                 if (e == 'error') {
-                    //console.error('player error', data);
                     onload();
                 }
             };

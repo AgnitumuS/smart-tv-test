@@ -123,6 +123,9 @@ lanet_tv.Menu = (function () {
                         category_element.classList.add('category');
                         category_element.classList.add('icon');
                         category_element.classList.add(categories[cat_id].icon);
+                        Object.keys(categories[cat_id].children).length > 0 ?
+                            category_element.classList.add('expandable') :
+                            category_element.classList.remove('expandable');
                         category_element.innerHTML = categories[cat_id].name;
                         root.appendChild(category_element);
                         categories[cat_id].element = category_element;
@@ -130,6 +133,8 @@ lanet_tv.Menu = (function () {
                             if (categories[cat_id].children.hasOwnProperty(item_id)) {
                                 var category_item = document.createElement('div');
                                 category_item.classList.add('item');
+                                if (cat_id == 'lists' && categories[cat_id].children[item_id].id == 'all')
+                                    category_item.classList.add('current');
                                 category_item.classList.add('hidden');
                                 category_item.innerHTML = categories[cat_id].children[item_id].name;
                                 root.appendChild(category_item);
@@ -152,6 +157,12 @@ lanet_tv.Menu = (function () {
                     }
                 } else if (root_menu_items[current_root_menu_item].element.classList.contains('item')) {
                     rootMenuItemAction = function () {
+                        for (var category in categories)
+                            if (categories.hasOwnProperty(category))
+                                for (item in categories[category].children)
+                                    if (categories[category].children.hasOwnProperty(item))
+                                        categories[category].children[item].element.classList.remove('current');
+                        root_menu_items[current_root_menu_item].element.classList.add('current');
                         itemSelectFunction(root_menu_items[current_root_menu_item].category, root_menu_items[current_root_menu_item].id);
                     }
                 }

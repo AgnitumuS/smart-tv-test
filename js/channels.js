@@ -109,7 +109,7 @@ lanet_tv.Channels = (function () {
                     result.push(channels[id])
                 });
                 */
-                return channels.filter(function (channel) {
+                return channels.filter(function () {
                     return true;
                 });
             },
