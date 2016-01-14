@@ -6,6 +6,7 @@ var api = lanet_tv.Api.getInstance(),
     menu = lanet_tv.Menu.getInstance(),
     social = lanet_tv.Social.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
+    remote = lanet_tv.Remote.getInstance(),
     channel,
     updateTime = function () {
         Time.setTimestamp(api.getTimestamp());
@@ -148,6 +149,10 @@ var api = lanet_tv.Api.getInstance(),
             },
             'LEFT': function () {
                 showPlayer()
+            },
+            'BLUE': function() {
+                var enabled = remote.togglePolling();
+                console.log("Remote " + enabled ? "enabled" : "disabled")
             }
         })
     },
@@ -211,6 +216,18 @@ api.getData(function () {
     menu.setChannels(channels.getChannels());
     menu.setGenres(api.getGenres());
     menu.setTags(api.getTags());
+    remote.setHandler(function (command) {
+        switch (command.toUpperCase()) {
+            case 'NEXT':
+                playChannel(channels.getNext());
+                app_bar.show(2000);
+                break;
+            case 'PREV':
+                playChannel(channels.getPrevious());
+                app_bar.show(2000);
+                break;
+        }
+    });
 });
 Helpers.hideNode(document.getElementById('loading'));
 if (document.readyState === 'complete') {

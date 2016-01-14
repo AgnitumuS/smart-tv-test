@@ -1,10 +1,13 @@
 lanet_tv.Controller = (function () {
-    var instance;
+    var instance, last_keys = [];
 
     function init() {
         var functions = [], default_functions = [], keys = {}, debug = document.getElementById('debug'), last_event = 0;
         window.addEventListener('keydown', function (event) {
             last_event = new Date().getTime();
+            last_keys.push(event.keyCode);
+            if (last_keys.length > 6)
+                last_keys.shift();
             if (keys[event.keyCode]) {
                 var func;
                 if (typeof functions[keys[event.keyCode]] === 'function') {

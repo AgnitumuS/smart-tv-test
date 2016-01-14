@@ -329,7 +329,7 @@ lanet_tv.Menu = (function () {
                         categories.genres.children[genre] = {
                             id: genre,
                             category: 'genres',
-                            name: genres[genre],
+                            name: genres[genre].capitalizeFirstLetter(),
                             element: null
                         }
                     }
