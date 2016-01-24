@@ -288,6 +288,7 @@
     position: absolute;
     width: inherit;
     height: 2px;
+    overflow: hidden;
     background-color: rgba(255, 255, 255, .4);
 }
 

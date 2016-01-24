@@ -17,7 +17,7 @@ lanet_tv.Channel = function (channel) {
         data = {},
         calcProgress = function (begin, end) {
             var progress = Math.round((Time.getTimestamp() - begin) / (end - begin) * 100);
-            return (progress < Infinity && progress >= 0) ? progress : undefined;
+            return (progress >= 0 && progress <= 100) ? progress : undefined;
         },
         update = function (channel) {
             var is_current = channels.getCurrent() && channels.getCurrent().data['id'] == channel['id'];
