@@ -7,7 +7,7 @@ var api = lanet_tv.Api.getInstance(),
     social = lanet_tv.Social.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
-    channel, ballon_timeout = 0,
+    channel, balloon_timeout = 0,
     updateTime = function () {
         Time.setTimestamp(api.getTimestamp());
         Time.setOffset(api.getOffset());
@@ -50,8 +50,8 @@ var api = lanet_tv.Api.getInstance(),
             balloon = document.getElementById("balloon");
         Helpers.showNode(container);
         balloon.innerHTML = text;
-        clearTimeout(ballon_timeout);
-        ballon_timeout = setTimeout(function () {
+        clearTimeout(balloon_timeout);
+        balloon_timeout = setTimeout(function () {
             Helpers.hideNode(container);
         }, 2000)
     },
