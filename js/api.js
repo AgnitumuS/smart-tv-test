@@ -3,19 +3,20 @@ lanet_tv.Api = (function () {
 
     function init() {
         var domains = {
-            api: 'play.lanet.tv',
-            stat: 'static.lanet.ua',
-            img: 'kirito.la.net.ua',
+            api: 'https://play.lanet.tv',
+            static: 'https://static.lanet.ua'
+            //images: 'https://kirito.la.net.ua',
             //data: 'data.rmrf.co',
-            data: 'data.lanet.tv',
-            edge: 'tv.rmrf.co'
+            //data: 'data.lanet.tv',
+            //edge: 'tv.rmrf.co'
         }, loaded = false, data = {}, key;
 
         function loadData(callback) {
             callback = callback || function (callback) { };
-            Helpers.getJSON('https://' + domains.api + '/init' + (key ? "?key=" + key : ""), function (reply) {
+            Helpers.getJSON(domains.api + '/init' + (key ? "?key=" + key : ""), function (reply) {
                 data = reply;
                 domains['edge'] = domains['edge'] || reply['edge'];
+                domains['images'] = domains['umg'] || reply['images'];
                 loaded = true;
                 callback(data);
             });
@@ -33,9 +34,9 @@ lanet_tv.Api = (function () {
             getOffset: function () { return data['time_offset'] },
             getGenres: function () { return data['classList']; },
             getTags: function () { return data['tagList']; },
-            getLogoUrl: function (id) { return 'http://' + domains.stat + '/tv/logo/' + id.toString() + '.png'; },
-            getPreviewBgUrl: function (id) { return 'http://' + domains.img + '/tv/_' + id.toString() + '_bg.jpg'; },
-            getPreviewUrl: function (id) { return 'http://' + domains.img + '/tv/_' + id.toString() + '.jpg'; },
+            getLogoUrl: function (id) { return domains.static + '/tv/logo/' + id.toString() + '.png'; },
+            getPreviewBgUrl: function (id) { return domains.images + '_' + id.toString() + '_bg.jpg'; },
+            getPreviewUrl: function (id) { return domains.images + '_' + id.toString() + '.jpg'; },
             parseChannels: function () {
                 var channels = [];
                 for (var channel in data['list']) {
@@ -46,7 +47,8 @@ lanet_tv.Api = (function () {
                             logo: this.getLogoUrl(channel),
                             preview: this.getPreviewUrl(channel),
                             preview_bg: this.getPreviewBgUrl(channel),
-                            url: 'http://' + domains.edge + '/tv/' + channel.toString() + '.m3u8',
+                            //url: 'http://' + domains.edge + '/tv/' + channel.toString() + '.m3u8',
+                            url: data['list'][channel]['url'],
                             ratio: data['list'][channel]['ratio'].split(':').map(function (value) {
                                 return parseInt(value);
                             }),
