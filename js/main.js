@@ -7,16 +7,27 @@ var api = lanet_tv.Api.getInstance(),
     social = lanet_tv.Social.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
-    channel,
+    channel, balloon_timeout = 0,
     updateTime = function () {
         Time.setTimestamp(api.getTimestamp());
         Time.setOffset(api.getOffset());
     },
+    getCurrentChannelList = function () {
+        return channels.getChannels();
+    },
     setChannels = function () {
-        api.parseChannels().forEach(function (channel) {
-            channel['favourite'] = storage.get('favourite').split(' ').indexOf(channel['id'].toString()) != -1;
-            channels.setChannel(channel);
-        });
+        var new_channels = api.parseChannels(),
+            new_channel_ids = [];
+        for (var c in new_channels) {
+            if (new_channels.hasOwnProperty(c)) {
+                var channel = new_channels[c];
+                new_channel_ids.push(channel.id);
+                channel['favourite'] = storage.get('favourite').split(' ').indexOf(channel['id'].toString()) != -1;
+                channels.setChannel(channel);
+            }
+        }
+        channels.leaveOnly(new_channel_ids);
+        menu.setChannels(getCurrentChannelList());
     },
     toggleFavourite = function (channel) {
         var current = storage.get('favourite').split(' '),
@@ -26,12 +37,26 @@ var api = lanet_tv.Api.getInstance(),
         channel.data['favourite'] = storage.get('favourite').split(' ').indexOf(target) != -1;
         channels.setChannel(channel.data);
     },
-    update = function () {
+    update = function (callback) {
+        callback = callback || function (callback) { };
         api.update(function () {
             updateTime();
             setChannels();
-            app_bar.setChannel(channels.getCurrent());
+            app_bar.setTitle(api.getPack());
+            menu.setGenres(api.getGenres());
+            menu.setTags(api.getTags());
+            callback();
         });
+    },
+    showBalloon = function (text) {
+        var container = document.getElementById("balloon-container"),
+            balloon = document.getElementById("balloon");
+        Helpers.showNode(container);
+        balloon.innerHTML = text;
+        clearTimeout(balloon_timeout);
+        balloon_timeout = setTimeout(function () {
+            Helpers.hideNode(container);
+        }, 2000)
     },
     showTint = function () {
         document.getElementById('overlay').classList.add('tinted');
@@ -54,21 +79,33 @@ var api = lanet_tv.Api.getInstance(),
                 case 'lists':
                     switch (id) {
                         case 'favourite':
-                            menu.setChannels(channels.getFavourite());
+                            getCurrentChannelList = function () {
+                                return channels.getFavourite();
+                            };
                             break;
                         default:
-                            menu.setChannels(channels.getChannels());
+                            getCurrentChannelList = function () {
+                                return channels.getChannels();
+                            };
                     }
                     break;
                 case 'genres':
-                    menu.setChannels(channels.getByClass(id));
+                    getCurrentChannelList = function () {
+                        return channels.getByClass(id);
+                    };
                     break;
                 case 'tags':
-                    menu.setChannels(channels.getByTag(id));
+                    getCurrentChannelList = function () {
+                        return channels.getByTag(id);
+                    };
                     break;
                 default:
-                    console.warn('TODO: Unhandled item: ', [category, id])
+                    console.warn('TODO: Unhandled item: ', [category, id]);
+                    getCurrentChannelList = function () {
+                        return channels.getChannels();
+                    };
             }
+            menu.setChannels(getCurrentChannelList());
         });
         controller.setKeyFunctions({
             'RIGHT': function () {
@@ -144,15 +181,11 @@ var api = lanet_tv.Api.getInstance(),
         app_bar.show();
         app_bar.setTransparentBackground(true);
         controller.setKeyFunctions({
-            'RED': function () {
-                social.resetAuth()
+            'ENTER': function () {
+                social.resetAuth();
             },
             'LEFT': function () {
-                showPlayer()
-            },
-            'BLUE': function() {
-                var enabled = remote.togglePolling();
-                console.log("Remote " + enabled ? "enabled" : "disabled")
+                showPlayer();
             }
         })
     },
@@ -177,6 +210,9 @@ var api = lanet_tv.Api.getInstance(),
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
             },
+            'YELLOW': function () {
+                showBalloon("Удаленное управление " + (remote.togglePolling() ? "включено" : "выключено"));
+            },
             'CH_UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
@@ -190,44 +226,69 @@ var api = lanet_tv.Api.getInstance(),
             }
         })
     };
+
 api.getData(function () {
-    app_bar.setTitle('/ONAIR');
-    setChannels();
-    setInterval(function () {
-        update();
-    }, 5000);
-    controller.setDefaultKeyFunctions({
-        'RED': function () {
-            Helpers.toggleNode(document.getElementById('grid'))
-        },
-        'GREEN': function () {
-            window.location.reload()
-        },
-        'BLUE': function () {
-            Helpers.toggleNode(document.getElementById('debug'))
-        }
-    });
-    social.setUserpicChangeFunction(function (userpic) {
-        app_bar.setUserpic(userpic);
-    });
-    channel = storage.get('last_channel') ? channels.getChannelById(storage.get('last_channel')) : channels.getChannelByNumber();
-    playChannel(channel);
-    showPlayer();
-    menu.setChannels(channels.getChannels());
-    menu.setGenres(api.getGenres());
-    menu.setTags(api.getTags());
-    remote.setHandler(function (command) {
-        switch (command.toUpperCase()) {
-            case 'NEXT':
-                playChannel(channels.getNext());
-                app_bar.show(2000);
-                break;
-            case 'PREV':
-                playChannel(channels.getPrevious());
-                app_bar.show(2000);
-                break;
-        }
-    });
+    if (storage.get("token")) {
+        social.setAuthUpdateFunction(function (userpic, key) {
+            app_bar.setUserpic(userpic);
+            api.setKey(key);
+            update(function () {
+                setInterval(function () {
+                    update();
+                }, 5000);
+                channel = storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')) ? channels.getChannelById(storage.get('last_channel')) : channels.getFirstChannel();
+                playChannel(channel);
+                showPlayer();
+                if (!social.getKey()) {
+                    showSocial();
+                    controller.disableKeys();
+                }
+            });
+            social.setAuthUpdateFunction(function (userpic, key) {
+                app_bar.setUserpic(userpic);
+                api.setKey(key);
+                update();
+                if (social.getKey()) {
+                    showPlayer();
+                    controller.enableKeys();
+                }
+            });
+        });
+    } else {
+        setChannels();
+        setInterval(function () {
+            update();
+        }, 5000);
+        channel = storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')) ? channels.getChannelById(storage.get('last_channel')) : channels.getFirstChannel();
+        playChannel(channel);
+        showPlayer();
+        showSocial();
+        social.setAuthUpdateFunction(function (userpic, key) {
+            app_bar.setUserpic(userpic);
+            api.setKey(key);
+            update();
+            if (social.getKey()) {
+                showPlayer();
+                controller.enableKeys();
+            }
+        });
+    }
+
+});
+controller.setDefaultKeyFunctions({
+    'RED': function () {
+        Helpers.toggleNode(document.getElementById('grid'))
+    },
+    'GREEN': function () {
+        window.location.reload()
+    },
+    'BLUE': function () {
+        Helpers.toggleNode(document.getElementById('debug'))
+    }
+});
+remote.setKey("default");
+remote.setHandler(function (command) {
+    controller.emulateKeyPress(command.toUpperCase());
 });
 Helpers.hideNode(document.getElementById('loading'));
 if (document.readyState === 'complete') {

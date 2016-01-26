@@ -2,7 +2,8 @@ lanet_tv.Controller = (function () {
     var instance, last_keys = [];
 
     function init() {
-        var functions = [], default_functions = [], keys = {}, debug = document.getElementById('debug'), last_event = 0;
+        var functions = [], default_functions = [], keys = {}, debug = document.getElementById('debug'), last_event = 0,
+            enabled = false;
         window.addEventListener('keydown', function (event) {
             last_event = new Date().getTime();
             last_keys.push(event.keyCode);
@@ -18,7 +19,8 @@ lanet_tv.Controller = (function () {
                 if (typeof func === 'function') {
                     event.preventDefault();
                     Helpers.throttle(function () {
-                        func();
+                        if (enabled)
+                            func();
                         debug.innerHTML = String(new Date().getTime() - last_event) + "ms\n";
                     }, 50)();
                 }
@@ -33,6 +35,18 @@ lanet_tv.Controller = (function () {
             },
             setDefaultKeyFunctions: function (keys) {
                 default_functions = keys
+            },
+            emulateKeyPress: function (key) {
+                if (typeof functions[key] === 'function')
+                    functions[key]();
+                else if (typeof default_functions[key] === 'function')
+                    default_functions[key]();
+            },
+            enableKeys: function () {
+                enabled = true;
+            },
+            disableKeys: function () {
+                enabled = false;
             }
         };
     }

@@ -11,8 +11,8 @@ lanet_tv.Social = (function () {
             reset = document.createElement('div'),
             storage = lanet_tv.Storage.getInstance(),
             welcome_words = ['Hello,', 'Howdy,', 'Welcome,', 'Bonjour,', 'Buenos dias,', 'Shalom,'],
-            userpic, requests = [], pin, pin_timeout, pin_check_url, open = false,
-            onUserpicChange = function (userpic) { },
+            userpic, key, requests = [], pin, pin_timeout, pin_check_url, open = false,
+            onAuthUpdate = function (userpic, key) { },
             createElement = function () {
                 social.id = 'social';
                 auth.className = 'auth';
@@ -21,8 +21,9 @@ lanet_tv.Social = (function () {
                 welcome.className = 'welcome';
                 hint.innerHTML = '<a target="_blank" href="https://auth.lanet.tv/test">https://auth.lanet.tv/test</a>';
                 hint.className = 'hint';
-                reset.innerHTML = 'RED/A - Log out';
+                reset.innerHTML = 'OK - Log out';
                 userpic = '';
+                key = null;
                 auth.appendChild(main);
                 social.appendChild(auth);
                 social.appendChild(reset);
@@ -37,7 +38,8 @@ lanet_tv.Social = (function () {
                 pin = false;
                 pin_check_url = false;
                 userpic = '';
-                onUserpicChange(userpic);
+                key = null;
+                onAuthUpdate(userpic, key);
                 updateAuth();
             },
             saveAuth = function (data) {
@@ -49,7 +51,8 @@ lanet_tv.Social = (function () {
                 main.appendChild(welcome);
                 main.innerHTML += data['name'];
                 userpic = data['image'];
-                onUserpicChange(userpic);
+                key = data['key'];
+                onAuthUpdate(userpic, key);
             },
             checkPin = function (url) {
                 requests.push(Helpers.getJSON(url, function (data) {
@@ -106,9 +109,12 @@ lanet_tv.Social = (function () {
                 open = false;
             },
             resetAuth: resetAuth,
-            setUserpicChangeFunction: function (func) {
-                onUserpicChange = func;
-                if (userpic) onUserpicChange(userpic)
+            setAuthUpdateFunction: function (func) {
+                onAuthUpdate = func;
+                if (userpic && key) onAuthUpdate(userpic, key)
+            },
+            getKey: function() {
+                return key;
             }
         };
     }

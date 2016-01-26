@@ -215,6 +215,30 @@ lanet_tv.Menu = (function () {
                     extra: result % 1 !== 0
                 }
             },
+        /*
+         renderCurrentListPage = function () {
+         resetListSelection();
+         Helpers.removeChildren(list);
+         var current_channel_id = Object.keys(full_channel_list.filter(function (channel) {
+         return channel.element.classList.contains('current')
+         }))[0],
+         index = Object.keys(full_channel_list).indexOf(current_channel_id),
+         visible = visibleListItems(),
+         counter, page;
+         index = index > -1 ? index : 0;
+         page = Math.floor(index / visible.visible);
+         current_channel_list = [];
+         selected_channel = index - page * visibleListItems().visible;
+         current_limits.min = visible.visible * page;
+         current_limits.max = current_limits.min + visible.visible;
+         for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[Object.keys(full_channel_list)[counter]]; counter++) {
+         current_channel_list.push(full_channel_list[Object.keys(full_channel_list)[counter]]);
+         list.appendChild(full_channel_list[Object.keys(full_channel_list)[counter]].element);
+         }
+         if (current_channel_list[selected_channel])
+         current_channel_list[selected_channel].element.classList.add('selected');
+         },
+         */
             renderCurrentListPage = function () {
                 resetListSelection();
                 Helpers.removeChildren(list);
@@ -323,39 +347,48 @@ lanet_tv.Menu = (function () {
                 }
             },
             setGenres: function (genres) {
-                categories.genres.children = {};
-                for (var genre in genres) {
-                    if (genres.hasOwnProperty(genre)) {
-                        categories.genres.children[genre] = {
-                            id: genre,
-                            category: 'genres',
-                            name: genres[genre].capitalizeFirstLetter(),
-                            element: null
+                if (genres.length != Object.keys(categories.genres.children).length) {
+                    categories.genres.children = {};
+                    for (var g in genres) {
+                        if (genres.hasOwnProperty(g)) {
+                            categories.genres.children[genres[g].id] = {
+                                id: genres[g].id,
+                                category: 'genres',
+                                name: genres[g].name.capitalizeFirstLetter(),
+                                element: null
+                            }
                         }
                     }
+                    renderRoot();
                 }
-                renderRoot();
             },
             setTags: function (tags) {
-                categories.tags.children = {};
-                for (var tag in tags) {
-                    if (tags.hasOwnProperty(tag)) {
-                        categories.tags.children[tag] = {
-                            id: tag,
-                            category: 'tags',
-                            name: tags[tag],
-                            element: null
+                if (tags.length != Object.keys(categories.tags.children).length) {
+                    categories.tags.children = {};
+                    for (var tag in tags) {
+                        if (tags.hasOwnProperty(tag)) {
+                            categories.tags.children[tag] = {
+                                id: tag,
+                                category: 'tags',
+                                name: tags[tag],
+                                element: null
+                            }
                         }
                     }
+                    renderRoot();
                 }
-                renderRoot();
             },
             setItemSelectHandler: function (handler) {
                 itemSelectFunction = handler;
             },
             setChannels: function (channels) {
-                full_channel_list = channels;
-                renderCurrentListPage();
+                if (full_channel_list.length != Object.keys(channels).length) {
+                    full_channel_list = [];
+                    for (var c in channels)
+                        if (channels.hasOwnProperty(c))
+                            full_channel_list.push(channels[c]);
+                    renderCurrentListPage();
+                }
             },
             selectNextChannel: function () {
                 if (current_limits.max > full_channel_list.length - 1) {

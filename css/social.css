@@ -1,7 +1,7 @@
 #social {
     display: none;
     position: absolute;
-    width: 456px;
+    width: 1000px;
     top: 72px;
     right: 0;
     bottom: 0;
@@ -14,7 +14,7 @@
     width: inherit;
     overflow: hidden;
     float: right;
-    background: rgba(96, 125, 139, .87);
+    background: rgba(38, 50, 56, .87);
     text-align: center;
     font-size: 40px;
     position: relative;
@@ -30,6 +30,8 @@
     overflow: hidden;
     vertical-align: middle;
     line-height: 40px;
+    font-family: "roboto_regular", sans-serif;
+    /*letter-spacing: .5em;*/
 }
 
 #social > .auth > .main > .welcome {
@@ -42,6 +44,7 @@
     font-size: 16px;
 }
 
+/*
 #social > .reset {
     position: absolute;
     bottom: 16px;
@@ -54,6 +57,23 @@
     line-height: 8px;
     padding: 22px 16px;
     background-color: #607d8b;
+    margin: auto;
+    cursor: pointer;
+}
+*/
+
+#social > .reset {
+    position: absolute;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    width: 240px;
+    height: 64px;
+    line-height: 64px;
+    border-radius: 2px;
+    font-size: 24px;
+    background-color: #607d8b;
+    text-align: center;
     margin: auto;
     cursor: pointer;
 }

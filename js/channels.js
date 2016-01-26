@@ -17,7 +17,7 @@ lanet_tv.Channel = function (channel) {
         data = {},
         calcProgress = function (begin, end) {
             var progress = Math.round((Time.getTimestamp() - begin) / (end - begin) * 100);
-            return (progress < Infinity && progress >= 0) ? progress : undefined;
+            return (progress >= 0 && progress <= 100) ? progress : undefined;
         },
         update = function (channel) {
             var is_current = channels.getCurrent() && channels.getCurrent().data['id'] == channel['id'];
@@ -82,12 +82,13 @@ lanet_tv.Channels = (function () {
     var instance;
 
     function init() {
-        var channels = [], current = 0, ctv_order = [], timestamp = Time.getTimestamp().toString();
+        var channels = {}, current = 0, ctv_order = [], timestamp = Time.getTimestamp().toString();
         setInterval(function () {
             var local_timestamp = Time.getTimestamp().toString(), images = [];
-            channels.forEach(function (channel) {
-                images.push(channel.data['preview_bg'] + '?timestamp=' + local_timestamp);
-            });
+            for (var channel_id in channels) {
+                if (channels.hasOwnProperty(channel_id))
+                    images.push(channels[channel_id].data['preview_bg'] + '?timestamp=' + local_timestamp);
+            }
             new PreLoader(images, function () {
                 timestamp = local_timestamp;
             });
@@ -102,16 +103,13 @@ lanet_tv.Channels = (function () {
                 }
                 ctv_order[channel['num']] = channel['id'];
             },
+            leaveOnly: function (ids) {
+                channels = channels.filter(function (channel) {
+                    return ids.indexOf(channel.data['id']) > -1;
+                });
+            },
             getChannels: function () {
-                /*
-                var result = [];
-                ctv_order.forEach(function (id) {
-                    result.push(channels[id])
-                });
-                */
-                return channels.filter(function () {
-                    return true;
-                });
+                return channels;
             },
             getByClass: function (classID) {
                 return channels.filter(function (channel) {
@@ -134,6 +132,9 @@ lanet_tv.Channels = (function () {
                 return channels.filter(function (channel) {
                     return channel.data['num'] === number;
                 })[0]
+            },
+            getFirstChannel: function () {
+                return channels[Object.keys(channels)[0]];
             },
             getChannelById: function (id) {
                 return channels[id];
