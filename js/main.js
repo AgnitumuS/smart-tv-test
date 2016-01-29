@@ -8,6 +8,7 @@ var api = lanet_tv.Api.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
     channel, balloon_timeout = 0,
+    touch = {last_y: 0, current_y: 0, last_x: 0, current_x: 0},
     updateTime = function () {
         Time.setTimestamp(api.getTimestamp());
         Time.setOffset(api.getOffset());
@@ -47,6 +48,11 @@ var api = lanet_tv.Api.getInstance(),
             menu.setTags(api.getTags());
             callback();
         });
+    },
+    log = function (string) {
+        var debug = document.getElementById('debug');
+        debug.innerHTML += string + "\n";
+        debug.scrollTop = debug.scrollHeight;
     },
     showBalloon = function (text) {
         var container = document.getElementById("balloon-container"),
@@ -222,7 +228,7 @@ var api = lanet_tv.Api.getInstance(),
                 app_bar.show(2000);
             },
             'ENTER': function () {
-                showMenu()
+                //showMenu()
             }
         })
     };
@@ -290,7 +296,39 @@ remote.setKey("default");
 remote.setHandler(function (command) {
     controller.emulateKeyPress(command.toUpperCase());
 });
+//remote.togglePolling();
 Helpers.hideNode(document.getElementById('loading'));
+window.addEventListener("touchstart", function (event) {
+    touch.last_y = event.touches[0].clientY;
+    touch.last_x = event.touches[0].clientX;
+    touch.current_y = touch.last_y;
+    touch.current_x = touch.last_x;
+    document.getElementById("player").play();
+    log("touchstart " + touch.last_x + "x" + touch.last_y);
+});
+window.addEventListener("touchend", function (event) {
+    touch.current_x = event.changedTouches[event.changedTouches.length - 1].clientX;
+    touch.current_y = event.changedTouches[event.changedTouches.length - 1].clientY;
+    var delta_y = touch.current_y - touch.last_y,
+        delta_x = touch.current_x - touch.last_x;
+    log("touchend " + touch.last_x + "x" + touch.last_y + " " + touch.current_x + "x" + touch.current_y + ' ' + delta_x + 'x' + delta_y);
+    if (Math.abs(delta_y) > 100) {
+        if (delta_y < 0)
+            controller.emulateKeyPress("UP");
+        else if (delta_y > 0)
+            controller.emulateKeyPress("DOWN");
+    }
+    else if (Math.abs(delta_x) > 100) {
+        if (delta_x < 0)
+            controller.emulateKeyPress("RIGHT");
+        else if (delta_x > 0)
+            controller.emulateKeyPress("LEFT");
+    } else if (Math.abs(delta_x) < 10 && Math.abs(delta_y) < 10) {
+        controller.emulateKeyPress("ENTER");
+    }
+    touch.last_y = touch.current_y;
+    touch.last_x = touch.current_x;
+});
 if (document.readyState === 'complete') {
     Helpers.hideNode(document.getElementById('loading'));
 } else {

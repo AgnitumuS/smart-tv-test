@@ -78,14 +78,14 @@ lanet_tv.Menu = (function () {
                     name: 'Теги',
                     element: null,
                     children: {}
-                },
+                }/*,
                 settings: {
                     category: 'settings',
                     icon: 'settings',
                     name: 'Настройки',
                     element: null,
                     children: {}
-                }
+                }*/
             },
             createElement = function () {
                 menu.id = 'menu';

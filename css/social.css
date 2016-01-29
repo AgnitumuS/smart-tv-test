@@ -1,6 +1,6 @@
 #social {
     display: none;
-    position: absolute;
+    position: fixed;
     width: 1000px;
     top: 72px;
     right: 0;
