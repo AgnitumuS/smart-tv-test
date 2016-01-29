@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+    <title>Lanet TV Login</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="user-scalable=no,width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+    <link rel="stylesheet" href="css/fonts.css">
+    <style>
+        body {
+            background-color: #455a64;
+        }
+
+        button {
+            display: block;
+            height: 72px;
+            line-height: 72px;
+            vertical-align: middle;
+            width: 400px;
+            border-radius: 2px;
+            border: 0;
+            margin: 10px auto;
+            color: #ffffff;
+            font-size: 16px;
+            text-align: left;
+            padding: 0;
+            font-family: "roboto_condensedregular", sans-serif;
+        }
+
+        button:before {
+            content: '';
+            display: inline-block;
+            height: inherit;
+            width: 72px;
+            background: no-repeat center;
+            background-size: 36px;
+        }
+
+        button.facebook {
+            background-color: #3b5998;
+        }
+
+        button.facebook:before {
+            background-image: url("./assets/icons/facebook_white.svg");
+        }
+
+        button.google {
+            background-color: #dc4e41;
+        }
+
+        button.google:before {
+            background-image: url("./assets/icons/google_white.svg");
+        }
+
+        button.vk {
+            background-color: #6383a8;
+        }
+
+        button.vk:before {
+            background-image: url("./assets/icons/vk_white.svg");
+        }
+
+        button.lanet {
+            background-color: #0093d7;
+        }
+
+        button.lanet:before {
+            background-image: url("./assets/icons/lanet_white.svg");
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        button span {
+            display: inline-block;
+            height: inherit;
+            position: absolute;
+            line-height: inherit;
+            border-left: 1px solid rgba(255, 255, 255, .1);
+            padding-left: 17px;
+        }
+    </style>
+</head>
+<body>
+<button class="facebook"><span>Facebook</span></button>
+<button class="google"><span>Google</span></button>
+<button class="vk"><span>Вконтакте</span></button>
+<button class="lanet"><span>Ланет</span></button>
+</body>
+</html>
