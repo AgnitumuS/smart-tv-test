@@ -1,5 +1,5 @@
 if (navigator.userAgent.match(/NetCast/g)) {
-    lanet_tv.Controller.getInstance().addKeymap({
+    lanet_tv.Input.getInstance().addKeymap({
         '13': 'ENTER',
         '461': 'BACK',
         '107': 'CH_UP',

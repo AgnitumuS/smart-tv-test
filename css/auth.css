@@ -1,0 +1,159 @@
+#social {
+    display: none;
+    position: fixed;
+    width: 560px;
+    top: 72px;
+    right: 0;
+    bottom: 0;
+    padding: 0 0;
+    z-index: 20;
+}
+
+#social > .auth {
+    height: 100%;
+    width: inherit;
+    overflow: hidden;
+    float: right;
+    background: rgba(38, 50, 56, .87);
+    text-align: center;
+    font-size: 40px;
+    position: relative;
+}
+
+#social > .auth > .main {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: inherit;
+    height: 384px;
+    overflow: hidden;
+    vertical-align: middle;
+    line-height: 100px;
+    font-family: "roboto_regular", sans-serif;
+    /*letter-spacing: .5em;*/
+}
+
+#social > .auth > .main > .welcome {
+    font-family: "roboto_condensedlight", sans-serif;
+    font-size: 24px;
+}
+
+#social > .auth > .main > .hint > a {
+    color: #fff;
+    font-size: 16px;
+}
+
+/*
+#social > .reset {
+    position: absolute;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    width: 104px;
+    height: 8px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 8px;
+    padding: 22px 16px;
+    background-color: #607d8b;
+    margin: auto;
+    cursor: pointer;
+}
+*/
+
+#social .button:focus {
+    outline: none;
+}
+
+#social .button {
+    display: block;
+    position: relative;
+    height: 72px;
+    line-height: 72px;
+    vertical-align: middle;
+    width: 400px;
+    border-radius: 2px;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .14), 0 2px 2px 0 rgba(0, 0, 0, .098), 0 1px 5px 0 rgba(0, 0, 0, .084);
+    border: 0;
+    margin: 12px auto;
+    color: #ffffff;
+    font-size: 20px;
+    text-align: left;
+    padding: 0;
+    font-family: "roboto_condensedregular", sans-serif;
+    text-decoration: none;
+}
+
+#social .button.reset {
+    background-color: #607d8b;
+    text-align: center;
+    position: absolute;
+    right: 0;
+    bottom: 48px;
+    left: 0;
+}
+
+#social .button.social:before {
+    content: '';
+    display: inline-block;
+    height: inherit;
+    width: 72px;
+    background: no-repeat center;
+    background-size: 36px;
+}
+
+#social .button:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#social .button:active:after {
+    background: rgba(255, 255, 255, .2);
+}
+
+#social .button.social.facebook {
+    background-color: #3b5998;
+}
+
+#social .button.social.facebook:before {
+    background-image: url("../assets/icons/facebook_white.svg");
+}
+
+#social .button.social.google {
+    background-color: #dc4e41;
+}
+
+#social .button.social.google:before {
+    background-image: url("../assets/icons/google_white.svg");
+}
+
+#social .button.social.vk {
+    background-color: #6383a8;
+}
+
+#social .button.social.vk:before {
+    background-image: url("../assets/icons/vk_white.svg");
+}
+
+#social .button.social.lanet {
+    background-color: #0093d7;
+}
+
+#social .button.social.lanet:before {
+    background-image: url("../assets/icons/lanet_white.svg");
+}
+
+#social .button.social span {
+    display: inline-block;
+    height: inherit;
+    position: absolute;
+    line-height: inherit;
+    border-left: 1px solid rgba(255, 255, 255, .1);
+    padding-left: 17px;
+}
