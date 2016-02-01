@@ -313,3 +313,41 @@ Helpers.addScript = function (source) {
     element.src = source;
     head.appendChild(element)
 };
+
+/**
+ * @description Open a window, try to place it in the center of the screen and execute callback on close
+ * @param url {String} New window URL
+ * @param name {String} New window name
+ * @param options {Object} Options, see https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Position_and_size_features
+ * @param closeCallback {Function} Callback to be executed after the window is closed
+ * @returns {Window}
+ */
+Helpers.openDialog = function (url, name, options, closeCallback) {
+    // Try to center the dialog. Found at http://stackoverflow.com/questions/4068373/center-a-popup-window-on-screen
+    if (!options['top'] && !options['right'] && !options['bottom'] && !options['left'] &&
+        options['width'] && options['height']) {
+        var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left,
+            dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top,
+            width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width,
+            height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+        options['left'] = ((width / 2) - (options['width'] / 2)) + dualScreenLeft;
+        options['top'] = ((height / 2) - (options['height'] / 2)) + dualScreenTop;
+    }
+    var feature_string = Object.keys(options).map(function (key) {
+            return key + '=' + options[key]
+        }).join(","),
+        dialog = window.open(url, name, feature_string);
+    // Try to force the focus on the dialog
+    window.focus && dialog.focus();
+    var interval = window.setInterval(function () {
+        try {
+            if (dialog == null || dialog.closed) {
+                window.clearInterval(interval);
+                closeCallback(dialog);
+            }
+        }
+        catch (e) {
+        }
+    }, 100);
+    return dialog;
+};

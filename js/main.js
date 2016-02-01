@@ -1,14 +1,13 @@
 var api = lanet_tv.Api.getInstance(),
     storage = lanet_tv.Storage.getInstance(),
-    controller = lanet_tv.Controller.getInstance(),
+    controller = lanet_tv.Input.getInstance(),
     player = lanet_tv.Player.getInstance(),
     app_bar = lanet_tv.AppBar.getInstance(),
     menu = lanet_tv.Menu.getInstance(),
-    social = lanet_tv.Social.getInstance(),
+    social = lanet_tv.Auth.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
     channel, balloon_timeout = 0,
-    touch = {last_y: 0, current_y: 0, last_x: 0, current_x: 0},
     updateTime = function () {
         Time.setTimestamp(api.getTimestamp());
         Time.setOffset(api.getOffset());
@@ -44,6 +43,7 @@ var api = lanet_tv.Api.getInstance(),
             updateTime();
             setChannels();
             app_bar.setTitle(api.getPack());
+            channels.getCurrent() && app_bar.setChannel(channels.getCurrent());
             menu.setGenres(api.getGenres());
             menu.setTags(api.getTags());
             callback();
@@ -80,7 +80,7 @@ var api = lanet_tv.Api.getInstance(),
     expandMenu = function () {
         menu.expand();
         app_bar.showTitle();
-        menu.setItemSelectHandler(function (category, id) {
+        menu.setRootItemSelectHandler(function (category, id) {
             switch (category) {
                 case 'lists':
                     switch (id) {
@@ -115,7 +115,7 @@ var api = lanet_tv.Api.getInstance(),
         });
         controller.setKeyFunctions({
             'RIGHT': function () {
-                collapseMenu()
+                showMenu();
             },
             'UP': function () {
                 menu.selectPreviousRootItem();
@@ -129,57 +129,51 @@ var api = lanet_tv.Api.getInstance(),
             'ENTER': function () {
                 menu.mainRootAction();
             }
-        })
-    },
-    collapseMenu = function () {
-        menu.collapse();
-        app_bar.hideTitle();
-        controller.setKeyFunctions({
-            'UP': function () {
-                menu.selectPreviousChannel()
+        });
+        controller.setGestureFunctions({
+            'SWIPE_RIGHT': function () {
+                showMenu();
             },
-            'DOWN': function () {
-                menu.selectNextChannel()
-            },
-            'LEFT': function () {
-                expandMenu()
-            },
-            'RIGHT': function () {
-                showPlayer()
-            },
-            'ENTER': function () {
-                playChannel(menu.getSelectedChannel())
-            },
-            'YELLOW': function () {
-                toggleFavourite(menu.getSelectedChannel())
+            'SWIPE_LEFT': function () {
+                menu.collapseCurrentRootCategory();
             }
-        })
+        });
     },
     showMenu = function () {
         showTint();
+        menu.collapse();
         menu.show();
-        app_bar.show();
+        app_bar.hideTitle();
         app_bar.setTransparentBackground(true);
+        app_bar.show();
         controller.setKeyFunctions({
             'UP': function () {
-                menu.selectPreviousChannel()
+                menu.selectPreviousChannel();
             },
             'DOWN': function () {
-                menu.selectNextChannel()
+                menu.selectNextChannel();
             },
             'LEFT': function () {
-                expandMenu()
+                expandMenu();
             },
             'RIGHT': function () {
-                showPlayer()
+                showPlayer();
             },
             'ENTER': function () {
-                playChannel(menu.getSelectedChannel())
+                playChannel(menu.getSelectedChannel());
             },
             'YELLOW': function () {
-                toggleFavourite(menu.getSelectedChannel())
+                toggleFavourite(menu.getSelectedChannel());
             }
-        })
+        });
+        controller.setGestureFunctions({
+            'SWIPE_RIGHT': function () {
+                showPlayer();
+            },
+            'SWIPE_LEFT': function () {
+                expandMenu();
+            }
+        });
     },
     showSocial = function () {
         showTint();
@@ -193,7 +187,12 @@ var api = lanet_tv.Api.getInstance(),
             'LEFT': function () {
                 showPlayer();
             }
-        })
+        });
+        controller.setGestureFunctions({
+            'SWIPE_LEFT': function () {
+                showPlayer();
+            }
+        });
     },
     showPlayer = function () {
         social.hide();
@@ -203,10 +202,10 @@ var api = lanet_tv.Api.getInstance(),
         app_bar.setTransparentBackground(false);
         controller.setKeyFunctions({
             'RIGHT': function () {
-                showSocial()
+                showSocial();
             },
             'LEFT': function () {
-                showMenu()
+                showMenu();
             },
             'UP': function () {
                 playChannel(channels.getNext());
@@ -228,58 +227,39 @@ var api = lanet_tv.Api.getInstance(),
                 app_bar.show(2000);
             },
             'ENTER': function () {
-                //showMenu()
+                showMenu()
             }
-        })
+        });
+        controller.setGestureFunctions({
+            'SWIPE_RIGHT': function () {
+                showSocial();
+            },
+            'SWIPE_LEFT': function () {
+                showMenu();
+            },
+            'SWIPE_UP': function () {
+                playChannel(channels.getNext());
+                app_bar.show(2000);
+            },
+            'SWIPE_DOWN': function () {
+                playChannel(channels.getPrevious());
+                app_bar.show(2000);
+            }
+        });
     };
 
 api.getData(function () {
-    if (storage.get("token")) {
-        social.setAuthUpdateFunction(function (userpic, key) {
-            app_bar.setUserpic(userpic);
-            api.setKey(key);
-            update(function () {
-                setInterval(function () {
-                    update();
-                }, 5000);
-                channel = storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')) ? channels.getChannelById(storage.get('last_channel')) : channels.getFirstChannel();
-                playChannel(channel);
-                showPlayer();
-                if (!social.getKey()) {
-                    showSocial();
-                    controller.disableKeys();
-                }
-            });
-            social.setAuthUpdateFunction(function (userpic, key) {
-                app_bar.setUserpic(userpic);
-                api.setKey(key);
-                update();
-                if (social.getKey()) {
-                    showPlayer();
-                    controller.enableKeys();
-                }
-            });
+    social.setAuthUpdateFunction(function (userpic, key) {
+        app_bar.setUserpic(userpic);
+        api.setKey(key);
+        update(function () {
+            playChannel(storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')) ? channels.getChannelById(storage.get('last_channel')) : channels.getFirstChannel());
+            (social.getKey() && showPlayer()) || showSocial();
         });
-    } else {
-        setChannels();
-        setInterval(function () {
-            update();
-        }, 5000);
-        channel = storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')) ? channels.getChannelById(storage.get('last_channel')) : channels.getFirstChannel();
-        playChannel(channel);
-        showPlayer();
-        showSocial();
-        social.setAuthUpdateFunction(function (userpic, key) {
-            app_bar.setUserpic(userpic);
-            api.setKey(key);
-            update();
-            if (social.getKey()) {
-                showPlayer();
-                controller.enableKeys();
-            }
-        });
-    }
-
+    });
+    setInterval(function () {
+        update();
+    }, 5000);
 });
 controller.setDefaultKeyFunctions({
     'RED': function () {
@@ -296,39 +276,10 @@ remote.setKey("default");
 remote.setHandler(function (command) {
     controller.emulateKeyPress(command.toUpperCase());
 });
+controller.enableKeys();
 //remote.togglePolling();
+if (window.location.hash == "#_=_") window.location.href = window.location.href.split('#')[0];
 Helpers.hideNode(document.getElementById('loading'));
-window.addEventListener("touchstart", function (event) {
-    touch.last_y = event.touches[0].clientY;
-    touch.last_x = event.touches[0].clientX;
-    touch.current_y = touch.last_y;
-    touch.current_x = touch.last_x;
-    document.getElementById("player").play();
-    log("touchstart " + touch.last_x + "x" + touch.last_y);
-});
-window.addEventListener("touchend", function (event) {
-    touch.current_x = event.changedTouches[event.changedTouches.length - 1].clientX;
-    touch.current_y = event.changedTouches[event.changedTouches.length - 1].clientY;
-    var delta_y = touch.current_y - touch.last_y,
-        delta_x = touch.current_x - touch.last_x;
-    log("touchend " + touch.last_x + "x" + touch.last_y + " " + touch.current_x + "x" + touch.current_y + ' ' + delta_x + 'x' + delta_y);
-    if (Math.abs(delta_y) > 100) {
-        if (delta_y < 0)
-            controller.emulateKeyPress("UP");
-        else if (delta_y > 0)
-            controller.emulateKeyPress("DOWN");
-    }
-    else if (Math.abs(delta_x) > 100) {
-        if (delta_x < 0)
-            controller.emulateKeyPress("RIGHT");
-        else if (delta_x > 0)
-            controller.emulateKeyPress("LEFT");
-    } else if (Math.abs(delta_x) < 10 && Math.abs(delta_y) < 10) {
-        controller.emulateKeyPress("ENTER");
-    }
-    touch.last_y = touch.current_y;
-    touch.last_x = touch.current_x;
-});
 if (document.readyState === 'complete') {
     Helpers.hideNode(document.getElementById('loading'));
 } else {

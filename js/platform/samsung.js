@@ -10,7 +10,7 @@ if (navigator.userAgent.match(/SmartHub/g)) {
             }
         }, 10);
     })();
-    lanet_tv.Controller.getInstance().addKeymap({
+    lanet_tv.Input.getInstance().addKeymap({
         '29443': 'ENTER',
         '88': 'BACK',
         '68': 'CH_UP',

@@ -4,7 +4,7 @@ lanet_tv.AppBar = (function () {
     function init() {
         var body = document.getElementsByTagName('body')[0],
             app_bar = document.createElement('div'),
-            channel_info_logo = document.createElement('img'),
+            channel_info_logo = document.createElement('div'),
             channel_info_now = document.createElement('div'),
             channel_info_now_title = document.createElement('div'),
             channel_info_now_number = document.createElement('span'),
@@ -51,7 +51,7 @@ lanet_tv.AppBar = (function () {
                 return app_bar;
             },
             setLogo = function (url) {
-                channel_info_logo.src = url;
+                channel_info_logo.style.backgroundImage = Helpers.cssUrl(url);
             },
             setNumber = function (number) {
                 channel_info_now_number.innerHTML = number;
@@ -105,7 +105,7 @@ lanet_tv.AppBar = (function () {
             setUserpic: function (src) {
                 userpic.src = src;
             },
-            setTitle: function(title) {
+            setTitle: function (title) {
                 title_primary.innerHTML = title;
             },
             hideTitle: function () {

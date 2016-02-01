@@ -2,7 +2,7 @@ lanet_tv.Channel = function (channel) {
     var channels = lanet_tv.Channels.getInstance(),
         element = document.createElement('div'),
         main = document.createElement('div'),
-        logo = document.createElement('img'),
+        logo = document.createElement('div'),
         program = document.createElement('div'),
         epg_title = document.createElement('div'),
         epg_time = document.createElement('div'),
@@ -11,7 +11,7 @@ lanet_tv.Channel = function (channel) {
         epg_time_line_value = document.createElement('div'),
         epg_tags = document.createElement('div'),
         epg_description = document.createElement('div'),
-        preview = document.createElement('img'),
+        preview = document.createElement('div'),
         star = document.createElement('div'),
         number = document.createElement('div'),
         data = {},
@@ -27,7 +27,7 @@ lanet_tv.Channel = function (channel) {
             element.dataset['id'] = channel['id'];
             element.dataset['title'] = channel['title'];
             number.innerHTML = channel["num"].toPaddedString(3);
-            logo.src = channel['logo'];
+            logo.style.backgroundImage = Helpers.cssUrl(channel['logo']);
             epg_title.innerHTML = channel["epg"]["now"]["title"];
             epg_tags.innerHTML = channel["epg"]["now"]["tags"].join(' ');
             epg_description.innerHTML = channel["epg"]["now"]["description"];
@@ -39,7 +39,7 @@ lanet_tv.Channel = function (channel) {
             } else {
                 element.classList.remove('progress');
             }
-            preview.src = (is_current ? channel['preview'] : channel['preview_bg']) + '?timestamp=' + channels.getPreviewTimestamp();
+            preview.style.backgroundImage = Helpers.cssUrl((is_current ? channel['preview'] : channel['preview_bg']) + '?timestamp=' + channels.getPreviewTimestamp());
         };
 
     element.className = 'channel';
@@ -82,7 +82,7 @@ lanet_tv.Channels = (function () {
     var instance;
 
     function init() {
-        var channels = {}, current = 0, ctv_order = [], timestamp = Time.getTimestamp().toString();
+        var channels = {}, current = 0, timestamp = Time.getTimestamp().toString();
         setInterval(function () {
             var local_timestamp = Time.getTimestamp().toString(), images = [];
             for (var channel_id in channels) {
@@ -99,9 +99,8 @@ lanet_tv.Channels = (function () {
                     channels[channel['id']].update(channel);
                 else {
                     channels[channel['id']] = new lanet_tv.Channel(channel);
-                    //new PreLoader([channel['logo']]);
+                    new PreLoader([channel['logo']]);
                 }
-                ctv_order[channel['num']] = channel['id'];
             },
             leaveOnly: function (ids) {
                 channels = channels.filter(function (channel) {
@@ -142,26 +141,24 @@ lanet_tv.Channels = (function () {
             setCurrent: function (channel) {
                 if (channels[current]) {
                     channels[current].element.classList.remove('current');
-                    channels[current].preview.src = channels[current].data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp();
+                    channels[current].preview.style.backgroundImage = Helpers.cssUrl(channels[current].data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp());
                 }
                 current = channel.data['id'];
-                channels[current].preview.src = channel.data['preview'] + '?timestamp=' + this.getPreviewTimestamp();
+                channels[current].preview.style.backgroundImage = Helpers.cssUrl(channel.data['preview'] + '?timestamp=' + this.getPreviewTimestamp());
                 channels[current].element.classList.add('current');
             },
             getCurrent: function () {
                 return channels[current];
             },
             getPrevious: function () {
-                var i = ctv_order.indexOf(current) - 1;
-                while (!ctv_order[i])
-                    i = i > 0 ? i - 1 : ctv_order.length - 1;
-                return channels[ctv_order[i]]
+                var i = Object.keys(channels).indexOf(current.toString());
+                i = i > 0 ? i - 1 : Object.keys(channels).length - 1;
+                return channels[Object.keys(channels)[i]];
             },
             getNext: function () {
-                var i = ctv_order.indexOf(current) + 1;
-                while (!ctv_order[i])
-                    i = i < ctv_order.length ? i + 1 : 0;
-                return channels[ctv_order[i]]
+                var i = Object.keys(channels).indexOf(current.toString());
+                i = i < Object.keys(channels).length - 1 ? i + 1 : 0;
+                return channels[Object.keys(channels)[i]];
             },
             getPreviewTimestamp: function () {
                 return timestamp

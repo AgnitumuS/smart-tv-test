@@ -1,5 +1,5 @@
 if (navigator.userAgent.match(/^((?!(NetCast|DuneHD|SmartHub)).)*$/g)) {
-    lanet_tv.Controller.getInstance().addKeymap({
+    lanet_tv.Input.getInstance().addKeymap({
         '13': 'ENTER',
         '8': 'BACK',
         '33': 'CH_UP',
