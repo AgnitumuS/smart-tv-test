@@ -75,7 +75,7 @@ lanet_tv.Menu = (function () {
                 tags: {
                     category: 'tags',
                     icon: 'tags',
-                    name: 'Теги',
+                    name: 'Темы',
                     element: null,
                     children: {}
                 }/*,
@@ -208,6 +208,7 @@ lanet_tv.Menu = (function () {
             },
             rootMenuItemAction = function () { },
             rootItemSelectFunction = function () { },
+            channelClickFunction = function () { },
             visibleListItems = function () {
                 var result = list.getBoundingClientRect().height / 104;
                 return {
@@ -255,6 +256,33 @@ lanet_tv.Menu = (function () {
                 current_limits.max = current_limits.min + visible.visible;
                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
                     current_channel_list.push(full_channel_list[counter]);
+                    list.appendChild(full_channel_list[counter].element);
+                }
+                if (current_channel_list[selected_channel])
+                    current_channel_list[selected_channel].element.classList.add('selected');
+            },
+            renderFullList = function () {
+                resetListSelection();
+                Helpers.removeChildren(list);
+                var index = full_channel_list.indexOf(full_channel_list.filter(function (channel) {
+                        return channel.element.classList.contains('current')
+                    })[0]),
+                    visible = visibleListItems(),
+                    counter, page;
+                index = index > -1 ? index : 0;
+                page = Math.floor(index / visible.visible);
+                current_channel_list = [];
+                selected_channel = index;
+                current_limits.min = visible.visible * page;
+                current_limits.max = current_limits.min + visible.visible;
+                for (counter = 0; full_channel_list[counter]; counter++) {
+                    current_channel_list.push(full_channel_list[counter]);
+                    (function (counter) {
+                        full_channel_list[counter].element.addEventListener('click', function () {
+                            selected_channel = counter;
+                            channelClickFunction(full_channel_list[selected_channel]);
+                        });
+                    })(counter);
                     list.appendChild(full_channel_list[counter].element);
                 }
                 if (current_channel_list[selected_channel])
@@ -380,6 +408,9 @@ lanet_tv.Menu = (function () {
             },
             setRootItemSelectHandler: function (handler) {
                 rootItemSelectFunction = handler;
+            },
+            setChannelClickHandler: function (handler) {
+                channelClickFunction = handler;
             },
             setChannels: function (channels) {
                 if (full_channel_list.length != Object.keys(channels).length) {

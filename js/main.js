@@ -8,6 +8,7 @@ var api = lanet_tv.Api.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
     channel, balloon_timeout = 0,
+    start_time = new Date().getTime(),
     updateTime = function () {
         Time.setTimestamp(api.getTimestamp());
         Time.setOffset(api.getOffset());
@@ -51,8 +52,11 @@ var api = lanet_tv.Api.getInstance(),
     },
     log = function (string) {
         var debug = document.getElementById('debug');
-        debug.innerHTML += string + "\n";
+        debug.innerHTML += "[" + String(new Date().getTime() - start_time) + "] " + string + "\n";
         debug.scrollTop = debug.scrollHeight;
+    },
+    showLog = function () {
+        Helpers.showNode(document.getElementById('debug'));
     },
     showBalloon = function (text) {
         var container = document.getElementById("balloon-container"),
@@ -146,6 +150,10 @@ var api = lanet_tv.Api.getInstance(),
         app_bar.hideTitle();
         app_bar.setTransparentBackground(true);
         app_bar.show();
+        menu.setChannelClickHandler(function (channel) {
+            playChannel(channel);
+            showPlayer();
+        });
         controller.setKeyFunctions({
             'UP': function () {
                 menu.selectPreviousChannel();
@@ -178,6 +186,7 @@ var api = lanet_tv.Api.getInstance(),
     showSocial = function () {
         showTint();
         social.show();
+        app_bar.hideTitle();
         app_bar.show();
         app_bar.setTransparentBackground(true);
         controller.setKeyFunctions({
@@ -198,6 +207,7 @@ var api = lanet_tv.Api.getInstance(),
         social.hide();
         menu.hide();
         hideTint();
+        app_bar.hideTitle();
         app_bar.show(2000);
         app_bar.setTransparentBackground(false);
         controller.setKeyFunctions({
@@ -266,7 +276,7 @@ controller.setDefaultKeyFunctions({
         Helpers.toggleNode(document.getElementById('grid'))
     },
     'GREEN': function () {
-        window.location.reload()
+        window.location.reload();
     },
     'BLUE': function () {
         Helpers.toggleNode(document.getElementById('debug'))
@@ -276,6 +286,7 @@ remote.setKey("default");
 remote.setHandler(function (command) {
     controller.emulateKeyPress(command.toUpperCase());
 });
+//showLog();
 controller.enableKeys();
 //remote.togglePolling();
 if (window.location.hash == "#_=_") window.location.href = window.location.href.split('#')[0];
