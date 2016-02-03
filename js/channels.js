@@ -2,7 +2,7 @@ lanet_tv.Channel = function (channel) {
     var channels = lanet_tv.Channels.getInstance(),
         element = document.createElement('div'),
         main = document.createElement('div'),
-        logo = document.createElement('div'),
+        logo = document.createElement('img'),
         program = document.createElement('div'),
         epg_title = document.createElement('div'),
         epg_time = document.createElement('div'),
@@ -11,7 +11,7 @@ lanet_tv.Channel = function (channel) {
         epg_time_line_value = document.createElement('div'),
         epg_tags = document.createElement('div'),
         epg_description = document.createElement('div'),
-        preview = document.createElement('div'),
+        preview = document.createElement('img'),
         star = document.createElement('div'),
         number = document.createElement('div'),
         data = {},
@@ -27,7 +27,7 @@ lanet_tv.Channel = function (channel) {
             element.dataset['id'] = channel['id'];
             element.dataset['title'] = channel['title'];
             number.innerHTML = channel["num"].toPaddedString(3);
-            logo.style.backgroundImage = Helpers.cssUrl(channel['logo']);
+            logo.src = channel['logo'];
             epg_title.innerHTML = channel["epg"]["now"]["title"];
             epg_tags.innerHTML = channel["epg"]["now"]["tags"].join(' ');
             epg_description.innerHTML = channel["epg"]["now"]["description"];
@@ -39,7 +39,7 @@ lanet_tv.Channel = function (channel) {
             } else {
                 element.classList.remove('progress');
             }
-            preview.style.backgroundImage = Helpers.cssUrl((is_current ? channel['preview'] : channel['preview_bg']) + '?timestamp=' + channels.getPreviewTimestamp());
+            preview.src = (is_current ? channel['preview'] : channel['preview_bg']) + '?timestamp=' + channels.getPreviewTimestamp();
         };
 
     element.className = 'channel';
@@ -135,19 +135,16 @@ lanet_tv.Channels = (function () {
             getFirstChannel: function () {
                 return channels[Object.keys(channels)[0]];
             },
-            getFirstChannel: function () {
-                return channels[Object.keys(channels)[0]];
-            },
             getChannelById: function (id) {
                 return channels[id];
             },
             setCurrent: function (channel) {
                 if (channels[current]) {
                     channels[current].element.classList.remove('current');
-                    channels[current].preview.style.backgroundImage = Helpers.cssUrl(channels[current].data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp());
+                    channels[current].preview.src = channels[current].data['preview_bg'] + '?timestamp=' + this.getPreviewTimestamp();
                 }
                 current = channel.data['id'];
-                channels[current].preview.style.backgroundImage = Helpers.cssUrl(channel.data['preview'] + '?timestamp=' + this.getPreviewTimestamp());
+                channels[current].preview.src = channel.data['preview'] + '?timestamp=' + this.getPreviewTimestamp();
                 channels[current].element.classList.add('current');
             },
             getCurrent: function () {
