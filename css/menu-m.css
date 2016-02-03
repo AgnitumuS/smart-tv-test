@@ -106,9 +106,12 @@
     z-index: 20;
     top: 72px;
     /*top: 136px;*/
-    bottom: 64px;
+    /*bottom: 64px;*/
+    bottom: 0;
     left: 72px;
-    overflow-y: hidden;
+    /*overflow-y: scroll;*/
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 #menu > .list > .channel {
@@ -316,6 +319,7 @@
 }
 
 #menu > .footer {
+    display: none;
     position: absolute;
     bottom: 0;
     left: 72px;

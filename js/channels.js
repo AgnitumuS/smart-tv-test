@@ -17,7 +17,7 @@ lanet_tv.Channel = function (channel) {
         data = {},
         calcProgress = function (begin, end) {
             var progress = Math.round((Time.getTimestamp() - begin) / (end - begin) * 100);
-            return (progress < Infinity && progress >= 0) ? progress : undefined;
+            return (progress >= 0 && progress <= 100) ? progress : undefined;
         },
         update = function (channel) {
             var is_current = channels.getCurrent() && channels.getCurrent().data['id'] == channel['id'];
@@ -82,12 +82,13 @@ lanet_tv.Channels = (function () {
     var instance;
 
     function init() {
-        var channels = [], current = 0, ctv_order = [], timestamp = Time.getTimestamp().toString();
+        var channels = {}, current = 0, timestamp = Time.getTimestamp().toString();
         setInterval(function () {
             var local_timestamp = Time.getTimestamp().toString(), images = [];
-            channels.forEach(function (channel) {
-                images.push(channel.data['preview_bg'] + '?timestamp=' + local_timestamp);
-            });
+            for (var channel_id in channels) {
+                if (channels.hasOwnProperty(channel_id))
+                    images.push(channels[channel_id].data['preview_bg'] + '?timestamp=' + local_timestamp);
+            }
             new PreLoader(images, function () {
                 timestamp = local_timestamp;
             });
@@ -98,20 +99,16 @@ lanet_tv.Channels = (function () {
                     channels[channel['id']].update(channel);
                 else {
                     channels[channel['id']] = new lanet_tv.Channel(channel);
-                    //new PreLoader([channel['logo']]);
+                    new PreLoader([channel['logo']]);
                 }
-                ctv_order[channel['num']] = channel['id'];
+            },
+            leaveOnly: function (ids) {
+                channels = channels.filter(function (channel) {
+                    return ids.indexOf(channel.data['id']) > -1;
+                });
             },
             getChannels: function () {
-                /*
-                var result = [];
-                ctv_order.forEach(function (id) {
-                    result.push(channels[id])
-                });
-                */
-                return channels.filter(function () {
-                    return true;
-                });
+                return channels;
             },
             getByClass: function (classID) {
                 return channels.filter(function (channel) {
@@ -133,7 +130,10 @@ lanet_tv.Channels = (function () {
                 number = number || 1;
                 return channels.filter(function (channel) {
                     return channel.data['num'] === number;
-                })[0]
+                })[0];
+            },
+            getFirstChannel: function () {
+                return channels[Object.keys(channels)[0]];
             },
             getChannelById: function (id) {
                 return channels[id];
@@ -151,16 +151,14 @@ lanet_tv.Channels = (function () {
                 return channels[current];
             },
             getPrevious: function () {
-                var i = ctv_order.indexOf(current) - 1;
-                while (!ctv_order[i])
-                    i = i > 0 ? i - 1 : ctv_order.length - 1;
-                return channels[ctv_order[i]]
+                var i = Object.keys(channels).indexOf(current.toString());
+                i = i > 0 ? i - 1 : Object.keys(channels).length - 1;
+                return channels[Object.keys(channels)[i]];
             },
             getNext: function () {
-                var i = ctv_order.indexOf(current) + 1;
-                while (!ctv_order[i])
-                    i = i < ctv_order.length ? i + 1 : 0;
-                return channels[ctv_order[i]]
+                var i = Object.keys(channels).indexOf(current.toString());
+                i = i < Object.keys(channels).length - 1 ? i + 1 : 0;
+                return channels[Object.keys(channels)[i]];
             },
             getPreviewTimestamp: function () {
                 return timestamp

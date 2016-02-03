@@ -3,8 +3,11 @@ lanet_tv.Player = (function () {
 
     function init() {
         var body = document.getElementsByTagName('body')[0], player, current;
-        if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android/g)) {
+        if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android|iPad|iPhone|Mac OS X/g)) {
             player = document.getElementById('player');
+            window.addEventListener("click", function() {
+                player.play();
+            });
             player.setSource = function (src, ratio) {
                 if (navigator.userAgent.match(/SmartHub/g))
                     src += '|COMPONENT=HLS';
@@ -13,21 +16,21 @@ lanet_tv.Player = (function () {
                 player.height = resolution[1];
                 player.src = src;
             };
-        /*
-        } else if (Hls.isSupported()) {
-            var hls = new Hls();
-            player = document.getElementById('player');
-            player.setSource = function (src, ratio) {
-                var resolution = Helpers.calcResolution(ratio);
-                player.width = resolution[0];
-                player.height = resolution[1];
-                hls.loadSource(src);
-                hls.attachMedia(player);
-                hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                    player.play();
-                });
-            }
-        */
+            /*
+             } else if (Hls.isSupported()) {
+             var hls = new Hls();
+             player = document.getElementById('player');
+             player.setSource = function (src, ratio) {
+             var resolution = Helpers.calcResolution(ratio);
+             player.width = resolution[0];
+             player.height = resolution[1];
+             hls.loadSource(src);
+             hls.attachMedia(player);
+             hls.on(Hls.Events.MANIFEST_PARSED, function () {
+             player.play();
+             });
+             }
+             */
         } else {
             document.getElementById('player').remove();
             var loaded = false, onload = function () {};
@@ -61,12 +64,14 @@ lanet_tv.Player = (function () {
                     current = src;
                 }
             };
+            player.play = player.play || function () {};
             player.id = 'player';
             body.appendChild(player);
         }
         return {
             play: function (channel) {
-                player.setSource(channel.data['url'], channel.data['ratio'])
+                player.setSource(channel.data['url'], channel.data['ratio']);
+                player.play();
             }
         };
     }

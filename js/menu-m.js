@@ -79,13 +79,13 @@ lanet_tv.Menu = (function () {
                     element: null,
                     children: {}
                 }/*,
-                settings: {
-                    category: 'settings',
-                    icon: 'settings',
-                    name: 'Настройки',
-                    element: null,
-                    children: {}
-                }*/
+                 settings: {
+                 category: 'settings',
+                 icon: 'settings',
+                 name: 'Настройки',
+                 element: null,
+                 children: {}
+                 }*/
             },
             createElement = function () {
                 menu.id = 'menu';
@@ -129,6 +129,18 @@ lanet_tv.Menu = (function () {
                         category_element.innerHTML = categories[cat_id].name;
                         root.appendChild(category_element);
                         categories[cat_id].element = category_element;
+                        (function (element) {
+                            element.addEventListener("touchend", function() {
+                                for (var n in root_menu_items) {
+                                    if (root_menu_items.hasOwnProperty(n) && root_menu_items[n].element == element) {
+                                        current_root_menu_category = n;
+                                        current_root_menu_item = n;
+                                    }
+                                }
+                                selectCurrentRootItem();
+                                rootMenuItemAction();
+                            })
+                        })(category_element);
                         for (var item_id in categories[cat_id].children) {
                             if (categories[cat_id].children.hasOwnProperty(item_id)) {
                                 var category_item = document.createElement('div');
@@ -137,6 +149,17 @@ lanet_tv.Menu = (function () {
                                     category_item.classList.add('current');
                                 category_item.classList.add('hidden');
                                 category_item.innerHTML = categories[cat_id].children[item_id].name;
+                                (function (element) {
+                                    element.addEventListener("touchend", function() {
+                                        for (var n in root_menu_items) {
+                                            if (root_menu_items.hasOwnProperty(n) && root_menu_items[n].element == element) {
+                                                current_root_menu_item = n;
+                                            }
+                                        }
+                                        selectCurrentRootItem();
+                                        rootMenuItemAction();
+                                    })
+                                })(category_item);
                                 root.appendChild(category_item);
                                 categories[cat_id].children[item_id].element = category_item;
                             }
@@ -285,8 +308,8 @@ lanet_tv.Menu = (function () {
                     })(counter);
                     list.appendChild(full_channel_list[counter].element);
                 }
-                if (current_channel_list[selected_channel])
-                    current_channel_list[selected_channel].element.classList.add('selected');
+                //if (current_channel_list[selected_channel])
+                //    current_channel_list[selected_channel].element.classList.add('selected');
             },
             renderNextListPage = function () {
                 resetListSelection();
@@ -316,6 +339,38 @@ lanet_tv.Menu = (function () {
                 selected_channel = current_channel_list.length - (visible.extra ? 2 : 1);
                 current_channel_list[selected_channel].element.classList.add('selected');
             },
+            scrollToNextListPage = function () {
+                //resetListSelection();
+                //selected_channel = 0;
+                //Helpers.removeChildren(list);
+                //current_channel_list = [];
+                /*
+                 var counter, visible = visibleListItems();
+                 current_limits.min = current_limits.max;
+                 current_limits.max = current_limits.min + visible.visible;
+                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
+                 current_channel_list.push(full_channel_list[counter]);
+                 list.appendChild(full_channel_list[counter].element);
+                 }
+                 current_channel_list[selected_channel].element.classList.add('selected');
+                 */
+            },
+            scrollToPreviousListPage = function () {
+                //resetListSelection();
+                //Helpers.removeChildren(list);
+                //current_channel_list = [];
+                /*
+                 var counter, visible = visibleListItems();
+                 current_limits.min = current_limits.min - visible.visible;
+                 current_limits.max = current_limits.min + visible.visible;
+                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
+                 current_channel_list.push(full_channel_list[counter]);
+                 list.appendChild(full_channel_list[counter].element);
+                 }
+                 selected_channel = current_channel_list.length - (visible.extra ? 2 : 1);
+                 current_channel_list[selected_channel].element.classList.add('selected');
+                 */
+            },
             resetListSelection = function () {
                 if (current_channel_list[selected_channel])
                     current_channel_list[selected_channel].element.classList.remove('selected');
@@ -324,13 +379,14 @@ lanet_tv.Menu = (function () {
         body.appendChild(createElement());
         return {
             show: function () {
-                renderCurrentListPage();
-                setClock(Time.asObject().getHhMm());
+                //renderCurrentListPage();
+                //renderFullList();
+                //setClock(Time.asObject().getHhMm());
                 menu.style.visibility = 'visible';
                 update();
-                clock_update_interval = setInterval(function () {
-                    setClock(Time.asObject().getHhMm());
-                }, 1000);
+                //clock_update_interval = setInterval(function () {
+                //    setClock(Time.asObject().getHhMm());
+                //}, 1000);
             },
             hide: function () {
                 menu.style.visibility = 'hidden';
@@ -418,7 +474,8 @@ lanet_tv.Menu = (function () {
                     for (var c in channels)
                         if (channels.hasOwnProperty(c))
                             full_channel_list.push(channels[c]);
-                    renderCurrentListPage();
+                    //renderCurrentListPage();
+                    renderFullList();
                 }
             },
             selectNextChannel: function () {
@@ -434,7 +491,8 @@ lanet_tv.Menu = (function () {
                         selected_channel++;
                         current_channel_list[selected_channel].element.classList.add('selected');
                     } else {
-                        renderNextListPage()
+                        //renderNextListPage();
+                        scrollToNextListPage();
                     }
                 }
             },
@@ -445,7 +503,8 @@ lanet_tv.Menu = (function () {
                     selected_channel--;
                     current_channel_list[selected_channel].element.classList.add('selected');
                 } else if (current_limits.min > 0) {
-                    renderPreviousListPage()
+                    //renderPreviousListPage();
+                    scrollToPreviousListPage();
                 }
             },
             getSelectedChannel: function () { return current_channel_list[selected_channel] }

@@ -1,4 +1,4 @@
-lanet_tv.Social = (function () {
+lanet_tv.Auth = (function () {
     var instance;
 
     function init() {
@@ -8,24 +8,23 @@ lanet_tv.Social = (function () {
             main = document.createElement('div'),
             welcome = document.createElement('div'),
             hint = document.createElement('div'),
-            reset = document.createElement('div'),
+            reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            welcome_words = ['Hello,', 'Howdy,', 'Welcome,', 'Bonjour,', 'Buenos dias,', 'Shalom,'],
-            userpic, requests = [], pin, pin_timeout, pin_check_url, open = false,
-            onUserpicChange = function (userpic) { },
+            userpic, key, requests = [], pin, expire = 0, last_refresh = 0, refresh_timeout = 0, pin_check_url, open = false,
+            onAuthUpdate = function (userpic, key) { },
             createElement = function () {
                 social.id = 'social';
                 auth.className = 'auth';
                 main.className = 'main';
-                reset.className = 'reset';
+                reset.className = 'button reset';
                 welcome.className = 'welcome';
                 hint.innerHTML = '<a target="_blank" href="https://auth.lanet.tv/test">https://auth.lanet.tv/test</a>';
                 hint.className = 'hint';
-                reset.innerHTML = 'RED/A - Log out';
+                reset.innerHTML = 'Выйти';
                 userpic = '';
+                key = null;
                 auth.appendChild(main);
                 social.appendChild(auth);
-                social.appendChild(reset);
                 reset.addEventListener('click', resetAuth);
                 Helpers.hideNode(reset);
                 return social;
@@ -34,43 +33,50 @@ lanet_tv.Social = (function () {
                 Helpers.hideNode(reset);
                 storage.set('token', '');
                 storage.set('key', '');
+                userpic = '';
+                key = null;
                 pin = false;
                 pin_check_url = false;
-                userpic = '';
-                onUserpicChange(userpic);
-                updateAuth();
+                onAuthUpdate(userpic, key);
+                refreshPin();
             },
             saveAuth = function (data) {
-                Helpers.showNode(reset);
+                clearTimeout(refresh_timeout);
                 Helpers.removeChildren(main);
                 storage.set('token', data['token']);
                 storage.set('key', data['key']);
-                welcome.innerHTML = welcome_words[Math.floor(Math.random() * welcome_words.length)];
+                welcome.innerHTML = 'Добро пожаловать,';
                 main.appendChild(welcome);
                 main.innerHTML += data['name'];
+                main.appendChild(reset);
+                Helpers.showNode(reset);
                 userpic = data['image'];
-                onUserpicChange(userpic);
+                key = data['key'];
+                onAuthUpdate(userpic, key);
             },
             checkPin = function (url) {
                 requests.push(Helpers.getJSON(url, function (data) {
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
                     if (error.status != 0 && open)
-                        updateAuth();
+                        checkPin(url);
                 }));
             },
             refreshPin = function () {
+                clearTimeout(refresh_timeout);
+                last_refresh = new Date().getTime();
                 requests.push(Helpers.getJSON('https://auth.lanet.tv/login/pin', function (data) {
                     pin = data['code'];
                     pin_check_url = data['status'];
-                    pin_timeout = setTimeout(function () {
+                    expire = data['expire'] * 1000;
+                    refresh_timeout = setTimeout(function () {
                         pin = false;
                         pin_check_url = false;
-                        updateAuth();
-                    }, data['expire'] * 1000);
-                    main.innerHTML = data['code'];
+                        refreshPin();
+                    }, expire);
+                    main.innerHTML = pin;
                     main.appendChild(hint);
-                    updateAuth();
+                    checkPin(pin_check_url);
                 }));
             },
             checkToken = function (token) {
@@ -78,37 +84,33 @@ lanet_tv.Social = (function () {
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
                     if (error.status != 0)
-                        resetAuth()
+                        resetAuth();
                 }));
-            },
-            updateAuth = function () {
-                for (var r in requests) { if (requests.hasOwnProperty(r)) requests[r].abort(); }
-                requests = [];
-                if (storage.get('key').length == 0) {
-                    if (storage.get('token').length > 0) {
-                        checkToken(storage.get('token'));
-                    } else if (open) {
-                        pin_check_url ? checkPin(pin_check_url) : refreshPin();
-                    }
-                }
             };
         body.appendChild(createElement());
         storage.set('key', '');
-        updateAuth();
+        if (storage.get('token').length > 0)
+            checkToken(storage.get('token'));
+        else
+            resetAuth();
         return {
             show: function () {
                 open = true;
                 Helpers.showNode(social);
-                updateAuth();
+                if (!key && last_refresh > 0 && last_refresh + expire < new Date().getTime())
+                    refreshPin();
             },
             hide: function () {
                 Helpers.hideNode(social);
                 open = false;
             },
             resetAuth: resetAuth,
-            setUserpicChangeFunction: function (func) {
-                onUserpicChange = func;
-                if (userpic) onUserpicChange(userpic)
+            setAuthUpdateFunction: function (func) {
+                onAuthUpdate = func;
+                onAuthUpdate(userpic, key)
+            },
+            getKey: function () {
+                return key;
             }
         };
     }

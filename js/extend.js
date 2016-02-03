@@ -102,12 +102,6 @@ if (!Array.prototype.filter) {
         for (var i = 0; i < len; i++) {
             if (i in t) {
                 var val = t[i];
-
-                // NOTE: Technically this should Object.defineProperty at
-                //       the next index, as push can be affected by
-                //       properties on Object.prototype and Array.prototype.
-                //       But that method's new, and collisions should be
-                //       rare, so use the more-compatible alternative.
                 if (fun.call(thisArg, val, i, t)) {
                     res.push(val);
                 }
@@ -125,13 +119,12 @@ if (!Array.prototype.spliced) {
 }
 
 if (!Object.prototype.filter) {
-    Object.prototype.filter = function (obj, predicate) {
+    Object.prototype.filter = function (predicate) {
         var result = {}, key;
-        for (key in obj) {
-            if (obj.hasOwnProperty(key) && !predicate(obj[key])) {
-                result[key] = obj[key];
+        for (key in this)
+            if (this.hasOwnProperty(key) && predicate(this[key])) {
+                result[key] = this[key];
             }
-        }
         return result;
     };
 }
@@ -176,5 +169,11 @@ if (!NodeList.prototype.remove) {
                 this[i].parentElement.removeChild(this[i]);
             }
         }
+    }
+}
+
+if (!String.prototype.capitalizeFirstLetter) {
+    String.prototype.capitalizeFirstLetter = function () {
+        return this.charAt(0).toUpperCase() + this.slice(1);
     }
 }
