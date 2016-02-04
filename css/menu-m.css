@@ -19,6 +19,8 @@
 
 #menu.expanded > .root {
     width: 288px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 #menu.expanded > .list, #menu.expanded > .footer {
@@ -146,8 +148,8 @@
 }
 
 #menu.expanded > .root > .selected {
-    opacity: 1;
-    background-color: rgba(255, 255, 255, .15);
+    /*opacity: 1;*/
+    /*background-color: rgba(255, 255, 255, .15);*/
 }
 
 #menu > .list > .current, #menu.expanded > .root > .current {

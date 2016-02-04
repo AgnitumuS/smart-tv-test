@@ -38,25 +38,25 @@ lanet_tv.Menu = (function () {
                     name: 'Отладочная информация'
                 }
             ], categories = {
-                choice: {
+                /*choice: {
                     category: 'choice',
                     icon: 'selection',
                     name: 'Мой выбор',
                     element: null,
                     children: {}
-                },
+                },*/
                 lists: {
                     category: 'lists',
                     icon: 'view_list',
                     name: 'Списки',
                     element: null,
                     children: {
-                        0: {
+                        /*0: {
                             id: 'favourite',
                             category: 'lists',
                             element: null,
                             name: 'Избранное'
-                        },
+                        },*/
                         1: {
                             id: 'all',
                             category: 'lists',
@@ -130,7 +130,7 @@ lanet_tv.Menu = (function () {
                         root.appendChild(category_element);
                         categories[cat_id].element = category_element;
                         (function (element) {
-                            element.addEventListener("touchend", function() {
+                            element.addEventListener("click", function() {
                                 for (var n in root_menu_items) {
                                     if (root_menu_items.hasOwnProperty(n) && root_menu_items[n].element == element) {
                                         current_root_menu_category = n;
@@ -150,7 +150,7 @@ lanet_tv.Menu = (function () {
                                 category_item.classList.add('hidden');
                                 category_item.innerHTML = categories[cat_id].children[item_id].name;
                                 (function (element) {
-                                    element.addEventListener("touchend", function() {
+                                    element.addEventListener("click", function() {
                                         for (var n in root_menu_items) {
                                             if (root_menu_items.hasOwnProperty(n) && root_menu_items[n].element == element) {
                                                 current_root_menu_item = n;
