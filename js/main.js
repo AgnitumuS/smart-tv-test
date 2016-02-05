@@ -69,9 +69,11 @@ var api = lanet_tv.Api.getInstance(),
         }, 2000)
     },
     showTint = function () {
+        Helpers.showNode(document.getElementById('overlay'));
         document.getElementById('overlay').classList.add('tinted');
     },
     hideTint = function () {
+        Helpers.hideNode(document.getElementById('overlay'));
         document.getElementById('overlay').classList.remove('tinted');
     },
     playChannel = function (channel) {
@@ -289,7 +291,7 @@ remote.setHandler(function (command) {
 //showLog();
 controller.enableKeys();
 //remote.togglePolling();
-if (window.location.hash == "#_=_") window.location.href = window.location.href.split('#')[0];
+if (window.location.hash.length > 0) window.location.href = window.location.href.split('#')[0];
 Helpers.hideNode(document.getElementById('loading'));
 if (document.readyState === 'complete') {
     Helpers.hideNode(document.getElementById('loading'));

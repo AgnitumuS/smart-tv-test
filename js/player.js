@@ -5,7 +5,7 @@ lanet_tv.Player = (function () {
         var body = document.getElementsByTagName('body')[0], player, current;
         if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android|iPad|iPhone|Mac OS X/g)) {
             player = document.getElementById('player');
-            window.addEventListener("click", function() {
+            player.addEventListener("click", function () {
                 player.play();
             });
             player.setSource = function (src, ratio) {
