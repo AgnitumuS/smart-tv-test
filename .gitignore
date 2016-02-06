@@ -1,3 +1,6 @@
 *.ipk
 *.zip
 .idea/
+node_modules/
+build/
+ftp.json

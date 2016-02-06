@@ -69,7 +69,7 @@ lanet_tv.AppBar = (function () {
                 channel_info_next_content.innerHTML = content;
             },
             displayNext = function (state) {
-                Helpers.toggleNode(channel_info_next, state)
+                Helpers.toggleNode(channel_info_next, state);
             };
         body.appendChild(createElement());
         return {
@@ -80,7 +80,7 @@ lanet_tv.AppBar = (function () {
                     var self = this;
                     timeout = setTimeout(function () {
                         self.hide();
-                    }, delay)
+                    }, delay);
                 }
             },
             hide: function () {
@@ -99,7 +99,7 @@ lanet_tv.AppBar = (function () {
                     setNextContent(channel.data['epg']['next']['title']);
                     displayNext(true)
                 } else {
-                    displayNext(false)
+                    displayNext(false);
                 }
             },
             setUserpic: function (src) {
@@ -123,5 +123,5 @@ lanet_tv.AppBar = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

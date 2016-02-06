@@ -32,5 +32,5 @@ lanet_tv.Storage = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

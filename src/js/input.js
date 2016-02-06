@@ -107,5 +107,5 @@ lanet_tv.Input = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

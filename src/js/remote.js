@@ -46,5 +46,5 @@ lanet_tv.Remote = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

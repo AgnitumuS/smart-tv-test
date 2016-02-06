@@ -172,5 +172,5 @@ lanet_tv.Channels = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

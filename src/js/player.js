@@ -77,12 +77,12 @@ lanet_tv.Player = (function () {
             play: function (channel) {
                 channel && player.setSource(channel.data['url'], channel.data['ratio']);
                 try {
-                    player.play();
+                    navigator.userAgent.match(/iPhone/g) && !channel && player.play();
                 } catch (e) {
                 }
             },
             tintOverlay: function (state) {
-                state ? overlay.classList.add('tint') : overlay.classList.remove('tint');
+                state ? overlay.classList.add('tinted') : overlay.classList.remove('tinted');
             },
             setOverlayHandler: function (overlayHandler) {
                 overlayFunction = overlayHandler;
@@ -96,5 +96,5 @@ lanet_tv.Player = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

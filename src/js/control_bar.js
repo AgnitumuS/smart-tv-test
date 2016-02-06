@@ -40,5 +40,5 @@ lanet_tv.ControlBar = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

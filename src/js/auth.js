@@ -122,5 +122,5 @@ lanet_tv.Auth = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

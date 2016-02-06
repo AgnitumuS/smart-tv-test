@@ -1,6 +1,6 @@
 var api = lanet_tv.Api.getInstance(),
     storage = lanet_tv.Storage.getInstance(),
-    controller = lanet_tv.Input.getInstance(),
+    input = lanet_tv.Input.getInstance(),
     player = lanet_tv.Player.getInstance(),
     app_bar = lanet_tv.AppBar.getInstance(),
     menu = lanet_tv.Menu.getInstance(),
@@ -102,14 +102,14 @@ var api = lanet_tv.Api.getInstance(),
             }
             menu.setChannels(getCurrentChannelList());
         });
-        controller.setKeyFunctions({
+        input.setKeyFunctions({
             'RIGHT': function () { showMenu(); },
             'UP': function () { menu.selectPreviousRootItem(); },
             'DOWN': function () { menu.selectNextRootItem(); },
             'LEFT': function () { menu.collapseCurrentRootCategory(); },
             'ENTER': function () { menu.mainRootAction(); }
         });
-        controller.setGestureFunctions({
+        input.setGestureFunctions({
             'SWIPE_RIGHT': function () { showMenu(); },
             'SWIPE_LEFT': function () { menu.collapseCurrentRootCategory(); }
         });
@@ -126,7 +126,7 @@ var api = lanet_tv.Api.getInstance(),
             playChannel(channel);
             showPlayer();
         });
-        controller.setKeyFunctions({
+        input.setKeyFunctions({
             'UP': function () { menu.selectPreviousChannel(); },
             'DOWN': function () { menu.selectNextChannel(); },
             'LEFT': function () { expandMenu(); },
@@ -134,7 +134,7 @@ var api = lanet_tv.Api.getInstance(),
             'ENTER': function () { playChannel(menu.getSelectedChannel()); },
             'YELLOW': function () { toggleFavourite(menu.getSelectedChannel()); }
         });
-        controller.setGestureFunctions({
+        input.setGestureFunctions({
             'SWIPE_RIGHT': function () { showPlayer(); },
             'SWIPE_LEFT': function () { expandMenu(); }
         });
@@ -144,14 +144,14 @@ var api = lanet_tv.Api.getInstance(),
         auth.show();
         app_bar.hideTitle();
         app_bar.show();
-        control_bar.show();
+        navigator.userAgent.match(/iPhone/g) && control_bar.show();
         app_bar.setTransparentBackground(true);
         control_bar.hide();
-        controller.setKeyFunctions({
+        input.setKeyFunctions({
             'ENTER': function () { auth.resetAuth(); },
             'LEFT': function () { showPlayer(); }
         });
-        controller.setGestureFunctions({
+        input.setGestureFunctions({
             'SWIPE_LEFT': function () { showPlayer(); }
         });
     },
@@ -161,20 +161,20 @@ var api = lanet_tv.Api.getInstance(),
         hideTint();
         app_bar.hideTitle();
         app_bar.show(2000);
-        control_bar.show(2000);
+        navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
         app_bar.setTransparentBackground(false);
-        controller.setKeyFunctions({
+        input.setKeyFunctions({
             'RIGHT': function () { showAuth(); },
             'LEFT': function () { showMenu(); },
             'UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
-                control_bar.show(2000);
+                //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
             'DOWN': function () {
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
-                control_bar.show(2000);
+                //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
             'YELLOW': function () {
                 showBalloon("Удаленное управление " + (remote.togglePolling() ? "включено" : "выключено"));
@@ -182,27 +182,27 @@ var api = lanet_tv.Api.getInstance(),
             'CH_UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
-                control_bar.show(2000);
+                //control_bar.show(2000);
             },
             'CH_DOWN': function () {
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
-                control_bar.show(2000);
+                //control_bar.show(2000);
             },
             'ENTER': function () { showMenu() }
         });
-        controller.setGestureFunctions({
+        input.setGestureFunctions({
             'SWIPE_RIGHT': function () { showAuth(); },
             'SWIPE_LEFT': function () { showMenu(); },
             'SWIPE_UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
-                control_bar.show(2000);
+                navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
             'SWIPE_DOWN': function () {
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
-                control_bar.show(2000);
+                navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             }
         });
     };
@@ -221,17 +221,17 @@ api.getData(function () {
         });
     });
     setInterval(function () { update(); }, 5000);
-    controller.setDefaultKeyFunctions({
+    input.setDefaultKeyFunctions({
         'RED': function () { Helpers.toggleNode(document.getElementById('grid')) },
         'GREEN': function () { window.location.reload(); },
         'BLUE': function () { Helpers.toggleNode(document.getElementById('debug')) }
     });
     remote.setKey("default");
-    remote.setHandler(function (command) { controller.emulateKeyPress(command.toUpperCase()); });
+    remote.setHandler(function (command) { input.emulateKeyPress(command.toUpperCase()); });
     player.setOverlayHandler(function () { showPlayer(); });
     control_bar.setPlayHandler(function () { player.play(); });
     //showLog();
-    controller.enableKeys();
+    input.enableKeys();
     // Remove any hashes (after oauth login in some cases)
     //if (window.location.hash.length > 0) window.location.href = window.location.href.split('#')[0];
     Helpers.hideNode(document.getElementById('loading'));

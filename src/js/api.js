@@ -4,7 +4,7 @@ lanet_tv.Api = (function () {
     function init() {
         var domains = {
             "api": 'https://play.lanet.tv',
-            "static": 'https://static.lanet.ua'
+            "static_files": 'https://static.lanet.ua'
             //images: 'https://kirito.la.net.ua',
             //data: 'data.rmrf.co',
             //data: 'data.lanet.tv',
@@ -16,7 +16,7 @@ lanet_tv.Api = (function () {
             Helpers.getJSON(domains.api + '/init' + (key ? "?key=" + key : ""), function (reply) {
                 data = reply;
                 domains['edge'] = domains['edge'] || reply['edge'];
-                domains['images'] = domains['umg'] || reply['images'];
+                domains['images'] = domains['images'] || reply['images'];
                 loaded = true;
                 callback(data);
             });
@@ -34,8 +34,8 @@ lanet_tv.Api = (function () {
             getOffset: function () { return data['time_offset'] },
             getGenres: function () { return data['classList']; },
             getTags: function () { return data['tagList']; },
-            getLogoUrl: function (id) { return domains['static'] + '/tv/logo/' + id.toString() + '.svg'; },
-            //getLogoUrl: function (id) { return domains.static + '/tv/logo/' + id.toString() + '.png'; },
+            getLogoUrl: function (id) { return domains['static_files'] + '/tv/logo/' + id.toString() + '.svg'; },
+            //getLogoUrl: function (id) { return domains.static_files + '/tv/logo/' + id.toString() + '.png'; },
             getPreviewBgUrl: function (id) { return domains.images + '_' + id.toString() + '_bg.jpg'; },
             getPreviewUrl: function (id) { return domains.images + '_' + id.toString() + '.jpg'; },
             parseChannels: function () {
@@ -107,5 +107,5 @@ lanet_tv.Api = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

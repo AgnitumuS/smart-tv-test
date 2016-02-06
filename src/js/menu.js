@@ -520,5 +520,5 @@ lanet_tv.Menu = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();

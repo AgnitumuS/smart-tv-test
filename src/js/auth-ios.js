@@ -25,7 +25,7 @@ lanet_tv.Auth = (function () {
                 container.appendChild(auth);
                 reset.addEventListener('touchend', function (event) {
                     event.preventDefault();
-                    resetAuth()
+                    resetAuth();
                 });
                 reset.addEventListener('click', resetAuth);
                 Helpers.hideNode(reset);
@@ -102,7 +102,7 @@ lanet_tv.Auth = (function () {
                 }, function () {
                     resetAuth();
                 });
-                timeout = setTimeout(function () {request.abort()}, 500);
+                timeout = setTimeout(function () { request.abort(); }, 500);
             },
             refreshAuth = function () {
                 clearTimeout(refresh_timeout);
@@ -148,7 +148,7 @@ lanet_tv.Auth = (function () {
             resetAuth: resetAuth,
             setAuthUpdateFunction: function (func) {
                 onAuthUpdate = func;
-                onAuthUpdate(userpic, key)
+                onAuthUpdate(userpic, key);
             },
             getKey: function () {
                 return key;
@@ -162,5 +162,5 @@ lanet_tv.Auth = (function () {
                 instance = init();
             return instance;
         }
-    }
+    };
 })();
