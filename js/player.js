@@ -2,12 +2,16 @@ lanet_tv.Player = (function () {
     var instance;
 
     function init() {
-        var body = document.getElementsByTagName('body')[0], player, current;
-        if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android|iPad|iPhone|Mac OS X/g)) {
+        var body = document.getElementsByTagName('body')[0],
+            overlay = document.createElement('div'),
+            overlayFunction = function () {alert("")}, player, current;
+        overlay.id = "overlay";
+        overlay.addEventListener('click', function () { overlayFunction() });
+        if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android|iPad|iPod|iPhone|Mac OS X/g)) {
             player = document.getElementById('player');
-            player.addEventListener("click", function () {
-                player.play();
-            });
+            //player.addEventListener("click", function () {
+            //    player.play();
+            //});
             player.setSource = function (src, ratio) {
                 if (navigator.userAgent.match(/SmartHub/g))
                     src += '|COMPONENT=HLS';
@@ -68,10 +72,20 @@ lanet_tv.Player = (function () {
             player.id = 'player';
             body.appendChild(player);
         }
+        body.appendChild(overlay);
         return {
             play: function (channel) {
-                player.setSource(channel.data['url'], channel.data['ratio']);
-                player.play();
+                channel && player.setSource(channel.data['url'], channel.data['ratio']);
+                try {
+                    player.play();
+                } catch (e) {
+                }
+            },
+            tintOverlay: function (state) {
+                state ? overlay.classList.add('tint') : overlay.classList.remove('tint');
+            },
+            setOverlayHandler: function (overlayHandler) {
+                overlayFunction = overlayHandler;
             }
         };
     }

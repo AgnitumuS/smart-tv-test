@@ -4,7 +4,8 @@ var api = lanet_tv.Api.getInstance(),
     player = lanet_tv.Player.getInstance(),
     app_bar = lanet_tv.AppBar.getInstance(),
     menu = lanet_tv.Menu.getInstance(),
-    social = lanet_tv.Auth.getInstance(),
+    auth = lanet_tv.Auth.getInstance(),
+    control_bar = lanet_tv.ControlBar.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
     channel, balloon_timeout = 0,
@@ -64,18 +65,10 @@ var api = lanet_tv.Api.getInstance(),
         Helpers.showNode(container);
         balloon.innerHTML = text;
         clearTimeout(balloon_timeout);
-        balloon_timeout = setTimeout(function () {
-            Helpers.hideNode(container);
-        }, 2000)
+        balloon_timeout = setTimeout(function () { Helpers.hideNode(container); }, 2000)
     },
-    showTint = function () {
-        Helpers.showNode(document.getElementById('overlay'));
-        document.getElementById('overlay').classList.add('tinted');
-    },
-    hideTint = function () {
-        Helpers.hideNode(document.getElementById('overlay'));
-        document.getElementById('overlay').classList.remove('tinted');
-    },
+    showTint = function () { player.tintOverlay(true); },
+    hideTint = function () { player.tintOverlay(false); },
     playChannel = function (channel) {
         channels.setCurrent(channel);
         player.play(channel);
@@ -91,58 +84,34 @@ var api = lanet_tv.Api.getInstance(),
                 case 'lists':
                     switch (id) {
                         case 'favourite':
-                            getCurrentChannelList = function () {
-                                return channels.getFavourite();
-                            };
+                            getCurrentChannelList = function () { return channels.getFavourite(); };
                             break;
                         default:
-                            getCurrentChannelList = function () {
-                                return channels.getChannels();
-                            };
+                            getCurrentChannelList = function () { return channels.getChannels(); };
                     }
                     break;
                 case 'genres':
-                    getCurrentChannelList = function () {
-                        return channels.getByClass(id);
-                    };
+                    getCurrentChannelList = function () { return channels.getByClass(id); };
                     break;
                 case 'tags':
-                    getCurrentChannelList = function () {
-                        return channels.getByTag(id);
-                    };
+                    getCurrentChannelList = function () { return channels.getByTag(id); };
                     break;
                 default:
                     console.warn('TODO: Unhandled item: ', [category, id]);
-                    getCurrentChannelList = function () {
-                        return channels.getChannels();
-                    };
+                    getCurrentChannelList = function () { return channels.getChannels(); };
             }
             menu.setChannels(getCurrentChannelList());
         });
         controller.setKeyFunctions({
-            'RIGHT': function () {
-                showMenu();
-            },
-            'UP': function () {
-                menu.selectPreviousRootItem();
-            },
-            'DOWN': function () {
-                menu.selectNextRootItem();
-            },
-            'LEFT': function () {
-                menu.collapseCurrentRootCategory();
-            },
-            'ENTER': function () {
-                menu.mainRootAction();
-            }
+            'RIGHT': function () { showMenu(); },
+            'UP': function () { menu.selectPreviousRootItem(); },
+            'DOWN': function () { menu.selectNextRootItem(); },
+            'LEFT': function () { menu.collapseCurrentRootCategory(); },
+            'ENTER': function () { menu.mainRootAction(); }
         });
         controller.setGestureFunctions({
-            'SWIPE_RIGHT': function () {
-                showMenu();
-            },
-            'SWIPE_LEFT': function () {
-                menu.collapseCurrentRootCategory();
-            }
+            'SWIPE_RIGHT': function () { showMenu(); },
+            'SWIPE_LEFT': function () { menu.collapseCurrentRootCategory(); }
         });
     },
     showMenu = function () {
@@ -151,81 +120,61 @@ var api = lanet_tv.Api.getInstance(),
         menu.show();
         app_bar.hideTitle();
         app_bar.setTransparentBackground(true);
+        control_bar.hide();
         app_bar.show();
         menu.setChannelClickHandler(function (channel) {
             playChannel(channel);
             showPlayer();
         });
         controller.setKeyFunctions({
-            'UP': function () {
-                menu.selectPreviousChannel();
-            },
-            'DOWN': function () {
-                menu.selectNextChannel();
-            },
-            'LEFT': function () {
-                expandMenu();
-            },
-            'RIGHT': function () {
-                showPlayer();
-            },
-            'ENTER': function () {
-                playChannel(menu.getSelectedChannel());
-            },
-            'YELLOW': function () {
-                toggleFavourite(menu.getSelectedChannel());
-            }
+            'UP': function () { menu.selectPreviousChannel(); },
+            'DOWN': function () { menu.selectNextChannel(); },
+            'LEFT': function () { expandMenu(); },
+            'RIGHT': function () { showPlayer(); },
+            'ENTER': function () { playChannel(menu.getSelectedChannel()); },
+            'YELLOW': function () { toggleFavourite(menu.getSelectedChannel()); }
         });
         controller.setGestureFunctions({
-            'SWIPE_RIGHT': function () {
-                showPlayer();
-            },
-            'SWIPE_LEFT': function () {
-                expandMenu();
-            }
+            'SWIPE_RIGHT': function () { showPlayer(); },
+            'SWIPE_LEFT': function () { expandMenu(); }
         });
     },
-    showSocial = function () {
+    showAuth = function () {
         showTint();
-        social.show();
+        auth.show();
         app_bar.hideTitle();
         app_bar.show();
+        control_bar.show();
         app_bar.setTransparentBackground(true);
+        control_bar.hide();
         controller.setKeyFunctions({
-            'ENTER': function () {
-                social.resetAuth();
-            },
-            'LEFT': function () {
-                showPlayer();
-            }
+            'ENTER': function () { auth.resetAuth(); },
+            'LEFT': function () { showPlayer(); }
         });
         controller.setGestureFunctions({
-            'SWIPE_LEFT': function () {
-                showPlayer();
-            }
+            'SWIPE_LEFT': function () { showPlayer(); }
         });
     },
     showPlayer = function () {
-        social.hide();
+        auth.hide();
         menu.hide();
         hideTint();
         app_bar.hideTitle();
         app_bar.show(2000);
+        control_bar.show(2000);
         app_bar.setTransparentBackground(false);
         controller.setKeyFunctions({
-            'RIGHT': function () {
-                showSocial();
-            },
-            'LEFT': function () {
-                showMenu();
-            },
+            'RIGHT': function () { showAuth(); },
+            'LEFT': function () { showMenu(); },
             'UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
+                control_bar.show(2000);
             },
             'DOWN': function () {
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
+                control_bar.show(2000);
             },
             'YELLOW': function () {
                 showBalloon("Удаленное управление " + (remote.togglePolling() ? "включено" : "выключено"));
@@ -233,70 +182,64 @@ var api = lanet_tv.Api.getInstance(),
             'CH_UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
+                control_bar.show(2000);
             },
             'CH_DOWN': function () {
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
+                control_bar.show(2000);
             },
-            'ENTER': function () {
-                showMenu()
-            }
+            'ENTER': function () { showMenu() }
         });
         controller.setGestureFunctions({
-            'SWIPE_RIGHT': function () {
-                showSocial();
-            },
-            'SWIPE_LEFT': function () {
-                showMenu();
-            },
+            'SWIPE_RIGHT': function () { showAuth(); },
+            'SWIPE_LEFT': function () { showMenu(); },
             'SWIPE_UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
+                control_bar.show(2000);
             },
             'SWIPE_DOWN': function () {
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
+                control_bar.show(2000);
             }
         });
     };
 
 api.getData(function () {
-    social.setAuthUpdateFunction(function (userpic, key) {
+    auth.setAuthUpdateFunction(function (userpic, key) {
         app_bar.setUserpic(userpic);
         api.setKey(key);
         update(function () {
-            playChannel(storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')) ? channels.getChannelById(storage.get('last_channel')) : channels.getFirstChannel());
-            (social.getKey() && showPlayer()) || showSocial();
+            // Check if last channel is saved and available, default to first channel in list
+            if (!storage.get('last_channel') || !channels.getChannelById(storage.get('last_channel')))
+                storage.set('last_channel', channels.getFirstChannel());
+            playChannel(channels.getChannelById(storage.get('last_channel')));
+            // Show authorization if not logged in
+            (auth.getKey() && showPlayer()) || showAuth();
         });
     });
-    setInterval(function () {
-        update();
-    }, 5000);
-});
-controller.setDefaultKeyFunctions({
-    'RED': function () {
-        Helpers.toggleNode(document.getElementById('grid'))
-    },
-    'GREEN': function () {
-        window.location.reload();
-    },
-    'BLUE': function () {
-        Helpers.toggleNode(document.getElementById('debug'))
+    setInterval(function () { update(); }, 5000);
+    controller.setDefaultKeyFunctions({
+        'RED': function () { Helpers.toggleNode(document.getElementById('grid')) },
+        'GREEN': function () { window.location.reload(); },
+        'BLUE': function () { Helpers.toggleNode(document.getElementById('debug')) }
+    });
+    remote.setKey("default");
+    remote.setHandler(function (command) { controller.emulateKeyPress(command.toUpperCase()); });
+    player.setOverlayHandler(function () { showPlayer(); });
+    control_bar.setPlayHandler(function () { player.play(); });
+    //showLog();
+    controller.enableKeys();
+    // Remove any hashes (after oauth login in some cases)
+    //if (window.location.hash.length > 0) window.location.href = window.location.href.split('#')[0];
+    Helpers.hideNode(document.getElementById('loading'));
+    if (document.readyState === 'complete') {
+        Helpers.hideNode(document.getElementById('loading'));
+    } else {
+        window.addEventListener('load', function () {
+            Helpers.hideNode(document.getElementById('loading'));
+        });
     }
 });
-remote.setKey("default");
-remote.setHandler(function (command) {
-    controller.emulateKeyPress(command.toUpperCase());
-});
-//showLog();
-controller.enableKeys();
-//remote.togglePolling();
-if (window.location.hash.length > 0) window.location.href = window.location.href.split('#')[0];
-Helpers.hideNode(document.getElementById('loading'));
-if (document.readyState === 'complete') {
-    Helpers.hideNode(document.getElementById('loading'));
-} else {
-    window.addEventListener('load', function () {
-        Helpers.hideNode(document.getElementById('loading'));
-    });
-}

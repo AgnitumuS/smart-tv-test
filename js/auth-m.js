@@ -3,16 +3,17 @@ lanet_tv.Auth = (function () {
 
     function init() {
         var body = document.getElementsByTagName('body')[0],
-            social = document.createElement('div'),
+            container = document.createElement('div'),
             auth = document.createElement('div'),
             main = document.createElement('div'),
             welcome = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], expire = 0, open = false, popup, refresh_timeout = 0,
+            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0,
+            popup,
             onAuthUpdate = function (userpic, key) { },
             createElement = function () {
-                social.id = 'social';
+                container.id = 'auth';
                 auth.className = 'auth';
                 main.className = 'main';
                 reset.className = 'button reset';
@@ -21,14 +22,14 @@ lanet_tv.Auth = (function () {
                 userpic = '';
                 key = null;
                 auth.appendChild(main);
-                social.appendChild(auth);
+                container.appendChild(auth);
                 reset.addEventListener('touchend', function (event) {
                     event.preventDefault();
                     resetAuth()
                 });
                 reset.addEventListener('click', resetAuth);
                 Helpers.hideNode(reset);
-                return social;
+                return container;
             },
             refreshButton = function (id) {
                 clearTimeout(refresh_timeout);
@@ -41,7 +42,7 @@ lanet_tv.Auth = (function () {
             createButton = function (id, name) {
                 var button = document.createElement('button');
                 button.classList.add('button');
-                button.classList.add('social');
+                button.classList.add('auth');
                 button.classList.add(id);
                 var button_text = document.createElement('span');
                 button_text.innerHTML = name;
@@ -81,8 +82,7 @@ lanet_tv.Auth = (function () {
                 main.appendChild(createButton('lanet', 'Ланет'));
             },
             saveAuth = function (data) {
-                if (popup && !popup.closed)
-                    popup.close();
+                popup && !popup.closed && popup.close();
                 Helpers.removeChildren(main);
                 storage.set('token', data['token']);
                 storage.set('key', data['key']);
@@ -99,9 +99,8 @@ lanet_tv.Auth = (function () {
                 requests.push(Helpers.getJSON(url, function (data) {
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
-                    if (error.status != 0 && open) {
+                    if (error.status != 0 && open)
                         resetAuth();
-                    }
                 }));
             },
             checkToken = function (token) {
@@ -109,7 +108,7 @@ lanet_tv.Auth = (function () {
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
                     if (error.status != 0)
-                        resetAuth()
+                        resetAuth();
                 }));
             };
         body.appendChild(createElement());
@@ -121,10 +120,10 @@ lanet_tv.Auth = (function () {
         return {
             show: function () {
                 open = true;
-                Helpers.showNode(social);
+                Helpers.showNode(container);
             },
             hide: function () {
-                Helpers.hideNode(social);
+                Helpers.hideNode(container);
                 open = false;
             },
             resetAuth: resetAuth,

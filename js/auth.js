@@ -3,17 +3,18 @@ lanet_tv.Auth = (function () {
 
     function init() {
         var body = document.getElementsByTagName('body')[0],
-            social = document.createElement('div'),
+            container = document.createElement('div'),
             auth = document.createElement('div'),
             main = document.createElement('div'),
             welcome = document.createElement('div'),
             hint = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], pin, expire = 0, last_refresh = 0, refresh_timeout = 0, pin_check_url, open = false,
+            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0,
+            pin, pin_check_url, last_refresh = 0,
             onAuthUpdate = function (userpic, key) { },
             createElement = function () {
-                social.id = 'social';
+                container.id = 'auth';
                 auth.className = 'auth';
                 main.className = 'main';
                 reset.className = 'button reset';
@@ -24,10 +25,10 @@ lanet_tv.Auth = (function () {
                 userpic = '';
                 key = null;
                 auth.appendChild(main);
-                social.appendChild(auth);
+                container.appendChild(auth);
                 reset.addEventListener('click', resetAuth);
                 Helpers.hideNode(reset);
-                return social;
+                return container;
             },
             resetAuth = function () {
                 Helpers.hideNode(reset);
@@ -96,12 +97,12 @@ lanet_tv.Auth = (function () {
         return {
             show: function () {
                 open = true;
-                Helpers.showNode(social);
+                Helpers.showNode(container);
                 if (!key && last_refresh > 0 && last_refresh + expire < new Date().getTime())
                     refreshPin();
             },
             hide: function () {
-                Helpers.hideNode(social);
+                Helpers.hideNode(container);
                 open = false;
             },
             resetAuth: resetAuth,

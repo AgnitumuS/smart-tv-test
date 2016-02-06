@@ -1,0 +1,24 @@
+#control_bar {
+    position: fixed;
+    color: #fff;
+    height: 48px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 16px 32px 16px 32px;
+    background: rgba(96, 125, 139, .87);
+    background-size: 40px 40px;
+    font-size: 24px;
+    display: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    z-index: 10;
+}
+
+#control_bar .play {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    background: url("../assets/icons/ic_play_circle_filled_white_48px.svg");
+}

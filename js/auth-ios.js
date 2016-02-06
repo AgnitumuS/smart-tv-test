@@ -3,16 +3,17 @@ lanet_tv.Auth = (function () {
 
     function init() {
         var body = document.getElementsByTagName('body')[0],
-            social = document.createElement('div'),
+            container = document.createElement('div'),
             auth = document.createElement('div'),
             main = document.createElement('div'),
             welcome = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], expire = 0, last_refresh = 0, open = false, refresh_timeout = 0,
+            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0,
+            last_refresh = 0,
             onAuthUpdate = function (userpic, key) { },
             createElement = function () {
-                social.id = 'social';
+                container.id = 'auth';
                 auth.className = 'auth';
                 main.className = 'main';
                 reset.className = 'button reset';
@@ -21,20 +22,20 @@ lanet_tv.Auth = (function () {
                 userpic = '';
                 key = null;
                 auth.appendChild(main);
-                social.appendChild(auth);
+                container.appendChild(auth);
                 reset.addEventListener('touchend', function (event) {
                     event.preventDefault();
                     resetAuth()
                 });
                 reset.addEventListener('click', resetAuth);
                 Helpers.hideNode(reset);
-                return social;
+                return container;
             },
         /*
          createButton = function (id, name, url) {
          var button = document.createElement('a');
          button.classList.add('button');
-         button.classList.add('social');
+         button.classList.add('auth');
          button.classList.add(id);
          //button.target = "_self";
          button.href = url + '?redirect=true';
@@ -47,21 +48,21 @@ lanet_tv.Auth = (function () {
             createButton = function (id, name, url) {
                 var button = document.createElement('button');
                 button.classList.add('button');
-                button.classList.add('social');
+                button.classList.add('auth');
                 button.classList.add(id);
                 var button_text = document.createElement('span');
                 button_text.innerHTML = name;
                 button.appendChild(button_text);
                 button.addEventListener('touchend', function (event) {
                     event.preventDefault();
-                    popup = Helpers.openDialog(url + "?redirect=true", "_self", {width: 640, height: 480}, function () {
+                    Helpers.openDialog(url + "?redirect=true", "_self", {width: 640, height: 480}, function () {
                         clearTimeout(refresh_timeout);
                         if (!key)
                             resetAuth();
                     });
                 });
                 button.addEventListener('click', function () {
-                    popup = Helpers.openDialog(url + "?redirect=true", "_self", {width: 640, height: 480}, function () {
+                    Helpers.openDialog(url + "?redirect=true", "_self", {width: 640, height: 480}, function () {
                         clearTimeout(refresh_timeout);
                         if (!key)
                             resetAuth();
@@ -136,12 +137,12 @@ lanet_tv.Auth = (function () {
         return {
             show: function () {
                 open = true;
-                Helpers.showNode(social);
+                Helpers.showNode(container);
                 if (!key && last_refresh > 0 && last_refresh + expire < new Date().getTime())
                     refreshAuth();
             },
             hide: function () {
-                Helpers.hideNode(social);
+                Helpers.hideNode(container);
                 open = false;
             },
             resetAuth: resetAuth,
