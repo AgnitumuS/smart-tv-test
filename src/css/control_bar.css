@@ -1,24 +1,29 @@
 #control_bar {
     position: fixed;
     color: #fff;
-    height: 48px;
+    height: 80px;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: -112px;
     padding: 16px 32px 16px 32px;
     background: rgba(96, 125, 139, .87);
     background-size: 40px 40px;
     font-size: 24px;
-    display: none;
     overflow: hidden;
     white-space: nowrap;
     text-align: center;
     z-index: 10;
+    transition: bottom .5s;
+}
+
+#control_bar.visible {
+    bottom: 0;
 }
 
 #control_bar .play {
     display: inline-block;
-    width: 48px;
-    height: 48px;
+    width: 80px;
+    height: 80px;
     background: url("../assets/icons/ic_play_circle_filled_white_48px.svg");
+    background-size: contain;
 }

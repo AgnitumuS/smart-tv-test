@@ -74,7 +74,7 @@ lanet_tv.AppBar = (function () {
         body.appendChild(createElement());
         return {
             show: function (delay) {
-                Helpers.showNode(app_bar);
+                app_bar.classList.add('visible');
                 clearTimeout(timeout);
                 if (delay) {
                     var self = this;
@@ -84,7 +84,7 @@ lanet_tv.AppBar = (function () {
                 }
             },
             hide: function () {
-                Helpers.hideNode(app_bar);
+                app_bar.classList.remove('visible');
             },
             setTransparentBackground: function (bool) {
                 bool ? app_bar.classList.add('transparent') : app_bar.classList.remove('transparent')
@@ -109,10 +109,10 @@ lanet_tv.AppBar = (function () {
                 title_primary.innerHTML = title;
             },
             hideTitle: function () {
-                Helpers.hideNode(title);
+                title.classList.remove('visible');
             },
             showTitle: function () {
-                Helpers.showNode(title);
+                title.classList.add('visible');
             }
         };
     }

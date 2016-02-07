@@ -1,12 +1,15 @@
 #menu {
-    visibility: hidden;
     position: fixed;
     top: 72px;
-    /*right: 0;*/
     bottom: 0;
-    left: 0;
+    left: -1008px;
     padding: 0 0;
     z-index: 20;
+    transition: left .5s;
+}
+
+#menu.visible {
+    left: 0;
 }
 
 #menu > .root {
@@ -15,16 +18,13 @@
     overflow: hidden;
     float: left;
     background: rgba(96, 125, 139, .87);
+    transition: width .5s;
 }
 
 #menu.expanded > .root {
     width: 288px;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-}
-
-#menu.expanded > .list, #menu.expanded > .footer {
-    left: 288px;
 }
 
 #menu > .root > .category, #menu > .root > .item {
@@ -100,18 +100,15 @@
 }
 
 #menu > .list {
-    position: fixed;
+    position: relative;
     width: 912px;
+    height: 100%;
     float: left;
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
     background-color: #455A64;
     z-index: 20;
-    top: 72px;
-    /*top: 136px;*/
-    /*bottom: 64px;*/
+    top: 0;
     bottom: 0;
-    left: 72px;
-    /*overflow-y: scroll;*/
     overflow: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -147,9 +144,9 @@
     background-color: rgb(89, 108, 116);
 }
 
-#menu.expanded > .root > .selected {
-    /*opacity: 1;*/
-    /*background-color: rgba(255, 255, 255, .15);*/
+#menu.expanded > .root > :active {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, .15);
 }
 
 #menu > .list > .current, #menu.expanded > .root > .current {

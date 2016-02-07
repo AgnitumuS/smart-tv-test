@@ -21,7 +21,13 @@ lanet_tv.Storage = (function () {
                 return read(key)
             },
             set: function (key, value) {
-                write(key, value)
+                if (typeof key !== "string")
+                    return;
+                if (typeof value !== "string") {
+                    console.warn("Attempted to store non-string value for " + key);
+                    return;
+                }
+                write(key, value);
             }
         }
     }

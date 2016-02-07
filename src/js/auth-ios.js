@@ -137,12 +137,12 @@ lanet_tv.Auth = (function () {
         return {
             show: function () {
                 open = true;
-                Helpers.showNode(container);
+                container.classList.add('visible');
                 if (!key && last_refresh > 0 && last_refresh + expire < new Date().getTime())
                     refreshAuth();
             },
             hide: function () {
-                Helpers.hideNode(container);
+                container.classList.remove('visible');
                 open = false;
             },
             resetAuth: resetAuth,

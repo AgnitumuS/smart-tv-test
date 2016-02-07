@@ -120,10 +120,10 @@ lanet_tv.Auth = (function () {
         return {
             show: function () {
                 open = true;
-                Helpers.showNode(container);
+                container.classList.add('visible');
             },
             hide: function () {
-                Helpers.hideNode(container);
+                container.classList.remove('visible');
                 open = false;
             },
             resetAuth: resetAuth,

@@ -55,10 +55,13 @@ video, #player {
     margin: auto;
     z-index: 1;
     background-size: 100% 100%;
+    background-image: url("../assets/vignet.png");
+    opacity: 0;
+    transition: opacity .5s;
 }
 
 #overlay.tinted {
-    background-image: url("../assets/vignet.png");
+    opacity: 1;
 }
 
 .bold {

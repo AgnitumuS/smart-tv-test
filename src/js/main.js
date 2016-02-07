@@ -73,7 +73,7 @@ var api = lanet_tv.Api.getInstance(),
         channels.setCurrent(channel);
         player.play(channel);
         app_bar.setChannel(channel);
-        storage.set('last_channel', channel.data['id']);
+        storage.set('last_channel', String(channel.data['id']));
         //showPlayer()
     },
     expandMenu = function () {
@@ -213,11 +213,15 @@ api.getData(function () {
         api.setKey(key);
         update(function () {
             // Check if last channel is saved and available, default to first channel in list
-            if (!storage.get('last_channel') || !channels.getChannelById(storage.get('last_channel')))
-                storage.set('last_channel', channels.getFirstChannel());
-            playChannel(channels.getChannelById(storage.get('last_channel')));
+            var channel = channels.getFirstChannel();
+            if (storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')))
+                channel = channels.getChannelById(storage.get('last_channel'));
+            playChannel(channel);
             // Show authorization if not logged in
-            (auth.getKey() && showPlayer()) || showAuth();
+            if (auth.getKey())
+                showPlayer();
+            else
+                showAuth();
         });
     });
     setInterval(function () { update(); }, 5000);

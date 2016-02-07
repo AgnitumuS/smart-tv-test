@@ -386,14 +386,15 @@ lanet_tv.Menu = (function () {
             show: function () {
                 renderCurrentListPage();
                 setClock(Time.asObject().getHhMm());
-                menu.style.visibility = 'visible';
+                menu.classList.add('visible');
                 update();
                 clock_update_interval = setInterval(function () {
                     setClock(Time.asObject().getHhMm());
                 }, 1000);
             },
             hide: function () {
-                menu.style.visibility = 'hidden';
+                this.collapse();
+                menu.classList.remove('visible');
                 clearInterval(clock_update_interval);
             },
             expand: function () {
@@ -496,7 +497,7 @@ lanet_tv.Menu = (function () {
                         selected_channel++;
                         current_channel_list[selected_channel].element.classList.add('selected');
                     } else {
-                        renderNextListPage()
+                        renderNextListPage();
                     }
                 }
             },
@@ -507,7 +508,7 @@ lanet_tv.Menu = (function () {
                     selected_channel--;
                     current_channel_list[selected_channel].element.classList.add('selected');
                 } else if (current_limits.min > 0) {
-                    renderPreviousListPage()
+                    renderPreviousListPage();
                 }
             },
             getSelectedChannel: function () { return current_channel_list[selected_channel] }

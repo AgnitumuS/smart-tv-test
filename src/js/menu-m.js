@@ -379,22 +379,16 @@ lanet_tv.Menu = (function () {
             resetListSelection = function () {
                 if (current_channel_list[selected_channel])
                     current_channel_list[selected_channel].element.classList.remove('selected');
-            },
-            setClock = function (time) { clock.innerHTML = time; };
+            };
         body.appendChild(createElement());
         return {
             show: function () {
-                //renderCurrentListPage();
-                //renderFullList();
-                //setClock(Time.asObject().getHhMm());
-                menu.style.visibility = 'visible';
+                menu.classList.add('visible');
                 update();
-                //clock_update_interval = setInterval(function () {
-                //    setClock(Time.asObject().getHhMm());
-                //}, 1000);
             },
             hide: function () {
-                menu.style.visibility = 'hidden';
+                this.collapse();
+                menu.classList.remove('visible');
                 clearInterval(clock_update_interval);
             },
             expand: function () {
@@ -481,7 +475,6 @@ lanet_tv.Menu = (function () {
                     for (var c in channels)
                         if (channels.hasOwnProperty(c))
                             full_channel_list.push(channels[c]);
-                    //renderCurrentListPage();
                     renderFullList();
                 }
             },
@@ -498,7 +491,6 @@ lanet_tv.Menu = (function () {
                         selected_channel++;
                         current_channel_list[selected_channel].element.classList.add('selected');
                     } else {
-                        //renderNextListPage();
                         scrollToNextListPage();
                     }
                 }
@@ -510,7 +502,6 @@ lanet_tv.Menu = (function () {
                     selected_channel--;
                     current_channel_list[selected_channel].element.classList.add('selected');
                 } else if (current_limits.min > 0) {
-                    //renderPreviousListPage();
                     scrollToPreviousListPage();
                 }
             },

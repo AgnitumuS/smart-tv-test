@@ -2,16 +2,22 @@
     position: fixed;
     color: #fff;
     height: 40px;
+    top: -72px;
     left: 0;
     right: 0;
     padding: 16px 32px 16px 72px;
     background: rgba(96, 125, 139, .95) url('../assets/logotvcolor.svg') no-repeat 16px;
     background-size: 40px 40px;
     font-size: 24px;
-    display: none;
     overflow: hidden;
     white-space: nowrap;
     z-index: 40;
+    transition: top .5s, background .5s;
+}
+
+#app_bar.visible {
+    top: 0;
+    background-color: rgba(96, 125, 139, .95);
 }
 
 #app_bar.transparent {
@@ -26,8 +32,14 @@
 
 #app_bar > .title {
     float: left;
+    width: 0;
+    overflow: hidden;
+    display: block;
+    transition: width .5s;
+}
+
+#app_bar > .title.visible {
     width: 216px;
-    display: none;
 }
 
 #app_bar > .title > span.secondary {

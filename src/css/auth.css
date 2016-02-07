@@ -1,12 +1,16 @@
 #auth {
-    display: none;
     position: fixed;
     width: 560px;
     top: 72px;
-    right: 0;
+    right: -560px;
     bottom: 0;
     padding: 0 0;
     z-index: 20;
+    transition: right .5s;
+}
+
+#auth.visible {
+    right: 0;
 }
 
 #auth > .auth {
@@ -43,24 +47,6 @@
     color: #fff;
     font-size: 16px;
 }
-
-/*
-#auth > .reset {
-    position: absolute;
-    bottom: 16px;
-    left: 0;
-    right: 0;
-    width: 104px;
-    height: 8px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 8px;
-    padding: 22px 16px;
-    background-color: #607d8b;
-    margin: auto;
-    cursor: pointer;
-}
-*/
 
 #auth .button:focus {
     outline: none;

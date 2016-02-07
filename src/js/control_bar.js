@@ -16,7 +16,7 @@ lanet_tv.ControlBar = (function () {
         body.appendChild(createElement());
         return {
             show: function (delay) {
-                Helpers.showNode(control_bar);
+                control_bar.classList.add('visible');
                 clearTimeout(timeout);
                 if (delay) {
                     var self = this;
@@ -26,7 +26,7 @@ lanet_tv.ControlBar = (function () {
                 }
             },
             hide: function () {
-                Helpers.hideNode(control_bar);
+                control_bar.classList.remove('visible');
             },
             setPlayHandler: function (playHandler) {
                 playFunction = playHandler;
