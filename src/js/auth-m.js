@@ -129,7 +129,7 @@ lanet_tv.Auth = (function () {
             resetAuth: resetAuth,
             setAuthUpdateFunction: function (func) {
                 onAuthUpdate = func;
-                onAuthUpdate(userpic, key)
+                if (key) onAuthUpdate(userpic, key);
             },
             getKey: function () {
                 return key;
