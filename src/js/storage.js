@@ -9,6 +9,11 @@ lanet_tv.Storage = (function () {
                 'domain=', document.domain, '; ',
                 'expires=', new Date().addDays(365).toUTCString(), ';'
             ].join('');
+            document.cookie = [
+                key, '=', value, '; ',
+                'path=/; ',
+                'expires=', new Date().addDays(365).toUTCString(), ';'
+            ].join('');
         }
 
         function read(key) {

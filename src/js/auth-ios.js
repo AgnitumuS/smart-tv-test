@@ -71,7 +71,6 @@ lanet_tv.Auth = (function () {
                 return button;
             },
             resetAuth = function () {
-                console.log('resetauth');
                 init = true;
                 Helpers.hideNode(reset);
                 storage.set('auth_status', '');
@@ -83,7 +82,6 @@ lanet_tv.Auth = (function () {
                 refreshAuth();
             },
             saveAuth = function (data) {
-                console.log('saveauth');
                 init = true;
                 clearTimeout(refresh_timeout);
                 Helpers.removeChildren(main);

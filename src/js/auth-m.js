@@ -67,7 +67,6 @@ lanet_tv.Auth = (function () {
                 return button;
             },
             resetAuth = function () {
-                console.log('resetauth');
                 init = true;
                 Helpers.hideNode(reset);
                 storage.set('token', '');
@@ -84,7 +83,6 @@ lanet_tv.Auth = (function () {
                 main.appendChild(createButton('lanet', 'Ланет'));
             },
             saveAuth = function (data) {
-                console.log('saveauth');
                 init = true;
                 popup && !popup.closed && popup.close();
                 Helpers.removeChildren(main);

@@ -120,8 +120,8 @@ var api = lanet_tv.Api.getInstance(),
         menu.show();
         app_bar.hideTitle();
         app_bar.setTransparentBackground(true);
-        control_bar.hide();
         app_bar.show();
+        control_bar.hide();
         menu.setChannelClickHandler(function (channel) {
             playChannel(channel);
             showPlayer();
@@ -143,9 +143,8 @@ var api = lanet_tv.Api.getInstance(),
         showTint();
         auth.show();
         app_bar.hideTitle();
-        app_bar.show();
-        navigator.userAgent.match(/iPhone/g) && control_bar.show();
         app_bar.setTransparentBackground(true);
+        app_bar.show();
         control_bar.hide();
         input.setKeyFunctions({
             'ENTER': function () { auth.resetAuth(); },
@@ -160,9 +159,9 @@ var api = lanet_tv.Api.getInstance(),
         menu.hide();
         hideTint();
         app_bar.hideTitle();
-        app_bar.show(2000);
-        navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
         app_bar.setTransparentBackground(false);
+        app_bar.show(2000);
+        //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
         input.setKeyFunctions({
             'RIGHT': function () { showAuth(); },
             'LEFT': function () { showMenu(); },
@@ -197,12 +196,12 @@ var api = lanet_tv.Api.getInstance(),
             'SWIPE_UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
-                navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
+                //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
             'SWIPE_DOWN': function () {
                 playChannel(channels.getPrevious());
                 app_bar.show(2000);
-                navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
+                //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             }
         });
     };
@@ -211,10 +210,10 @@ api.getData(function () {
     auth.setAuthUpdateFunction(function (userpic, key) {
         app_bar.setUserpic(userpic);
         api.setKey(key);
+        var play = auth.hasInit();
         update(function () {
-            var channel = channels.getFirstChannel();
-            if (auth.hasInit()) {
-                console.log("has init", Object.keys(channels.getChannels()).length);
+            if (play) {
+                var channel = channels.getFirstChannel();
                 if (storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')))
                     channel = channels.getChannelById(storage.get('last_channel'));
                 playChannel(channel);
