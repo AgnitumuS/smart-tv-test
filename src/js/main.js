@@ -212,12 +212,13 @@ api.getData(function () {
         app_bar.setUserpic(userpic);
         api.setKey(key);
         update(function () {
-            // Check if last channel is saved and available, default to first channel in list
             var channel = channels.getFirstChannel();
-            if (storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')))
-                channel = channels.getChannelById(storage.get('last_channel'));
-            playChannel(channel);
-            // Show authorization if not logged in
+            if (auth.hasInit()) {
+                console.log("has init", Object.keys(channels.getChannels()).length);
+                if (storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')))
+                    channel = channels.getChannelById(storage.get('last_channel'));
+                playChannel(channel);
+            }
             if (auth.getKey())
                 showPlayer();
             else

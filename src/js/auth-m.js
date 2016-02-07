@@ -9,7 +9,7 @@ lanet_tv.Auth = (function () {
             welcome = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0,
+            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0, init = false,
             popup,
             onAuthUpdate = function (userpic, key) { },
             createElement = function () {
@@ -67,6 +67,8 @@ lanet_tv.Auth = (function () {
                 return button;
             },
             resetAuth = function () {
+                console.log('resetauth');
+                init = true;
                 Helpers.hideNode(reset);
                 storage.set('token', '');
                 storage.set('key', '');
@@ -82,6 +84,8 @@ lanet_tv.Auth = (function () {
                 main.appendChild(createButton('lanet', 'Ланет'));
             },
             saveAuth = function (data) {
+                console.log('saveauth');
+                init = true;
                 popup && !popup.closed && popup.close();
                 Helpers.removeChildren(main);
                 storage.set('token', data['token']);
@@ -105,6 +109,7 @@ lanet_tv.Auth = (function () {
             },
             checkToken = function (token) {
                 requests.push(Helpers.getJSON('https://auth.lanet.tv/token/' + token, function (data) {
+                    init = true;
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
                     if (error.status != 0)
@@ -129,11 +134,12 @@ lanet_tv.Auth = (function () {
             resetAuth: resetAuth,
             setAuthUpdateFunction: function (func) {
                 onAuthUpdate = func;
-                if (key) onAuthUpdate(userpic, key);
+                onAuthUpdate(userpic, key);
             },
             getKey: function () {
                 return key;
-            }
+            },
+            hasInit: function () { return init; }
         };
     }
 
