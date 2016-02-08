@@ -1,0 +1,30 @@
+{
+  "name": "lanet-tv",
+  "version": "0.0.1",
+  "description": "Lanet TV",
+  "dependencies": {
+    "vinyl-ftp": "^0.4.5"
+  },
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-cleancss": "latest",
+    "gulp-concat": "latest",
+    "gulp-htmlmin": "latest",
+    "gulp-imagemin": "^2.4.0",
+    "gulp-rename": "latest",
+    "gulp-replace": "latest",
+    "gulp-template": "latest",
+    "gulp-uglify": "latest",
+    "imagemin-pngquant": "^4.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/andrew-shulgin/lanet-smat-tv.git"
+  },
+  "author": "andrewshulginua@gmail.com",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/andrew-shulgin/lanet-smat-tv"
+}
