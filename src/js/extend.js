@@ -56,6 +56,13 @@ if (!Array.prototype.map) {
     };
 }
 
+if (!Array.prototype.pushUnique) {
+    Array.prototype.pushUnique = function (element) {
+        if (this.indexOf(element) == -1)
+            this.push(element);
+    }
+}
+
 if (!Number.prototype.toPaddedString) {
     Number.prototype.toPaddedString = function (length, symbol) {
         symbol = symbol || '0';

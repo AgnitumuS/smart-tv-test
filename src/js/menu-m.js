@@ -40,12 +40,12 @@ lanet_tv.Menu = (function () {
                 }
             ], categories = {
                 /*choice: {
-                    category: 'choice',
-                    icon: 'selection',
-                    name: 'Мой выбор',
-                    element: null,
-                    children: {}
-                },*/
+                 category: 'choice',
+                 icon: 'selection',
+                 name: 'Мой выбор',
+                 element: null,
+                 children: {}
+                 },*/
                 lists: {
                     category: 'lists',
                     icon: 'view_list',
@@ -53,11 +53,11 @@ lanet_tv.Menu = (function () {
                     element: null,
                     children: {
                         /*0: {
-                            id: 'favourite',
-                            category: 'lists',
-                            element: null,
-                            name: 'Избранное'
-                        },*/
+                         id: 'favourite',
+                         category: 'lists',
+                         element: null,
+                         name: 'Избранное'
+                         },*/
                         1: {
                             id: 'all',
                             category: 'lists',
@@ -80,13 +80,13 @@ lanet_tv.Menu = (function () {
                     element: null,
                     children: {}
                 }/*,
-                settings: {
-                    category: 'settings',
-                    icon: 'settings',
-                    name: 'Настройки',
-                    element: null,
-                    children: {}
-                }*/
+                 settings: {
+                 category: 'settings',
+                 icon: 'settings',
+                 name: 'Настройки',
+                 element: null,
+                 children: {}
+                 }*/
             },
             createElement = function () {
                 menu.id = 'menu';
@@ -417,7 +417,7 @@ lanet_tv.Menu = (function () {
             show: function () {
                 selectCurrentListItem();
                 menu.classList.add('visible');
-                update();
+                //update();
             },
             hide: function () {
                 this.collapse();
@@ -449,10 +449,10 @@ lanet_tv.Menu = (function () {
                     categories.genres.children = {};
                     for (var g in genres) {
                         if (genres.hasOwnProperty(g)) {
-                            categories.genres.children[genres[g].id] = {
-                                id: genres[g].id,
+                            categories.genres.children[g] = {
+                                id: genres[g],
                                 category: 'genres',
-                                name: genres[g].name.capitalizeFirstLetter(),
+                                name: genres[g],
                                 element: null
                             }
                         }
@@ -463,12 +463,12 @@ lanet_tv.Menu = (function () {
             setTags: function (tags) {
                 if (tags.length != Object.keys(categories.tags.children).length) {
                     categories.tags.children = {};
-                    for (var tag in tags) {
-                        if (tags.hasOwnProperty(tag)) {
-                            categories.tags.children[tag] = {
-                                id: tag,
+                    for (var t in tags) {
+                        if (tags.hasOwnProperty(t)) {
+                            categories.tags.children[t] = {
+                                id: tags[t],
                                 category: 'tags',
-                                name: tags[tag],
+                                name: tags[t],
                                 element: null
                             }
                         }
@@ -483,13 +483,13 @@ lanet_tv.Menu = (function () {
                 channelClickFunction = handler;
             },
             setChannels: function (channels) {
-                if (full_channel_list.length != Object.keys(channels).length) {
-                    full_channel_list = [];
-                    for (var c in channels)
-                        if (channels.hasOwnProperty(c))
-                            full_channel_list.push(channels[c]);
-                    renderFullList();
-                }
+                //if (full_channel_list.length != Object.keys(channels).length) {
+                full_channel_list = [];
+                for (var c in channels)
+                    if (channels.hasOwnProperty(c))
+                        full_channel_list.push(channels[c]);
+                renderFullList();
+                //}
             },
             selectNextChannel: selectNextChannel,
             selectPreviousChannel: selectPreviousChannel,

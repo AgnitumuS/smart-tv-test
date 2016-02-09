@@ -85,7 +85,6 @@
     display: inline-block;
     height: inherit;
     width: 72px;
-    background: no-repeat center;
     background-size: 36px;
 }
 
@@ -108,7 +107,7 @@
 }
 
 #auth .button.auth.facebook:before {
-    background-image: url("../assets/icons/facebook_white.svg");
+    background: url("../assets/icons/facebook_white.svg") no-repeat center;
 }
 
 #auth .button.auth.google {
@@ -116,7 +115,7 @@
 }
 
 #auth .button.auth.google:before {
-    background-image: url("../assets/icons/google_white.svg");
+    background: url("../assets/icons/google_white.svg") no-repeat center;
 }
 
 #auth .button.auth.vk {
@@ -124,7 +123,7 @@
 }
 
 #auth .button.auth.vk:before {
-    background-image: url("../assets/icons/vk_white.svg");
+    background: url("../assets/icons/vk_white.svg") no-repeat center;
 }
 
 #auth .button.auth.lanet {
@@ -132,7 +131,7 @@
 }
 
 #auth .button.auth.lanet:before {
-    background-image: url("../assets/icons/lanet_white.svg");
+    background: url("../assets/icons/lanet_white.svg") no-repeat center;
 }
 
 #auth .button.auth span {

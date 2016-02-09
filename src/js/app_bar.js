@@ -4,6 +4,7 @@ lanet_tv.AppBar = (function () {
     function init() {
         var body = document.getElementsByTagName('body')[0],
             app_bar = document.createElement('div'),
+            logo = document.createElement('div'),
             channel_info_logo = document.createElement('div'),
             channel_info_now = document.createElement('div'),
             channel_info_now_title = document.createElement('div'),
@@ -20,18 +21,27 @@ lanet_tv.AppBar = (function () {
             title_primary = document.createElement('span'),
             channel_info = document.createElement('div'),
             timeout = 0,
+            logoClickFunction = function () { },
+            userpicClickFunction = function () { },
             createElement = function () {
                 app_bar.id = 'app_bar';
+                logo.className = 'logo';
+                logo.addEventListener('click', function () {
+                    logoClickFunction();
+                });
                 title.className = 'title';
                 title_secondary.className = 'secondary';
                 channel_info.className = 'channel_info';
-                channel_info_logo.className = 'logo';
+                channel_info_logo.className = 'channel_logo';
                 channel_info_now.className = channel_info_next.className = 'column';
                 channel_info_now_title.className = channel_info_next_title.className = 'title';
                 channel_info_now_number.className = 'number';
                 channel_info_now_channel.className = 'channel';
                 channel_info_now_content.className = channel_info_next_content.className = 'content';
                 userpic.className = 'userpic';
+                userpic.addEventListener('click', function () {
+                    userpicClickFunction();
+                });
                 title_secondary.innerHTML = 'Ланет.TV';
                 title.appendChild(title_secondary);
                 title.appendChild(title_primary);
@@ -46,6 +56,7 @@ lanet_tv.AppBar = (function () {
                 channel_info_next.appendChild(channel_info_next_content);
                 channel_info.appendChild(channel_info_next);
                 app_bar.appendChild(title);
+                app_bar.appendChild(logo);
                 app_bar.appendChild(channel_info);
                 app_bar.appendChild(userpic);
                 return app_bar;
@@ -113,6 +124,12 @@ lanet_tv.AppBar = (function () {
             },
             showTitle: function () {
                 title.classList.add('visible');
+            },
+            setLogoClickHandler: function (func) {
+                logoClickFunction = func;
+            },
+            setUserpicClickHandler: function (func) {
+                userpicClickFunction = func;
             }
         };
     }

@@ -9,7 +9,7 @@ lanet_tv.Channel = function (channel) {
         epg_time_end = document.createElement('div'),
         epg_time_line = document.createElement('div'),
         epg_time_line_value = document.createElement('div'),
-        epg_tags = document.createElement('div'),
+        epg_tag_string = document.createElement('div'),
         epg_description = document.createElement('div'),
         preview = document.createElement('img'),
         star = document.createElement('div'),
@@ -29,7 +29,7 @@ lanet_tv.Channel = function (channel) {
             number.innerHTML = channel["num"].toPaddedString(3);
             logo.src = channel['logo'];
             epg_title.innerHTML = channel["epg"]["now"]["title"];
-            epg_tags.innerHTML = channel["epg"]["now"]["tags"].join(' ');
+            epg_tag_string.innerHTML = [channel["epg"]["now"]["genre"].capitalizeFirstLetter()].concat(channel["epg"]["now"]["tags"]).join(' ');
             epg_description.innerHTML = channel["epg"]["now"]["description"];
             epg_time_end.innerHTML = Time.asObject(channel["epg"]["now"]["end"]).getHhMm();
             var progress = calcProgress(channel["epg"]["now"]["begin"], channel["epg"]["now"]["end"]);
@@ -47,7 +47,7 @@ lanet_tv.Channel = function (channel) {
     logo.className = 'logo';
     program.className = 'program';
     epg_title.className = 'title';
-    epg_tags.className = 'tags';
+    epg_tag_string.className = 'tags';
     epg_description.className = 'description';
     epg_time.className = 'time';
     epg_time_end.className = 'end';
@@ -62,7 +62,7 @@ lanet_tv.Channel = function (channel) {
     element.appendChild(main);
     program.appendChild(epg_title);
     epg_time.appendChild(epg_time_end);
-    program.appendChild(epg_tags);
+    program.appendChild(epg_tag_string);
     program.appendChild(epg_description);
     epg_time_line.appendChild(epg_time_line_value);
     epg_time.appendChild(epg_time_line);
@@ -110,15 +110,14 @@ lanet_tv.Channels = (function () {
             getChannels: function () {
                 return channels;
             },
-            getByClass: function (classID) {
+            getByGenre: function (genre) {
                 return channels.filter(function (channel) {
-                    return channel.data.classID == parseInt(classID);
+                    return channel.data.epg.now.genre == genre;
                 });
             },
             getByTag: function (tag) {
                 return channels.filter(function (channel) {
-                    tag = parseInt(tag);
-                    return channel.data.tags.indexOf(tag) > -1;
+                    return channel.data.epg.now.tags.indexOf(tag) > -1;
                 });
             },
             getFavourite: function () {

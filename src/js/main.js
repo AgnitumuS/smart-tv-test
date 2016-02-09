@@ -18,7 +18,7 @@ var api = lanet_tv.Api.getInstance(),
         return channels.getChannels();
     },
     setChannels = function () {
-        var new_channels = api.parseChannels(),
+        var new_channels = api.getChannels(),
             new_channel_ids = [];
         for (var c in new_channels) {
             if (new_channels.hasOwnProperty(c)) {
@@ -53,7 +53,9 @@ var api = lanet_tv.Api.getInstance(),
     },
     log = function (string) {
         var debug = document.getElementById('debug');
-        debug.innerHTML += "[" + String(new Date().getTime() - start_time) + "] " + string + "\n";
+        string = "[" + String(new Date().getTime() - start_time) + "] " + string;
+        console.log(string);
+        debug.innerHTML += string + "\n";
         debug.scrollTop = debug.scrollHeight;
     },
     showLog = function () {
@@ -91,7 +93,7 @@ var api = lanet_tv.Api.getInstance(),
                     }
                     break;
                 case 'genres':
-                    getCurrentChannelList = function () { return channels.getByClass(id); };
+                    getCurrentChannelList = function () { return channels.getByGenre(id); };
                     break;
                 case 'tags':
                     getCurrentChannelList = function () { return channels.getByTag(id); };
@@ -236,6 +238,14 @@ api.getData(function () {
     control_bar.setPlayHandler(function () { player.play(); });
     //showLog();
     input.enableKeys();
+    app_bar.setLogoClickHandler(function () {
+        showPlayer();
+        showMenu();
+    });
+    app_bar.setUserpicClickHandler(function () {
+        showPlayer();
+        showAuth();
+    });
     // Remove any hashes (after oauth login in some cases)
     //if (window.location.hash.length > 0) window.location.href = window.location.href.split('#')[0];
     Helpers.hideNode(document.getElementById('loading'));

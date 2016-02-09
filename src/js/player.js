@@ -77,7 +77,8 @@ lanet_tv.Player = (function () {
             play: function (channel) {
                 channel && player.setSource(channel.data['url'], channel.data['ratio']);
                 try {
-                    navigator.userAgent.match(/iPhone/g) && !channel && player.play();
+                    if (navigator.userAgent.match(/iPhone/g))
+                        !channel && player.play();
                 } catch (e) {
                 }
             },
