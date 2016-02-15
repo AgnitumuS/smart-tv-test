@@ -2,15 +2,26 @@
     position: fixed;
     width: 560px;
     top: 72px;
-    right: -560px;
+    right: 0;
+    transform: translateX(576px);
     bottom: 0;
     padding: 0 0;
     z-index: 20;
-    transition: right .5s;
+    animation: auth_close_animation .3s both;
 }
 
 #auth.visible {
-    right: 0;
+    animation: auth_open_animation .3s both;
+}
+
+@keyframes auth_open_animation {
+    0% { transform: translateX(576px); }
+    100% { transform: translateX(0px); }
+}
+
+@-webkit-keyframes auth_close_animation {
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(576px); }
 }
 
 #auth > .auth {

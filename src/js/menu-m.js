@@ -90,6 +90,7 @@ lanet_tv.Menu = (function () {
             },
             createElement = function () {
                 menu.id = 'menu';
+                menu.classList.add('hidden');
                 root.className = 'root';
                 list.className = 'list';
                 footer.className = 'footer';
@@ -416,6 +417,7 @@ lanet_tv.Menu = (function () {
         return {
             show: function () {
                 selectCurrentListItem();
+                menu.classList.remove('hidden');
                 menu.classList.add('visible');
                 //update();
             },

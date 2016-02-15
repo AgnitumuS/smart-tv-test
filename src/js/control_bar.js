@@ -8,6 +8,7 @@ lanet_tv.ControlBar = (function () {
             timeout = 0, playFunction = function () { },
             createElement = function () {
                 control_bar.id = 'control_bar';
+                control_bar.classList.add('hidden');
                 play_button.className = 'play';
                 play_button.addEventListener('click', function() { playFunction() });
                 control_bar.appendChild(play_button);
@@ -16,6 +17,7 @@ lanet_tv.ControlBar = (function () {
         body.appendChild(createElement());
         return {
             show: function (delay) {
+                control_bar.classList.remove('hidden');
                 control_bar.classList.add('visible');
                 clearTimeout(timeout);
                 if (delay) {

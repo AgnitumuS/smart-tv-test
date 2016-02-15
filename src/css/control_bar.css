@@ -13,7 +13,8 @@
     white-space: nowrap;
     text-align: center;
     z-index: 10;
-    transition: bottom .5s;
+    -webkit-transition: bottom .3s;
+    -webkit-transform: translate3d(0px, 0, 0);
 }
 
 #control_bar.visible {

@@ -2,7 +2,8 @@
     position: fixed;
     color: #fff;
     height: 40px;
-    top: -72px;
+    top: 0;
+    transform: translateY(-72px);
     left: 0;
     right: 0;
     padding: 16px 32px 16px 72px;
@@ -12,7 +13,21 @@
     overflow: hidden;
     white-space: nowrap;
     z-index: 40;
-    transition: top .5s, background .5s;
+    animation: app_bar_close_animation .3s both;
+}
+
+#app_bar.visible {
+    animation: app_bar_open_animation .3s both;
+}
+
+@keyframes app_bar_open_animation {
+    /*0% { transform: translateY(-72px); }*/
+    100% { transform: translateY(0px); }
+}
+
+@-webkit-keyframes app_bar_close_animation {
+    /*0% { transform: translateY(0px); }*/
+    100% { transform: translateY(-72px); }
 }
 
 #app_bar > .logo {
@@ -23,10 +38,6 @@
     background: url('../assets/logotvcolor.svg') no-repeat;
     background-size: 40px;
     left: 16px;
-}
-
-#app_bar.visible {
-    top: 0;
 }
 
 #app_bar.transparent {
@@ -44,7 +55,9 @@
     width: 0;
     overflow: hidden;
     display: block;
-    transition: width .5s;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-transition: width .3s;
 }
 
 #app_bar > .title.visible {

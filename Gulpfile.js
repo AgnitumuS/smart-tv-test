@@ -24,6 +24,7 @@ gulp.task('ios', function () {
             "storage.js",
             "input.js",
             "platform/pc.js",
+            "platform/lg.js",
             "channels.js",
             "app_bar.js",
             "control_bar.js",

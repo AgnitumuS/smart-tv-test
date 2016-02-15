@@ -4,7 +4,7 @@ lanet_tv.Player = (function () {
     function init() {
         var body = document.getElementsByTagName('body')[0],
             overlay = document.createElement('div'),
-            overlayFunction = function () {alert("")}, player, current;
+            overlayFunction = function () {}, player, current;
         overlay.id = "overlay";
         overlay.addEventListener('click', function () { overlayFunction() });
         if (navigator.userAgent.match(/NetCast|DuneHD|SmartHub|Android|iPad|iPod|iPhone|Mac OS X/g)) {
@@ -76,11 +76,12 @@ lanet_tv.Player = (function () {
         return {
             play: function (channel) {
                 channel && player.setSource(channel.data['url'], channel.data['ratio']);
-                try {
-                    if (navigator.userAgent.match(/iPhone/g))
-                        !channel && player.play();
-                } catch (e) {
-                }
+                player.play();
+                //try {
+                //    if (navigator.userAgent.match(/iPhone/g))
+                //        !channel && player.play();
+                //} catch (e) {
+                //}
             },
             tintOverlay: function (state) {
                 state ? overlay.classList.add('tinted') : overlay.classList.remove('tinted');

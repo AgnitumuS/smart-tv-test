@@ -14,6 +14,7 @@ lanet_tv.Auth = (function () {
             onAuthUpdate = function (userpic, key) { },
             createElement = function () {
                 container.id = 'auth';
+                container.classList.add('hidden');
                 auth.className = 'auth';
                 main.className = 'main';
                 reset.className = 'button reset';
@@ -123,6 +124,7 @@ lanet_tv.Auth = (function () {
         return {
             show: function () {
                 open = true;
+                container.classList.remove('hidden');
                 container.classList.add('visible');
             },
             hide: function () {

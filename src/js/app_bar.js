@@ -25,6 +25,7 @@ lanet_tv.AppBar = (function () {
             userpicClickFunction = function () { },
             createElement = function () {
                 app_bar.id = 'app_bar';
+                app_bar.classList.add('hidden');
                 logo.className = 'logo';
                 logo.addEventListener('click', function () {
                     logoClickFunction();
@@ -85,6 +86,7 @@ lanet_tv.AppBar = (function () {
         body.appendChild(createElement());
         return {
             show: function (delay) {
+                app_bar.classList.remove('hidden');
                 app_bar.classList.add('visible');
                 clearTimeout(timeout);
                 if (delay) {

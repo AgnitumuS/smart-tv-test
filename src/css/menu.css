@@ -5,7 +5,8 @@
     left: -1008px;
     padding: 0 0;
     z-index: 20;
-    transition: left .5s;
+    -webkit-transition: left .3s;
+    -webkit-transform: translate3d(0px, 0, 0);
 }
 
 #menu.visible {
@@ -18,7 +19,8 @@
     overflow: hidden;
     float: left;
     background: rgba(96, 125, 139, .87);
-    transition: width .5s;
+    -webkit-transition: width .3s;
+    -webkit-transform: translate3d(0px, 0, 0);
 }
 
 #menu.expanded > .root {
