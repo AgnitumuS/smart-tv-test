@@ -13,7 +13,7 @@
     overflow: hidden;
     white-space: nowrap;
     z-index: 40;
-    animation: app_bar_close_animation .3s both;
+    /*animation: app_bar_close_animation .3s both;*/
 }
 
 #app_bar.visible {
@@ -55,9 +55,6 @@
     width: 0;
     overflow: hidden;
     display: block;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-transition: width .3s;
 }
 
 #app_bar > .title.visible {

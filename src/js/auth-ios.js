@@ -9,7 +9,7 @@ lanet_tv.Auth = (function () {
             welcome = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0, init = false,
+            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0, initialized = false,
             last_refresh = 0,
             onAuthUpdate = function (userpic, key) { },
             createElement = function () {
@@ -72,7 +72,7 @@ lanet_tv.Auth = (function () {
                 return button;
             },
             resetAuth = function () {
-                init = true;
+                initialized = true;
                 Helpers.hideNode(reset);
                 storage.set('auth_status', '');
                 storage.set('token', '');
@@ -83,7 +83,7 @@ lanet_tv.Auth = (function () {
                 refreshAuth();
             },
             saveAuth = function (data) {
-                init = true;
+                initialized = true;
                 clearTimeout(refresh_timeout);
                 Helpers.removeChildren(main);
                 storage.set('auth_status', '');
@@ -157,7 +157,7 @@ lanet_tv.Auth = (function () {
             getKey: function () {
                 return key;
             },
-            hasInit: function () { return init; }
+            hasInit: function () { return initialized; }
         };
     }
 

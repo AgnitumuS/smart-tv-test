@@ -9,7 +9,7 @@ lanet_tv.Auth = (function () {
             welcome = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0, init = false,
+            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0, initialized = false,
             popup,
             onAuthUpdate = function (userpic, key) { },
             createElement = function () {
@@ -26,7 +26,7 @@ lanet_tv.Auth = (function () {
                 container.appendChild(auth);
                 reset.addEventListener('touchend', function (event) {
                     event.preventDefault();
-                    resetAuth()
+                    resetAuth();
                 });
                 reset.addEventListener('click', resetAuth);
                 Helpers.hideNode(reset);
@@ -68,7 +68,7 @@ lanet_tv.Auth = (function () {
                 return button;
             },
             resetAuth = function () {
-                init = true;
+                initialized = true;
                 Helpers.hideNode(reset);
                 storage.set('token', '');
                 storage.set('key', '');
@@ -84,7 +84,7 @@ lanet_tv.Auth = (function () {
                 main.appendChild(createButton('lanet', 'Ланет'));
             },
             saveAuth = function (data) {
-                init = true;
+                initialized = true;
                 popup && !popup.closed && popup.close();
                 Helpers.removeChildren(main);
                 storage.set('token', data['token']);
@@ -108,7 +108,7 @@ lanet_tv.Auth = (function () {
             },
             checkToken = function (token) {
                 requests.push(Helpers.getJSON('https://auth.lanet.tv/token/' + token, function (data) {
-                    init = true;
+                    initialized = true;
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
                     if (error.status != 0)
@@ -139,7 +139,7 @@ lanet_tv.Auth = (function () {
             getKey: function () {
                 return key;
             },
-            hasInit: function () { return init; }
+            hasInit: function () { return initialized; }
         };
     }
 

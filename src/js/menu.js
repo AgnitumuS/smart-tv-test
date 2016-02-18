@@ -444,10 +444,10 @@ lanet_tv.Menu = (function () {
                     categories.genres.children = {};
                     for (var g in genres) {
                         if (genres.hasOwnProperty(g)) {
-                            categories.genres.children[genres[g].id] = {
-                                id: genres[g].id,
+                            categories.genres.children[g] = {
+                                id: genres[g],
                                 category: 'genres',
-                                name: genres[g].name.capitalizeFirstLetter(),
+                                name: genres[g],
                                 element: null
                             }
                         }
@@ -458,12 +458,12 @@ lanet_tv.Menu = (function () {
             setTags: function (tags) {
                 if (tags.length != Object.keys(categories.tags.children).length) {
                     categories.tags.children = {};
-                    for (var tag in tags) {
-                        if (tags.hasOwnProperty(tag)) {
-                            categories.tags.children[tag] = {
-                                id: tag,
+                    for (var t in tags) {
+                        if (tags.hasOwnProperty(t)) {
+                            categories.tags.children[t] = {
+                                id: tags[t],
                                 category: 'tags',
-                                name: tags[tag],
+                                name: tags[t],
                                 element: null
                             }
                         }
