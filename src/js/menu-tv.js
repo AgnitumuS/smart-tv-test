@@ -420,8 +420,12 @@ lanet_tv.Menu = (function () {
                 if (current_root_menu_item + 1 < root_menu_items.length) {
                     current_root_menu_item++;
                     selectCurrentRootItem();
-                    if (root_menu_items[current_root_menu_item + 1] && root.scrollTop + root.offsetHeight <= root_menu_items[current_root_menu_item + 1].element.offsetTop)
-                        root.scrollTop = root_menu_items[current_root_menu_item + 1].element.offsetTop + root_menu_items[current_root_menu_item + 1].element.offsetHeight - root.offsetHeight;
+                    if (root_menu_items[current_root_menu_item + 1]) {
+                        if (root.scrollTop + root.offsetHeight <= root_menu_items[current_root_menu_item + 1].element.offsetTop)
+                            root.scrollTop = root_menu_items[current_root_menu_item + 1].element.offsetTop + root_menu_items[current_root_menu_item + 1].element.offsetHeight - root.offsetHeight;
+                    } else {
+                        root.scrollTop = root_menu_items[current_root_menu_item].element.offsetTop;
+                    }
                 }
             },
             selectPreviousRootItem: function () {
