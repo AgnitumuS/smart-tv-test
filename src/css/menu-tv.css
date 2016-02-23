@@ -119,13 +119,12 @@
 #menu > .list {
     position: fixed;
     width: 912px;
-    height: 100%;
     left: 72px;
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
     background-color: #455A64;
     z-index: 20;
     top: 0;
-    bottom: 0;
+    bottom: 64px;
     overflow: hidden;
     -webkit-overflow-scrolling: touch;
     transform-origin: 100% 50%;
