@@ -1,15 +1,13 @@
 #auth {
     position: fixed;
-    width: 928px;
+    width: 560px;
     top: 72px;
     right: 0;
-    transform: translateX(1000px);
+    transform: translateX(576px);
     bottom: 0;
-    padding: 0 0 0 72px;
+    padding: 0 0;
     z-index: 20;
     animation: auth_close_animation .3s both;
-    background: rgba(38, 50, 56, .87);
-    overflow: hidden;
 }
 
 #auth.visible {
@@ -17,44 +15,48 @@
 }
 
 @keyframes auth_open_animation {
-    0% { transform: translateX(1000px); }
+    0% { transform: translateX(576px); }
     100% { transform: translateX(0px); }
 }
 
 @-webkit-keyframes auth_close_animation {
     0% { transform: translateX(0px); }
-    100% { transform: translateX(1000px); }
+    100% { transform: translateX(576px); }
 }
 
-#auth > .heading {
-    font-family: "roboto_condensedregular", sans-serif;
-    font-size: 34px;
-    line-height: 1.2em;
-    margin-bottom: 1em;
-}
-
-#auth > .left, #auth > .right {
-    display: inline-block;
-    float: left;
-}
-
-#auth > .left {
-    width: 510px;
-    border-right: solid 2px rgba(255, 255, 255, .4);
-}
-
-#auth > .right {
-    width: 416px;
+#auth > .auth {
+    height: 100%;
+    width: inherit;
+    overflow: hidden;
+    float: right;
+    background: rgba(38, 50, 56, .87);
     text-align: center;
-    vertical-align: middle;
+    font-size: 40px;
+    position: relative;
 }
 
-#auth > .right > .pin {
-    display: inline;
-    font-size: 48px;
-    font-weight: 600;
+#auth > .auth > .main {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: inherit;
+    height: 384px;
+    overflow: hidden;
+    vertical-align: middle;
+    line-height: 100px;
     font-family: "roboto_regular", sans-serif;
-    letter-spacing: .6em;
+    /*letter-spacing: .5em;*/
+}
+
+#auth > .auth > .main > .welcome {
+    font-family: "roboto_condensedlight", sans-serif;
+    font-size: 24px;
+}
+
+#auth > .auth > .main > .hint > a {
+    color: #fff;
+    font-size: 16px;
 }
 
 #auth .button:focus {
@@ -150,30 +152,4 @@
     line-height: inherit;
     border-left: 1px solid rgba(255, 255, 255, .1);
     padding-left: 17px;
-}
-
-#auth p {
-    padding-left: 72px;
-    position: relative;
-    font-size: 34px;
-    line-height: 1em;
-    margin-bottom: 2em;
-}
-
-#auth p > i.circle {
-    position: absolute;
-    left: 0;
-    top: 8px;
-    display: inline-block;
-    background: white;
-    border-radius: 50%;
-    height: 28px;
-    width: 28px;
-    line-height: 28px;
-    vertical-align: middle;
-    font-family: "roboto_condensedbold", sans-serif;
-    font-size: 18px;
-    font-style: normal;
-    text-align: center;
-    color: black;
 }

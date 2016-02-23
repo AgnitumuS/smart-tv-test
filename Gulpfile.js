@@ -10,7 +10,7 @@ var gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     ftp = require('vinyl-ftp');
 
-gulp.task('ios', function () {
+gulp.task('mobile', function () {
     var js_prefix = "src/js",
         css_prefix = "src/css",
         js_files = [
@@ -24,79 +24,6 @@ gulp.task('ios', function () {
             "storage.js",
             "input.js",
             "platform/pc.js",
-            "platform/lg.js",
-            "channels.js",
-            "app_bar.js",
-            "control_bar.js",
-            "menu-m.js",
-            "auth-ios.js",
-            "player.js",
-            "remote.js",
-            "main.js"
-        ],
-        css_files = [
-            "fonts.css",
-            "icons.css",
-            "global.css",
-            "menu-m.css",
-            "auth.css",
-            "app_bar.css",
-            "control_bar.css"
-        ];
-    js_files = js_files.map(function (file) {
-        return js_prefix + "/" + file;
-    });
-    css_files = css_files.map(function (file) {
-        return css_prefix + "/" + file;
-    });
-    gulp.src(js_files)
-        .pipe(uglify())
-        .pipe(concat('app.min.js'))
-        .pipe(gulp.dest('build/ios'));
-    gulp.src(css_files)
-        .pipe(replace(/\.\.\//g, ''))
-        .pipe(cleancss())
-        .pipe(concat('app.min.css'))
-        .pipe(gulp.dest('build/ios'));
-    gulp.src("./src/template.html")
-        .pipe(template({
-            title: "Ланет TV Mobile",
-            css: "app.min.css",
-            js: "app.min.js"
-        }))
-        .pipe(htmlmin({
-            collapseWhitespace: true
-        }))
-        .pipe(rename("index.html"))
-        .pipe(gulp.dest('build/ios'));
-    gulp.src("src/favicon.ico")
-        .pipe(gulp.dest('build/ios'));
-    gulp.src("src/assets/**/*")
-        .pipe(imagemin({
-            progressive: true,
-            svgoPlugins: [{removeViewBox: false}],
-            use: [pngquant()]
-        }))
-        .pipe(gulp.dest('build/ios/assets'));
-});
-
-gulp.task('smart', function () {
-    var js_prefix = "src/js",
-        css_prefix = "src/css",
-        js_files = [
-            "extend.js",
-            "helpers.js",
-            "preloader.js",
-            "time.js",
-            "inobounce.js",
-            "app.js",
-            "api.js",
-            "storage.js",
-            "input.js",
-            "platform/pc.js",
-            "platform/lg.js",
-            "platform/dune.js",
-            "platform/samsung.js",
             "channels.js",
             "app_bar.js",
             "control_bar.js",
@@ -124,15 +51,15 @@ gulp.task('smart', function () {
     gulp.src(js_files)
         .pipe(uglify())
         .pipe(concat('app.min.js'))
-        .pipe(gulp.dest('build/smart'));
+        .pipe(gulp.dest('build/mobile'));
     gulp.src(css_files)
         .pipe(replace(/\.\.\//g, ''))
         .pipe(cleancss())
         .pipe(concat('app.min.css'))
-        .pipe(gulp.dest('build/smart'));
+        .pipe(gulp.dest('build/mobile'));
     gulp.src("./src/template.html")
         .pipe(template({
-            title: "Ланет TV для Smart TV",
+            title: "Ланет TV Mobile",
             css: "app.min.css",
             js: "app.min.js"
         }))
@@ -140,27 +67,112 @@ gulp.task('smart', function () {
             collapseWhitespace: true
         }))
         .pipe(rename("index.html"))
-        .pipe(gulp.dest('build/smart'));
+        .pipe(gulp.dest('build/mobile'));
     gulp.src("src/favicon.ico")
-        .pipe(gulp.dest('build/smart'));
+        .pipe(gulp.dest('build/mobile'));
     gulp.src("src/assets/**/*")
         .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         }))
-        .pipe(gulp.dest('build/smart/assets'));
+        .pipe(gulp.dest('build/mobile/assets'));
 });
 
-gulp.task('deploy-ios', function () {
-    var config = require('./ftp.json'),
+gulp.task('tv', function () {
+    var js_prefix = "src/js",
+        css_prefix = "src/css",
+        js_files = [
+            "extend.js",
+            "helpers.js",
+            "preloader.js",
+            "time.js",
+            "inobounce.js",
+            "app.js",
+            "api.js",
+            "storage.js",
+            "input.js",
+            "platform/pc.js",
+            "platform/lg.js",
+            "platform/dune.js",
+            "platform/samsung.js",
+            "channels.js",
+            "app_bar.js",
+            "control_bar.js",
+            "menu-tv.js",
+            "auth-tv.js",
+            "player.js",
+            "remote.js",
+            "main.js"
+        ],
+        css_files = [
+            "fonts.css",
+            "icons.css",
+            "global.css",
+            "menu-tv.css",
+            "auth-tv.css",
+            "app_bar.css",
+            "control_bar.css"
+        ];
+    js_files = js_files.map(function (file) {
+        return js_prefix + "/" + file;
+    });
+    css_files = css_files.map(function (file) {
+        return css_prefix + "/" + file;
+    });
+    gulp.src(js_files)
+        .pipe(uglify())
+        .pipe(concat('app.min.js'))
+        .pipe(gulp.dest('build/tv'));
+    gulp.src(css_files)
+        .pipe(replace(/\.\.\//g, ''))
+        .pipe(cleancss())
+        .pipe(concat('app.min.css'))
+        .pipe(gulp.dest('build/tv'));
+    gulp.src("./src/template.html")
+        .pipe(template({
+            title: "Ланет TV Smart TV",
+            css: "app.min.css",
+            js: "app.min.js"
+        }))
+        .pipe(htmlmin({
+            collapseWhitespace: true
+        }))
+        .pipe(rename("index.html"))
+        .pipe(gulp.dest('build/tv'));
+    gulp.src("src/favicon.ico")
+        .pipe(gulp.dest('build/tv'));
+    gulp.src("src/assets/**/*")
+        .pipe(imagemin({
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()]
+        }))
+        .pipe(gulp.dest('build/tv/assets'));
+});
+
+gulp.task('mobile.deploy', function () {
+    var config = require('./ftp.m.json'),
         conn = ftp.create({
             host: config.host,
             port: config.port,
             user: config.user,
             password: config.pass
         });
-    return gulp.src("build/ios/**/*")
+    return gulp.src("build/mobile/**/*")
+        .pipe(conn.newer('/'))
+        .pipe(conn.dest('/'));
+});
+
+gulp.task('tv.deploy', function () {
+    var config = require('./ftp.smart.json'),
+        conn = ftp.create({
+            host: config.host,
+            port: config.port,
+            user: config.user,
+            password: config.pass
+        });
+    return gulp.src("build/tv/**/*")
         .pipe(conn.newer('/'))
         .pipe(conn.dest('/'));
 });
