@@ -10,6 +10,11 @@
     animation: auth_close_animation .3s both;
     background: rgba(38, 50, 56, .87);
     overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #auth.visible {
@@ -33,23 +38,52 @@
     margin-bottom: 1em;
 }
 
-#auth > .left, #auth > .right {
-    display: inline-block;
-    float: left;
+#auth > .columns p {
+    padding-left: 72px;
+    position: relative;
+    font-size: 34px;
+    line-height: 1em;
+    margin-bottom: 2em;
 }
 
-#auth > .left {
+#auth > .columns p > i.circle {
+    position: absolute;
+    left: 0;
+    top: 8px;
+    display: inline-block;
+    background: white;
+    border-radius: 50%;
+    height: 28px;
+    width: 28px;
+    line-height: 28px;
+    vertical-align: middle;
+    font-family: "roboto_condensedbold", sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    text-align: center;
+    color: black;
+}
+
+#auth > .columns {
+    display: flex;
+}
+
+#auth > .columns > .left, #auth > .columns > .right {
+    display: inline-block;
+    margin: auto;
+}
+
+#auth > .columns > .left {
     width: 510px;
     border-right: solid 2px rgba(255, 255, 255, .4);
 }
 
-#auth > .right {
+#auth > .columns > .right {
     width: 416px;
     text-align: center;
-    vertical-align: middle;
 }
 
-#auth > .right > .pin {
+#auth > .columns > .right > .pin {
     display: inline;
     font-size: 48px;
     font-weight: 600;
@@ -150,30 +184,4 @@
     line-height: inherit;
     border-left: 1px solid rgba(255, 255, 255, .1);
     padding-left: 17px;
-}
-
-#auth p {
-    padding-left: 72px;
-    position: relative;
-    font-size: 34px;
-    line-height: 1em;
-    margin-bottom: 2em;
-}
-
-#auth p > i.circle {
-    position: absolute;
-    left: 0;
-    top: 8px;
-    display: inline-block;
-    background: white;
-    border-radius: 50%;
-    height: 28px;
-    width: 28px;
-    line-height: 28px;
-    vertical-align: middle;
-    font-family: "roboto_condensedbold", sans-serif;
-    font-size: 18px;
-    font-style: normal;
-    text-align: center;
-    color: black;
 }

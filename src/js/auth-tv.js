@@ -4,10 +4,11 @@ lanet_tv.Auth = (function () {
     function init() {
         var body = document.getElementsByTagName('body')[0],
             container = document.createElement('div'),
-            //auth = document.createElement('div'),
+        //auth = document.createElement('div'),
             pin_block = document.createElement('div'),
-            //welcome = document.createElement('div'),
+        //welcome = document.createElement('div'),
             heading = document.createElement('div'),
+            columns = document.createElement('div'),
             left = document.createElement('div'),
             right = document.createElement('div'),
             reset = document.createElement('button'),
@@ -26,6 +27,7 @@ lanet_tv.Auth = (function () {
                 //hint.className = 'hint';
                 heading.className = 'heading';
                 heading.innerHTML = 'Войдите, чтобы гладко смотреть свое сочное телевидение<br>от Ланет ТВ';
+                columns.className = 'columns';
                 left.className = 'left';
                 left.innerHTML = '<p><i class="circle">1</i>' +
                     'Перейдите на страницу<br>' +
@@ -45,8 +47,9 @@ lanet_tv.Auth = (function () {
                 key = null;
                 right.appendChild(pin_block);
                 container.appendChild(heading);
-                container.appendChild(left);
-                container.appendChild(right);
+                columns.appendChild(left);
+                columns.appendChild(right);
+                container.appendChild(columns);
                 reset.addEventListener('click', resetAuth);
                 Helpers.hideNode(reset);
                 return container;
