@@ -59,7 +59,7 @@ gulp.task('mobile', function () {
         .pipe(gulp.dest('build/mobile'));
     gulp.src("./src/template.html")
         .pipe(template({
-            title: "Ланет TV Mobile",
+            title: "Ланет TV",
             css: "app.min.css",
             js: "app.min.js"
         }))
@@ -131,7 +131,7 @@ gulp.task('tv', function () {
         .pipe(gulp.dest('build/tv'));
     gulp.src("./src/template.html")
         .pipe(template({
-            title: "Ланет TV Smart TV",
+            title: "Ланет TV",
             css: "app.min.css",
             js: "app.min.js"
         }))
