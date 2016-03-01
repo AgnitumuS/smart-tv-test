@@ -13,7 +13,8 @@
     overflow: hidden;
     white-space: nowrap;
     z-index: 40;
-    /*animation: app_bar_close_animation .3s both;*/
+    transform-origin: 100% 50%;
+    animation: app_bar_close_animation .3s both;
 }
 
 #app_bar.visible {
@@ -21,12 +22,12 @@
 }
 
 @keyframes app_bar_open_animation {
-    /*0% { transform: translateY(-72px); }*/
+    0% { transform: translateY(-72px); }
     100% { transform: translateY(0px); }
 }
 
 @-webkit-keyframes app_bar_close_animation {
-    /*0% { transform: translateY(0px); }*/
+    0% { transform: translateY(0px); }
     100% { transform: translateY(-72px); }
 }
 

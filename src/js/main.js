@@ -168,12 +168,12 @@ var api = lanet_tv.Api.getInstance(),
             'RIGHT': function () { showAuth(); },
             'LEFT': function () { showMenu(); },
             'UP': function () {
-                playChannel(channels.getNext());
+                playChannel(channels.getPrevious());
                 app_bar.show(2000);
                 //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
             'DOWN': function () {
-                playChannel(channels.getPrevious());
+                playChannel(channels.getNext());
                 app_bar.show(2000);
                 //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
