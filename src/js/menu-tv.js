@@ -7,7 +7,6 @@ lanet_tv.Menu = (function () {
             root = document.createElement('div'),
             list = document.createElement('div'),
             footer = document.createElement('div'),
-            clock = document.createElement('div'),
             root_menu_items = [],
             current_root_menu_item,
             current_root_menu_category,
@@ -15,7 +14,6 @@ lanet_tv.Menu = (function () {
             current_channel_list = [],
             selected_channel,
             current_limits = {min: 0, max: 0},
-            clock_update_interval = 0,
             expanded = false,
             hints = [
                 {
@@ -94,7 +92,6 @@ lanet_tv.Menu = (function () {
                 root.className = 'root';
                 list.className = 'list';
                 footer.className = 'footer';
-                clock.className = 'clock';
                 renderRoot();
                 for (var hint in hints) {
                     if (hints.hasOwnProperty(hint)) {
@@ -109,7 +106,6 @@ lanet_tv.Menu = (function () {
                 }
                 menu.appendChild(root);
                 menu.appendChild(list);
-                footer.appendChild(clock);
                 menu.appendChild(footer);
                 return menu;
             },
@@ -380,24 +376,18 @@ lanet_tv.Menu = (function () {
             resetListSelection = function () {
                 if (current_channel_list[selected_channel])
                     current_channel_list[selected_channel].element.classList.remove('selected');
-            },
-            setClock = function (time) { clock.innerHTML = time; };
+            };
         body.appendChild(createElement());
         return {
             show: function () {
                 renderCurrentListPage();
-                setClock(Time.asObject().getHhMm());
                 menu.classList.remove('hidden');
                 menu.classList.add('visible');
                 update();
-                clock_update_interval = setInterval(function () {
-                    setClock(Time.asObject().getHhMm());
-                }, 1000);
             },
             hide: function () {
                 this.collapse();
                 menu.classList.remove('visible');
-                clearInterval(clock_update_interval);
             },
             expand: function () {
                 menu.classList.add('expanded');

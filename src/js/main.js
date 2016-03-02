@@ -6,6 +6,7 @@ var api = lanet_tv.Api.getInstance(),
     menu = lanet_tv.Menu.getInstance(),
     auth = lanet_tv.Auth.getInstance(),
     control_bar = lanet_tv.ControlBar.getInstance(),
+    clock = lanet_tv.Clock.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
     channel, balloon_timeout = 0,
@@ -124,6 +125,7 @@ var api = lanet_tv.Api.getInstance(),
         app_bar.setTransparentBackground(true);
         app_bar.show();
         control_bar.hide();
+        clock.show();
         menu.setChannelClickHandler(function (channel) {
             playChannel(channel);
             showPlayer();
@@ -148,6 +150,7 @@ var api = lanet_tv.Api.getInstance(),
         app_bar.setTransparentBackground(true);
         app_bar.show();
         control_bar.hide();
+        clock.hide();
         input.setKeyFunctions({
             'ENTER': function () { auth.resetAuth(); },
             'LEFT': function () { showPlayer(); }
@@ -163,6 +166,7 @@ var api = lanet_tv.Api.getInstance(),
         app_bar.hideTitle();
         app_bar.setTransparentBackground(false);
         app_bar.show(2000);
+        clock.hide();
         //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
         input.setKeyFunctions({
             'RIGHT': function () { showAuth(); },

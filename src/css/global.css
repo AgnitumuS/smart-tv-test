@@ -138,6 +138,15 @@ video, #player {
     border-radius: 12px;
 }
 
+#clock {
+    position: fixed;
+    bottom: 24px;
+    font-size: 24px;
+    right: 16px;
+    color: white;
+    z-index: 1000;
+}
+
 .hidden {
     visibility: hidden;
 }
