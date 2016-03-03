@@ -9,7 +9,7 @@ var api = lanet_tv.Api.getInstance(),
     clock = lanet_tv.Clock.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
     remote = lanet_tv.Remote.getInstance(),
-    channel, balloon_timeout = 0,
+    channel, toast_timeout = 0,
     start_time = new Date().getTime(),
     updateTime = function () {
         Time.setTimestamp(api.getTimestamp());
@@ -62,13 +62,13 @@ var api = lanet_tv.Api.getInstance(),
     showLog = function () {
         Helpers.showNode(document.getElementById('debug'));
     },
-    showBalloon = function (text) {
-        var container = document.getElementById("balloon-container"),
-            balloon = document.getElementById("balloon");
+    showToast = function (text) {
+        var container = document.getElementById("toast-container"),
+            toast = document.getElementById("toast");
         Helpers.showNode(container);
-        balloon.innerHTML = text;
-        clearTimeout(balloon_timeout);
-        balloon_timeout = setTimeout(function () { Helpers.hideNode(container); }, 2000)
+        toast.innerHTML = text;
+        clearTimeout(toast_timeout);
+        toast_timeout = setTimeout(function () { Helpers.hideNode(container); }, 2000)
     },
     showTint = function () { player.tintOverlay(true); },
     hideTint = function () { player.tintOverlay(false); },
@@ -130,6 +130,7 @@ var api = lanet_tv.Api.getInstance(),
             playChannel(channel);
             showPlayer();
         });
+        input.disableNumeric();
         input.setKeyFunctions({
             'UP': function () { menu.selectPreviousChannel(); },
             'DOWN': function () { menu.selectNextChannel(); },
@@ -151,6 +152,7 @@ var api = lanet_tv.Api.getInstance(),
         app_bar.show();
         control_bar.hide();
         clock.hide();
+        input.disableNumeric();
         input.setKeyFunctions({
             'ENTER': function () { auth.resetAuth(); },
             'LEFT': function () { showPlayer(); }
@@ -182,7 +184,7 @@ var api = lanet_tv.Api.getInstance(),
                 //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
             'YELLOW': function () {
-                showBalloon("Удаленное управление " + (remote.togglePolling() ? "включено" : "выключено"));
+                showToast("Удаленное управление " + (remote.togglePolling() ? "включено" : "выключено"));
             },
             'CH_UP': function () {
                 playChannel(channels.getNext());
@@ -210,6 +212,19 @@ var api = lanet_tv.Api.getInstance(),
                 //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             }
         });
+        input.enableNumeric();
+        input.setNumericHandler(function (number, final) {
+            showToast(number);
+            if (final) {
+                var channel_by_number = channels.getChannelByNumber(parseInt(number));
+                if (channel_by_number) {
+                    playChannel(channel_by_number);
+                    app_bar.show(2000);
+                } else {
+                    showToast("Канала с номером " + number + " не существует");
+                }
+            }
+        })
     };
 
 api.getData(function () {

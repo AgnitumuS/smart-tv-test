@@ -126,10 +126,10 @@ lanet_tv.Channels = (function () {
                 });
             },
             getChannelByNumber: function (number) {
-                number = number || 1;
-                return channels.filter(function (channel) {
-                    return channel.data['num'] === number;
-                })[0];
+                var found = channels.filter(function (channel) {
+                    return channel.data['num'] == number;
+                });
+                return found[Object.keys(found)[0]] || null;
             },
             getFirstChannel: function () {
                 return channels[Object.keys(channels)[0]];

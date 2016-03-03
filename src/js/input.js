@@ -6,9 +6,65 @@ lanet_tv.Input = (function () {
             gesture_functions = {}, default_gesture_functions = {},
             keys = {},
             enabled = false,
+            numeric_enabled = false,
+            numeric = ['NUM0', 'NUM1', 'NUM2', 'NUM3', 'NUM4', 'NUM5', 'NUM6', 'NUM7', 'NUM8', 'NUM9'],
+            entered_number = "",
+            number_timeout = 0,
+            onNumber = function (number, final) {console.log(number, final)},
             touch = {last_y: 0, current_y: 0, last_x: 0, current_x: 0};
         window.addEventListener('keydown', function (event) {
             if (keys[event.keyCode]) {
+                if (numeric_enabled && numeric.indexOf(keys[event.keyCode]) > -1) {
+                    var digit = "", final = false;
+                    clearTimeout(number_timeout);
+                    switch (keys[event.keyCode]) {
+                        case "NUM0":
+                            digit = "0";
+                            break;
+                        case "NUM1":
+                            digit = "1";
+                            break;
+                        case "NUM2":
+                            digit = "2";
+                            break;
+                        case "NUM3":
+                            digit = "3";
+                            break;
+                        case "NUM4":
+                            digit = "4";
+                            break;
+                        case "NUM5":
+                            digit = "5";
+                            break;
+                        case "NUM6":
+                            digit = "6";
+                            break;
+                        case "NUM7":
+                            digit = "7";
+                            break;
+                        case "NUM8":
+                            digit = "8";
+                            break;
+                        case "NUM9":
+                            digit = "9";
+                            break;
+
+                    }
+                    entered_number += digit;
+                    if (entered_number.length > 2) {
+                        final = true;
+                    }
+                    onNumber(entered_number, final);
+                    number_timeout = setTimeout(function () {
+                        final = true;
+                        onNumber(entered_number, final);
+                        entered_number = "";
+                    }, 1000);
+                    if (final) {
+                        clearTimeout(number_timeout);
+                        entered_number = "";
+                    }
+                }
                 var func;
                 if (typeof key_functions[keys[event.keyCode]] === 'function')
                     func = key_functions[keys[event.keyCode]];
@@ -97,6 +153,15 @@ lanet_tv.Input = (function () {
             },
             disableKeys: function () {
                 enabled = false;
+            },
+            enableNumeric: function () {
+                numeric_enabled = true;
+            },
+            disableNumeric: function () {
+                numeric_enabled = false;
+            },
+            setNumericHandler: function (func) {
+                onNumber = func;
             }
         };
     }

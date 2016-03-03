@@ -121,7 +121,7 @@ video, #player {
     left: 0;
 }
 
-#balloon-container {
+#toast-container {
     display: none;
     position: fixed;
     bottom: 48px;
@@ -131,7 +131,7 @@ video, #player {
     right: 0;
 }
 
-#balloon {
+#toast {
     display: inline-block;
     background: rgba(0, 0, 0, .8);
     padding: 1px 16px;
