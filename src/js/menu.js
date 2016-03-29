@@ -264,32 +264,10 @@ lanet_tv.Menu = (function () {
                     extra: result % 1 !== 0
                 }
             },
-            renderCurrentListPage = function () {
-                resetListSelection();
-                Helpers.removeChildren(list);
-                var index = full_channel_list.indexOf(full_channel_list.filter(function (channel) {
-                        return channel.element.classList.contains('current')
-                    })[0]),
-                    visible = visibleListItems(),
-                    counter, page;
-                index = index > -1 ? index : 0;
-                page = Math.floor(index / visible.visible);
-                current_channel_list = [];
-                selected_channel = index - page * visibleListItems().visible;
-                current_limits.min = visible.visible * page;
-                current_limits.max = current_limits.min + visible.visible;
-                for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
-                    current_channel_list.push(full_channel_list[counter]);
-                    list.appendChild(full_channel_list[counter].element);
-                }
-                if (current_channel_list[selected_channel])
-                    current_channel_list[selected_channel].element.classList.add('selected');
-            },
             renderFullList = function () {
-                resetListSelection();
                 Helpers.removeChildren(list);
                 var index = full_channel_list.indexOf(full_channel_list.filter(function (channel) {
-                        return channel.element.classList.contains('current');
+                        return channel.element.classList.contains('active');
                     })[0]),
                     counter;
                 index = index > -1 ? index : 0;
@@ -307,114 +285,24 @@ lanet_tv.Menu = (function () {
                     })(counter);
                     list.appendChild(full_channel_list[counter].element);
                 }
-                if (current_channel_list[selected_channel])
-                    current_channel_list[selected_channel].element.classList.add('selected');
             },
             selectCurrentListItem = function () {
-                resetListSelection();
-                var index = full_channel_list.indexOf(full_channel_list.filter(function (channel) {
-                    return channel.element.classList.contains('current');
-                })[0]);
+                var channel = full_channel_list.filter(function (channel) {
+                        return channel.element.classList.contains('current');
+                    })[0],
+                    index = full_channel_list.indexOf(channel);
                 index = index > -1 ? index : 0;
                 selected_channel = index;
+                list.scrollTop = full_channel_list[selected_channel].element.offsetTop + 104/2 - list.getBoundingClientRect().height / 2;
             },
-            renderNextListPage = function () {
-                resetListSelection();
-                selected_channel = 0;
-                Helpers.removeChildren(list);
-                current_channel_list = [];
-                var counter, visible = visibleListItems();
-                current_limits.min = current_limits.max;
-                current_limits.max = current_limits.min + visible.visible;
-                for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
-                    current_channel_list.push(full_channel_list[counter]);
-                    list.appendChild(full_channel_list[counter].element);
-                }
-                current_channel_list[selected_channel].element.classList.add('selected');
-            },
-            renderPreviousListPage = function () {
-                resetListSelection();
-                Helpers.removeChildren(list);
-                current_channel_list = [];
-                var counter, visible = visibleListItems();
-                current_limits.min = current_limits.min - visible.visible;
-                current_limits.max = current_limits.min + visible.visible;
-                for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
-                    current_channel_list.push(full_channel_list[counter]);
-                    list.appendChild(full_channel_list[counter].element);
-                }
-                selected_channel = current_channel_list.length - (visible.extra ? 2 : 1);
-                current_channel_list[selected_channel].element.classList.add('selected');
-            },
-            selectNextChannel = function () {
-                if (current_limits.max > full_channel_list.length - 1) {
-                    if (selected_channel + 1 < visibleListItems().visible - (current_limits.max - full_channel_list.length)) {
-                        current_channel_list[selected_channel].element.classList.remove('selected');
-                        selected_channel++;
-                        current_channel_list[selected_channel].element.classList.add('selected');
-                    }
-                } else {
-                    if (selected_channel < current_channel_list.length - 1) {
-                        current_channel_list[selected_channel].element.classList.remove('selected');
-                        selected_channel++;
-                        current_channel_list[selected_channel].element.classList.add('selected');
-                    } else {
-                        scrollToNextListPage();
-                    }
-                }
-            },
-            selectPreviousChannel = function () {
-                if (current_limits.min > 0 || selected_channel > 0)
-                    current_channel_list[selected_channel].element.classList.remove('selected');
-                if (selected_channel > 0) {
-                    selected_channel--;
-                    current_channel_list[selected_channel].element.classList.add('selected');
-                } else if (current_limits.min > 0) {
-                    scrollToPreviousListPage();
-                }
-            },
-            scrollToNextListPage = function () {
-                //resetListSelection();
-                //selected_channel = 0;
-                //Helpers.removeChildren(list);
-                //current_channel_list = [];
-                /*
-                 var counter, visible = visibleListItems();
-                 current_limits.min = current_limits.max;
-                 current_limits.max = current_limits.min + visible.visible;
-                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
-                 current_channel_list.push(full_channel_list[counter]);
-                 list.appendChild(full_channel_list[counter].element);
-                 }
-                 current_channel_list[selected_channel].element.classList.add('selected');
-                 */
-            },
-            scrollToPreviousListPage = function () {
-                //resetListSelection();
-                //Helpers.removeChildren(list);
-                //current_channel_list = [];
-                /*
-                 var counter, visible = visibleListItems();
-                 current_limits.min = current_limits.min - visible.visible;
-                 current_limits.max = current_limits.min + visible.visible;
-                 for (counter = current_limits.min; counter < current_limits.max + (visible.extra ? 1 : 0) && full_channel_list[counter]; counter++) {
-                 current_channel_list.push(full_channel_list[counter]);
-                 list.appendChild(full_channel_list[counter].element);
-                 }
-                 selected_channel = current_channel_list.length - (visible.extra ? 2 : 1);
-                 current_channel_list[selected_channel].element.classList.add('selected');
-                 */
-            },
-            resetListSelection = function () {
-                if (current_channel_list[selected_channel])
-                    current_channel_list[selected_channel].element.classList.remove('selected');
-            };
+            selectNextChannel = function () { },
+            selectPreviousChannel = function () { };
         body.appendChild(createElement());
         return {
             show: function () {
-                selectCurrentListItem();
                 menu.classList.remove('hidden');
                 menu.classList.add('visible');
+                selectCurrentListItem();
                 //update();
             },
             hide: function () {

@@ -13,6 +13,7 @@ lanet_tv.Api = (function () {
             getLogoUrl = function (id) { return domains['static_files'] + '/tv/logo/' + id.toString() + '.svg'; },
             //getLogoUrl = function (id) { return domains.static_files + '/tv/logo/' + id.toString() + '.png'; },
             getPreviewBgUrl = function (id) { return domains.images + '_' + id.toString() + '_bg.jpg'; },
+            getPreviewBigUrl = function (id) { return domains.images + id.toString() + '.jpg'; },
             getPreviewUrl = function (id) { return domains.images + '_' + id.toString() + '.jpg'; },
             loadData = function (callback) {
                 callback = callback || function (callback) { };
@@ -44,6 +45,7 @@ lanet_tv.Api = (function () {
                             logo: getLogoUrl(channel),
                             preview: getPreviewUrl(channel),
                             preview_bg: getPreviewBgUrl(channel),
+                            preview_big: getPreviewBigUrl(channel),
                             //url: 'http://' + domains.edge + '/tv/' + channel.toString() + '.m3u8',
                             url: data['list'][channel]['url'],
                             ratio: data['list'][channel]['ratio'].split(':').map(function (value) {

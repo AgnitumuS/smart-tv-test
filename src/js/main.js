@@ -1,4 +1,5 @@
 var api = lanet_tv.Api.getInstance(),
+    analytics = lanet_tv.Analytics.getInstance(),
     storage = lanet_tv.Storage.getInstance(),
     input = lanet_tv.Input.getInstance(),
     player = lanet_tv.Player.getInstance(),
@@ -8,7 +9,7 @@ var api = lanet_tv.Api.getInstance(),
     control_bar = lanet_tv.ControlBar.getInstance(),
     clock = lanet_tv.Clock.getInstance(),
     channels = lanet_tv.Channels.getInstance(),
-    remote = lanet_tv.Remote.getInstance(),
+    //remote = lanet_tv.Remote.getInstance(),
     channel, toast_timeout = 0,
     start_time = new Date().getTime(),
     updateTime = function () {
@@ -183,9 +184,9 @@ var api = lanet_tv.Api.getInstance(),
                 app_bar.show(2000);
                 //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
             },
-            'YELLOW': function () {
+            /*'YELLOW': function () {
                 showToast("Удаленное управление " + (remote.togglePolling() ? "включено" : "выключено"));
-            },
+            },*/
             'CH_UP': function () {
                 playChannel(channels.getNext());
                 app_bar.show(2000);
@@ -228,9 +229,11 @@ var api = lanet_tv.Api.getInstance(),
     };
 
 api.getData(function () {
-    auth.setAuthUpdateFunction(function (userpic, key) {
+    auth.setAuthUpdateFunction(function (userpic, key, hash) {
         app_bar.setUserpic(userpic);
         api.setKey(key);
+        if (hash)
+            analytics.setUser(hash);
         var play = auth.hasInit();
         update(function () {
             if (play) {
@@ -251,8 +254,8 @@ api.getData(function () {
         'GREEN': function () { window.location.reload(); },
         'BLUE': function () { Helpers.toggleNode(document.getElementById('debug')) }
     });
-    remote.setKey("default");
-    remote.setHandler(function (command) { input.emulateKeyPress(command.toUpperCase()); });
+    //remote.setKey("default");
+    //remote.setHandler(function (command) { input.emulateKeyPress(command.toUpperCase()); });
     player.setOverlayHandler(function () { showPlayer(); });
     control_bar.setPlayHandler(function () { player.play(); });
     //showLog();
@@ -268,7 +271,7 @@ api.getData(function () {
     // Remove any hashes (after oauth login in some cases)
     //if (window.location.hash.length > 0) window.location.href = window.location.href.split('#')[0];
     Helpers.hideNode(document.getElementById('loading'));
-    if (document.readyState === 'complete') {
+    if (document.readyState == 'complete') {
         Helpers.hideNode(document.getElementById('loading'));
     } else {
         window.addEventListener('load', function () {

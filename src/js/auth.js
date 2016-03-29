@@ -9,9 +9,11 @@ lanet_tv.Auth = (function () {
             welcome = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0, initialized = false,
+            userpic = "", key = null, hash = null,
+            requests = [], expire = 0, open = false, refresh_timeout = 0,
+            initialized = false,
             last_refresh = 0,
-            onAuthUpdate = function (userpic, key) { },
+            onAuthUpdate = function (userpic, key, hash) { },
             createElement = function () {
                 container.id = 'auth';
                 container.classList.add('hidden');
@@ -79,7 +81,8 @@ lanet_tv.Auth = (function () {
                 storage.set('key', '');
                 userpic = '';
                 key = null;
-                onAuthUpdate(userpic, key);
+                hash = null;
+                onAuthUpdate(userpic, key, hash);
                 refreshAuth();
             },
             saveAuth = function (data) {
@@ -96,7 +99,8 @@ lanet_tv.Auth = (function () {
                 Helpers.showNode(reset);
                 userpic = data['image'];
                 key = data['key'];
-                onAuthUpdate(userpic, key);
+                hash = data['user_id'];
+                onAuthUpdate(userpic, key, hash);
             },
             checkAuth = function (url) {
                 var timeout = 0, request = Helpers.getJSON(url, function (data) {
@@ -152,11 +156,10 @@ lanet_tv.Auth = (function () {
             resetAuth: resetAuth,
             setAuthUpdateFunction: function (func) {
                 onAuthUpdate = func;
-                onAuthUpdate(userpic, key);
+                onAuthUpdate(userpic, key, hash);
             },
-            getKey: function () {
-                return key;
-            },
+            getKey: function () { return key; },
+            getHash: function () { return hash },
             hasInit: function () { return initialized; }
         };
     }

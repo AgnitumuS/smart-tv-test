@@ -305,13 +305,17 @@ Helpers.createSwfObject = function (src, attributes, parameters) {
 /**
  * @description Load a n arbitrary JavaScript file (into head tag)
  * @param source {String} JS file source
+ * @param successCallback {Function=} Function to execute on script load
+ * @param errorCallback {Function=} Function to execute on script load error
  */
-Helpers.addScript = function (source) {
+Helpers.addScript = function (source, successCallback, errorCallback) {
     var head = document.getElementsByTagName('head')[0];
     var element = document.createElement('script');
     element.type = 'text/javascript';
     element.src = source;
-    head.appendChild(element)
+    element.addEventListener('load', successCallback || function () {});
+    element.addEventListener('error', errorCallback || function () {});
+    head.appendChild(element);
 };
 
 /**
