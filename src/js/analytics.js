@@ -3,7 +3,8 @@ lanet_tv.Analytics = (function () {
 
     function init() {
         var body = document.getElementsByTagName('body')[0],
-            meta_tags = document.getElementsByName('google-analytics-id'),
+            ga_id = document.getElementsByName('google-analytics-id')[0],
+            tm_id = document.getElementsByName('google-tag-manager-id')[0],
             disabled = false,
             google_id = "",
             user_hash = null,
@@ -27,8 +28,8 @@ lanet_tv.Analytics = (function () {
                 }
             };
 
-        if (meta_tags[0]) {
-            google_id = meta_tags[0].content;
+        if (ga_id) {
+            google_id = ga_id.content;
             Helpers.addScript('https://www.google-analytics.com/analytics.js', function () {
                 if (!window.ga) return;
                 window.ga('create', google_id, 'auto');
@@ -49,6 +50,13 @@ lanet_tv.Analytics = (function () {
             disabled = true;
             console.warn('Google Analytics meta tag not found, disabling');
         }
+
+        if (tm_id) {
+            Helpers.addScript('https://www.googletagmanager.com/gtm.js?id=' + tm_id.content);
+        } else {
+            console.warn('Google Tag Manager meta tag not found, disabling');
+        }
+
         return {
             setUser: setUserHash,
             sendEvent: sendEvent

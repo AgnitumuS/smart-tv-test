@@ -172,7 +172,7 @@
 }
 */
 
-#menu:not(.expanded) > .list > .selected:not(.current) {
+#menu:not(.expanded) > .list > .selected:not(.current), #menu:not(.expanded) > .list > :active:not(.current) {
     background-color: rgb(89, 108, 116);
 }
 

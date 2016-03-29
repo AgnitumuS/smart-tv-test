@@ -139,7 +139,8 @@ gulp.task('mobile.analytics', function () {
             css: "app.min.css",
             js: "app.min.js",
             analytics: true,
-            google_analytics_id: 'UA-74743557-1'
+            ga: 'UA-2946020-12',
+            tm: 'GTM-KCM3D7'
         }))
         .pipe(htmlmin({
             collapseWhitespace: true
