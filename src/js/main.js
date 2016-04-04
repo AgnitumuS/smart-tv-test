@@ -79,6 +79,7 @@ var api = lanet_tv.Api.getInstance(),
         player.play(channel);
         app_bar.setChannel(channel);
         storage.set('last_channel', String(channel.data['id']));
+        analytics.sendEvent('content', 'play', String(channel.data['id']));
         //showPlayer()
     },
     expandMenu = function () {
@@ -251,6 +252,7 @@ api.getData(function () {
     menu.setRootItemSelectHandler(function (category, id) {
         switch (category) {
             case 'lists':
+                analytics.sendEvent('root', 'lists', id);
                 switch (id) {
                     case 'favourite':
                         getCurrentChannelList = function () { return channels.getFavourite(); };
@@ -260,9 +262,11 @@ api.getData(function () {
                 }
                 break;
             case 'genres':
+                analytics.sendEvent('root', 'genres', id);
                 getCurrentChannelList = function () { return channels.getByGenre(id); };
                 break;
             case 'tags':
+                analytics.sendEvent('root', 'tags', id);
                 getCurrentChannelList = function () { return channels.getByTag(id); };
                 break;
             default:

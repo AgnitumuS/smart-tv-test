@@ -118,9 +118,17 @@ if (!Array.prototype.filter) {
         return res;
     };
 }
+
 if (!Array.prototype.spliced) {
     Array.prototype.spliced = function () {
         Array.prototype.splice.apply(this, arguments);
+        return ( this );
+    };
+}
+
+if (!Array.prototype.prepend) {
+    Array.prototype.prepend = function (value) {
+        this.unshift(value);
         return ( this );
     };
 }

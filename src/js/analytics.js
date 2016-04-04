@@ -18,12 +18,12 @@ lanet_tv.Analytics = (function () {
                     }
                 }
             },
-            sendEvent = function sendEvent(event) {
+            sendEvent = function sendEvent() {
                 if (!disabled) {
                     if (window.ga) {
-                        window.ga('send', event);
+                        window.ga.apply(this, ['send', 'event'].concat(arguments));
                     } else {
-                        event_queue.push(event);
+                        event_queue.push(arguments);
                     }
                 }
             };
