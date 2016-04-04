@@ -247,9 +247,9 @@ lanet_tv.Menu = (function () {
                 }
             },
             collapseRootCategory = function (category) {
+                var children = [], child;
                 if (Object.keys(category.children).length > 0 && category.element.classList.contains('expanded')) {
-                    var children = [];
-                    for (var child in category.children) {
+                    for (child in category.children) {
                         if (category.children.hasOwnProperty(child)) {
                             category.children[child].element.classList.add('hidden');
                             children.push(category.children[child]);
@@ -327,7 +327,8 @@ lanet_tv.Menu = (function () {
             },
             expand: expandRoot,
             collapse: function () {
-                for (var item in root_menu_items)
+                var item;
+                for (item in root_menu_items)
                     if (root_menu_items.hasOwnProperty(item) && root_menu_items[item].element.classList.contains('category'))
                         collapseRootCategory(root_menu_items[item]);
                 menu.classList.remove('expanded');
@@ -342,9 +343,10 @@ lanet_tv.Menu = (function () {
             selectPreviousRootItem: selectPreviousRootItem,
             collapseCurrentRootCategory: collapseCurrentRootCategory,
             setGenres: function (genres) {
+                var g;
                 if (genres.length != Object.keys(categories.genres.children).length) {
                     categories.genres.children = {};
-                    for (var g in genres) {
+                    for (g in genres) {
                         if (genres.hasOwnProperty(g)) {
                             categories.genres.children[g] = {
                                 id: genres[g],
@@ -358,9 +360,10 @@ lanet_tv.Menu = (function () {
                 }
             },
             setTags: function (tags) {
+                var t;
                 if (tags.length != Object.keys(categories.tags.children).length) {
                     categories.tags.children = {};
-                    for (var t in tags) {
+                    for (t in tags) {
                         if (tags.hasOwnProperty(t)) {
                             categories.tags.children[t] = {
                                 id: tags[t],

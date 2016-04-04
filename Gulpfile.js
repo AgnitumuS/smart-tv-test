@@ -138,9 +138,7 @@ gulp.task('mobile.analytics', function () {
             title: "Ланет TV",
             css: "app.min.css",
             js: "app.min.js",
-            analytics: true,
-            ga: 'UA-2946020-12',
-            tm: 'GTM-KCM3D7'
+            analytics: require('./analytics.json')
         }))
         .pipe(htmlmin({
             collapseWhitespace: true
@@ -232,30 +230,4 @@ gulp.task('tv', function () {
             use: [pngquant()]
         }))
         .pipe(gulp.dest(dest + '/assets'));
-});
-
-gulp.task('mobile.deploy', function () {
-    var config = require('./ftp.m.json'),
-        conn = ftp.create({
-            host: config.host,
-            port: config.port,
-            user: config.user,
-            password: config.pass
-        });
-    return gulp.src("build/mobile/**/*")
-        .pipe(conn.newer('/'))
-        .pipe(conn.dest('/'));
-});
-
-gulp.task('tv.deploy', function () {
-    var config = require('./ftp.smart.json'),
-        conn = ftp.create({
-            host: config.host,
-            port: config.port,
-            user: config.user,
-            password: config.pass
-        });
-    return gulp.src("build/tv/**/*")
-        .pipe(conn.newer('/'))
-        .pipe(conn.dest('/'));
 });

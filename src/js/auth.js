@@ -10,6 +10,7 @@ lanet_tv.Auth = (function () {
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
             userpic = "", key = null, hash = null,
+            analytics_uid = null,
             requests = [], expire = 0, open = false, refresh_timeout = 0,
             initialized = false,
             last_refresh = 0,
@@ -111,9 +112,13 @@ lanet_tv.Auth = (function () {
                 }, 500);
             },
             refreshAuth = function () {
+                var url = 'https://auth.lanet.tv/init';
+                if (analytics_uid && analytics_uid.length > 0) {
+                    url += '?google_client_id=' + analytics_uid;
+                }
                 clearTimeout(refresh_timeout);
                 last_refresh = new Date().getTime();
-                Helpers.getJSON('https://auth.lanet.tv/init', function (data) {
+                Helpers.getJSON(url, function (data) {
                     storage.set('auth_status', data['status']);
                     Helpers.removeChildren(main);
                     main.appendChild(createButton('facebook', 'Facebook', data['facebook']));
@@ -161,6 +166,9 @@ lanet_tv.Auth = (function () {
             setAuthUpdateFunction: function (func) {
                 onAuthUpdate = func;
                 onAuthUpdate(userpic, key, hash);
+            },
+            setAnalyticsUid: function (uid) {
+                analytics_uid = uid;
             },
             getKey: function () { return key; },
             getHash: function () { return hash; },

@@ -209,6 +209,7 @@ var api = lanet_tv.Api.getInstance(),
     };
 
 api.getData(function () {
+    auth.setAnalyticsUid(analytics.getUid());
     auth.setAuthUpdateFunction(function (userpic, key, hash) {
         var play, channel;
         app_bar.setUserpic(userpic);

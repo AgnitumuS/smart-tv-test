@@ -59,7 +59,11 @@ lanet_tv.Analytics = (function () {
 
         return {
             setUser: setUserHash,
-            sendEvent: sendEvent
+            sendEvent: sendEvent,
+            getUid: function () {
+                var result = document.cookie.match(/_ga=GA\d.\d.([^;]+)/);
+                return result ? result[1].toString() : null;
+            }
         };
     }
 
