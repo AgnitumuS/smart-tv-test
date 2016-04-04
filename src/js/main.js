@@ -84,29 +84,6 @@ var api = lanet_tv.Api.getInstance(),
     expandMenu = function () {
         menu.expand();
         app_bar.showTitle();
-        menu.setRootItemSelectHandler(function (category, id) {
-            switch (category) {
-                case 'lists':
-                    switch (id) {
-                        case 'favourite':
-                            getCurrentChannelList = function () { return channels.getFavourite(); };
-                            break;
-                        default:
-                            getCurrentChannelList = function () { return channels.getChannels(); };
-                    }
-                    break;
-                case 'genres':
-                    getCurrentChannelList = function () { return channels.getByGenre(id); };
-                    break;
-                case 'tags':
-                    getCurrentChannelList = function () { return channels.getByTag(id); };
-                    break;
-                default:
-                    console.warn('TODO: Unhandled item: ', [category, id]);
-                    getCurrentChannelList = function () { return channels.getChannels(); };
-            }
-            menu.setChannels(getCurrentChannelList());
-        });
         input.setKeyFunctions({
             'RIGHT': function () { showMenu(); },
             'UP': function () { menu.selectPreviousRootItem(); },
@@ -270,6 +247,29 @@ api.getData(function () {
     app_bar.setUserpicClickHandler(function () {
         showPlayer();
         showAuth();
+    });
+    menu.setRootItemSelectHandler(function (category, id) {
+        switch (category) {
+            case 'lists':
+                switch (id) {
+                    case 'favourite':
+                        getCurrentChannelList = function () { return channels.getFavourite(); };
+                        break;
+                    default:
+                        getCurrentChannelList = function () { return channels.getChannels(); };
+                }
+                break;
+            case 'genres':
+                getCurrentChannelList = function () { return channels.getByGenre(id); };
+                break;
+            case 'tags':
+                getCurrentChannelList = function () { return channels.getByTag(id); };
+                break;
+            default:
+                console.warn('TODO: Unhandled item: ', [category, id]);
+                getCurrentChannelList = function () { return channels.getChannels(); };
+        }
+        menu.setChannels(getCurrentChannelList());
     });
     // Remove any hashes (after oauth login in some cases)
     //if (window.location.hash.length > 0) window.location.href = window.location.href.split('#')[0];

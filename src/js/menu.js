@@ -158,8 +158,8 @@ lanet_tv.Menu = (function () {
                                 category_item.classList.add('hidden');
                                 category_item.innerHTML = categories[cat_id].children[item_id].name;
                                 (function (element) {
-                                    var n;
                                     element.addEventListener("click", function () {
+                                        var n;
                                         if (expanded) {
                                             for (n in root_menu_items) {
                                                 if (root_menu_items.hasOwnProperty(n) && root_menu_items[n].element == element) {
