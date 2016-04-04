@@ -1,7 +1,7 @@
 lanet_tv.Auth = (function () {
     var instance;
 
-    function init() {
+    function init () {
         var body = document.getElementsByTagName('body')[0],
             container = document.createElement('div'),
             auth = document.createElement('div'),
@@ -24,6 +24,7 @@ lanet_tv.Auth = (function () {
                 reset.innerHTML = 'Выйти';
                 userpic = '';
                 key = null;
+                hash = null;
                 auth.appendChild(main);
                 container.appendChild(auth);
                 reset.addEventListener('touchend', function (event) {
@@ -34,41 +35,29 @@ lanet_tv.Auth = (function () {
                 Helpers.hideNode(reset);
                 return container;
             },
-        /*
-         createButton = function (id, name, url) {
-         var button = document.createElement('a');
-         button.classList.add('button');
-         button.classList.add('auth');
-         button.classList.add(id);
-         //button.target = "_self";
-         button.href = url + '?redirect=true';
-         var button_text = document.createElement('span');
-         button_text.innerHTML = name;
-         button.appendChild(button_text);
-         return button;
-         },
-         */
             createButton = function (id, name, url) {
-                var button = document.createElement('button');
+                var button = document.createElement('button'),
+                    button_text = document.createElement('span');
                 button.classList.add('button');
                 button.classList.add('auth');
                 button.classList.add(id);
-                var button_text = document.createElement('span');
                 button_text.innerHTML = name;
                 button.appendChild(button_text);
                 button.addEventListener('touchend', function (event) {
                     event.preventDefault();
                     Helpers.openDialog(url + "?redirect=true", "_self", {width: 640, height: 480}, function () {
                         clearTimeout(refresh_timeout);
-                        if (!key)
+                        if (!key) {
                             resetAuth();
+                        }
                     });
                 });
                 button.addEventListener('click', function () {
                     Helpers.openDialog(url + "?redirect=true", "_self", {width: 640, height: 480}, function () {
                         clearTimeout(refresh_timeout);
-                        if (!key)
+                        if (!key) {
                             resetAuth();
+                        }
                     });
                 });
                 return button;
@@ -82,8 +71,16 @@ lanet_tv.Auth = (function () {
                 userpic = '';
                 key = null;
                 hash = null;
-                onAuthUpdate(userpic, key, hash);
-                refreshAuth();
+                getAnonKey(function () {
+                    onAuthUpdate(userpic, key, hash);
+                    refreshAuth();
+                });
+            },
+            getAnonKey = function (callback) {
+                Helpers.getJSON('https://auth.lanet.tv/user_id', function (data) {
+                    hash = data.user_id;
+                    callback();
+                });
             },
             saveAuth = function (data) {
                 initialized = true;
@@ -109,7 +106,9 @@ lanet_tv.Auth = (function () {
                 }, function () {
                     resetAuth();
                 });
-                timeout = setTimeout(function () { request.abort(); }, 500);
+                timeout = setTimeout(function () {
+                    request.abort();
+                }, 500);
             },
             refreshAuth = function () {
                 clearTimeout(refresh_timeout);
@@ -122,32 +121,37 @@ lanet_tv.Auth = (function () {
                     main.appendChild(createButton('vk', 'Вконтакте', data['vk']));
                     main.appendChild(createButton('lanet', 'Ланет', data['lanet']));
                     expire = 180 * 1000;
-                    refresh_timeout = setTimeout(function () {open && refreshAuth()}, expire);
+                    refresh_timeout = setTimeout(function () {
+                        open && refreshAuth()
+                    }, expire);
                 });
             },
             checkToken = function (token) {
                 requests.push(Helpers.getJSON('https://auth.lanet.tv/token/' + token, function (data) {
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
-                    if (error.status != 0)
+                    if (error.status !== 0) {
                         resetAuth();
+                    }
                 }));
             };
         body.appendChild(createElement());
         storage.set('key', '');
-        if (storage.get('token').length > 0)
+        if (storage.get('token').length > 0) {
             checkToken(storage.get('token'));
-        else if (storage.get('auth_status').length > 0)
+        } else if (storage.get('auth_status').length > 0) {
             checkAuth(storage.get('auth_status'));
-        else
+        } else {
             resetAuth();
+        }
         return {
             show: function () {
                 open = true;
                 container.classList.remove('hidden');
                 container.classList.add('visible');
-                if (!key && last_refresh > 0 && last_refresh + expire < new Date().getTime())
+                if (!key && last_refresh > 0 && last_refresh + expire < new Date().getTime()) {
                     refreshAuth();
+                }
             },
             hide: function () {
                 container.classList.remove('visible');
@@ -159,7 +163,7 @@ lanet_tv.Auth = (function () {
                 onAuthUpdate(userpic, key, hash);
             },
             getKey: function () { return key; },
-            getHash: function () { return hash },
+            getHash: function () { return hash; },
             hasInit: function () { return initialized; }
         };
     }

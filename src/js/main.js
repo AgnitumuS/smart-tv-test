@@ -20,11 +20,12 @@ var api = lanet_tv.Api.getInstance(),
         return channels.getChannels();
     },
     setChannels = function () {
+        var c, channel;
         var new_channels = api.getChannels(),
             new_channel_ids = [];
-        for (var c in new_channels) {
+        for (c in new_channels) {
             if (new_channels.hasOwnProperty(c)) {
-                var channel = new_channels[c];
+                channel = new_channels[c];
                 new_channel_ids.push(channel.id);
                 channel['favourite'] = storage.get('favourite').split(' ').indexOf(channel['id'].toString()) != -1;
                 channels.setChannel(channel);
@@ -168,7 +169,7 @@ var api = lanet_tv.Api.getInstance(),
         hideTint();
         app_bar.hideTitle();
         app_bar.setTransparentBackground(false);
-        app_bar.show(2000);
+        app_bar.show(5000);
         clock.hide();
         //navigator.userAgent.match(/iPhone/g) && control_bar.show(2000);
         input.setKeyFunctions({
@@ -215,9 +216,10 @@ var api = lanet_tv.Api.getInstance(),
         });
         input.enableNumeric();
         input.setNumericHandler(function (number, final) {
+            var channel_by_number;
             showToast(number);
             if (final) {
-                var channel_by_number = channels.getChannelByNumber(parseInt(number));
+                channel_by_number = channels.getChannelByNumber(parseInt(number));
                 if (channel_by_number) {
                     playChannel(channel_by_number);
                     app_bar.show(2000);
@@ -230,14 +232,15 @@ var api = lanet_tv.Api.getInstance(),
 
 api.getData(function () {
     auth.setAuthUpdateFunction(function (userpic, key, hash) {
+        var play, channel;
         app_bar.setUserpic(userpic);
         api.setKey(key);
         if (hash)
             analytics.setUser(hash);
-        var play = auth.hasInit();
+        play = auth.hasInit();
         update(function () {
             if (play) {
-                var channel = channels.getFirstChannel();
+                channel = channels.getFirstChannel();
                 if (storage.get('last_channel') && channels.getChannelById(storage.get('last_channel')))
                     channel = channels.getChannelById(storage.get('last_channel'));
                 playChannel(channel);

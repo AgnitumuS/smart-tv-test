@@ -1,7 +1,7 @@
 lanet_tv.Auth = (function () {
     var instance;
 
-    function init() {
+    function init () {
         var body = document.getElementsByTagName('body')[0],
             container = document.createElement('div'),
             auth = document.createElement('div'),
@@ -9,9 +9,10 @@ lanet_tv.Auth = (function () {
             welcome = document.createElement('div'),
             reset = document.createElement('button'),
             storage = lanet_tv.Storage.getInstance(),
-            userpic, key, requests = [], expire = 0, open = false, refresh_timeout = 0, initialized = false,
+            userpic = "", key = null, hash = null,
+            requests = [], expire = 0, open = false, refresh_timeout = 0, initialized = false,
             popup,
-            onAuthUpdate = function (userpic, key) { },
+            onAuthUpdate = function (userpic, key, hash) { },
             createElement = function () {
                 container.id = 'auth';
                 container.classList.add('hidden');
@@ -22,6 +23,7 @@ lanet_tv.Auth = (function () {
                 reset.innerHTML = 'Выйти';
                 userpic = '';
                 key = null;
+                hash = null;
                 auth.appendChild(main);
                 container.appendChild(auth);
                 reset.addEventListener('touchend', function (event) {
@@ -41,11 +43,11 @@ lanet_tv.Auth = (function () {
                 }));
             },
             createButton = function (id, name) {
-                var button = document.createElement('button');
+                var button = document.createElement('button'),
+                    button_text = document.createElement('span');
                 button.classList.add('button');
                 button.classList.add('auth');
                 button.classList.add(id);
-                var button_text = document.createElement('span');
                 button_text.innerHTML = name;
                 button.appendChild(button_text);
                 button.addEventListener('touchend', function (event) {
@@ -68,20 +70,32 @@ lanet_tv.Auth = (function () {
                 return button;
             },
             resetAuth = function () {
+                var r;
                 initialized = true;
                 Helpers.hideNode(reset);
                 storage.set('token', '');
                 storage.set('key', '');
                 userpic = '';
                 key = null;
-                onAuthUpdate(userpic, key);
-                for (var r in requests) { if (requests.hasOwnProperty(r)) requests[r].abort(); }
+                hash = null;
+                for (r in requests) {
+                    if (requests.hasOwnProperty(r)) requests[r].abort();
+                }
                 requests = [];
                 Helpers.removeChildren(main);
                 main.appendChild(createButton('facebook', 'Facebook'));
                 main.appendChild(createButton('google', 'Google'));
                 main.appendChild(createButton('vk', 'Вконтакте'));
                 main.appendChild(createButton('lanet', 'Ланет'));
+                getAnonKey(function () {
+                    onAuthUpdate(userpic, key, hash);
+                });
+            },
+            getAnonKey = function (callback) {
+                Helpers.getJSON('https://auth.lanet.tv/user_id', function (data) {
+                    hash = data.user_id;
+                    callback();
+                });
             },
             saveAuth = function (data) {
                 initialized = true;
@@ -96,13 +110,14 @@ lanet_tv.Auth = (function () {
                 Helpers.showNode(reset);
                 userpic = data['image'];
                 key = data['key'];
-                onAuthUpdate(userpic, key);
+                hash = data['user_id'];
+                onAuthUpdate(userpic, key, hash);
             },
             checkAuth = function (url) {
                 requests.push(Helpers.getJSON(url, function (data) {
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
-                    if (error.status != 0 && open)
+                    if (error.status !== 0 && open)
                         resetAuth();
                 }));
             },
@@ -111,7 +126,7 @@ lanet_tv.Auth = (function () {
                     initialized = true;
                     data['status'] == 'ok' ? saveAuth(data) : resetAuth();
                 }, function (error) {
-                    if (error.status != 0)
+                    if (error.status !== 0)
                         resetAuth();
                 }));
             };
@@ -134,11 +149,10 @@ lanet_tv.Auth = (function () {
             resetAuth: resetAuth,
             setAuthUpdateFunction: function (func) {
                 onAuthUpdate = func;
-                onAuthUpdate(userpic, key);
+                onAuthUpdate(userpic, key, hash);
             },
-            getKey: function () {
-                return key;
-            },
+            getKey: function () { return key; },
+            getHash: function () { return hash; },
             hasInit: function () { return initialized; }
         };
     }
